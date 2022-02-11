@@ -1,5 +1,9 @@
 #!/bin/bash
 
+docker rm -f cprox
+
+docker network create codec
+
 docker run -d \
     --restart unless-stopped \
     --name cprox \
@@ -7,4 +11,5 @@ docker run -d \
     -e "VERBOSE=true" \
     -e "ORIGIN_HOST_PREFIX=coreunit.net" \
     -e "CONTAINER_NAME_PREFFIX=codec_" \
+    --network codec \
     cprox
