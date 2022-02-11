@@ -41,7 +41,7 @@ export default function createContainerProxyMiddleware(
         }
         env.VERBOSE && console.log(
             " - VERBOSE: result container address:\n" +
-            "http://" + containerNamePrefix + hostname + containerNameSuffix + ":" + containerPort
+            "   http://" + containerNamePrefix + hostname + containerNameSuffix + ":" + containerPort
         )
 
         // cache proxy middleware in expressProxyMiddlewares
@@ -53,6 +53,18 @@ export default function createContainerProxyMiddleware(
                 }
             )
         }
+
+        env.VERBOSE && console.log(
+            " - VERBOSE:\n" +
+            "   url:\n" +
+            "      " + req.url +
+            "   headers:\n" +
+            "      " +
+            JSON.stringify(req.headers, null, 2)
+                .split("\n")
+                .map((v) => "      " + v)
+                .join("\n")
+        )
 
         // proxy request to cached proxy of the host
         expressProxyMiddlewares[hostname](req, res, next)
