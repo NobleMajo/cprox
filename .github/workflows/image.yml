@@ -18,7 +18,7 @@ jobs:
       - name: Run built image
         run: ./start.sh
       - name: Check (max 5 times) if docker images is running
-        run: for i in {1..5}; do docker exec --tty codec env TERM=xterm docker info && break || sleep 10; done
+        run: for i in {1..5}; do docker exec --tty ${{ github.event.repository.name }} env TERM=xterm docker info && break || sleep 10; done
 
   release:
     name: Release docker image

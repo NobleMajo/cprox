@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build . -t cprox
+docker build -t cprox .
