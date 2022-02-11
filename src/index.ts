@@ -31,11 +31,17 @@ const prepareProxy: (req: IncomingMessage) => string = (req) => {
         hostname.length <= env.ORIGIN_HOST.length ||
         !hostname.endsWith(env.ORIGIN_HOST)
     ) {
-        throw new Error("Origin host needs to be a subdomain of '" + originHost + "'!")
+        throw new Error(
+            "Origin host needs to be a subdomain of '" +
+            env.ORIGIN_HOST +
+            "'!")
     }
     hostname = hostname.slice(0, -(env.ORIGIN_HOST.length + 1)).toLowerCase()
     if (hostname.length === 0) {
-        throw new Error("Origin host subdomain '" + env.ORIGIN_HOST + "' needs to be greater than 0!")
+        throw new Error(
+            "Origin host subdomain '" +
+            env.ORIGIN_HOST +
+            "' needs to be greater than 0!")
     }
     env.VERBOSE && console.log(
         " - VERBOSE: result container address:\n" +
