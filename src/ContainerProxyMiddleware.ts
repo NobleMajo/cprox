@@ -50,6 +50,11 @@ export default function createContainerProxyMiddleware(
                 "http://" + containerNamePrefix + hostname + containerNameSuffix + ":" + containerPort,
                 {
                     https: false,
+                    reqBodyEncoding: null,
+                    reqAsBuffer: true,
+                    parseReqBody: false,
+                    preserveHostHdr: false,
+                    timeout: 12000,
                 }
             )
         }

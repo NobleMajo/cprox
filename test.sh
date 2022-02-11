@@ -4,6 +4,8 @@ docker rm -f cprox
 
 docker network create codec
 
+./build.sh
+
 docker run -d \
     --restart unless-stopped \
     --name cprox \

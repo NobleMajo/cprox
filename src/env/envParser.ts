@@ -7,6 +7,7 @@ export const envParser = new EnvironmentParser({
 })
 
 envParser.define("PRODUCTION", "boolean")
+envParser.define("VERBOSE", "boolean")
 
 envParser.define("PORT", "number")
 envParser.define("BIND_ADDRESS", "string")
