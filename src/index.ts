@@ -1,10 +1,8 @@
 // import express, compression, cors, morgan
-import express from 'express'
-import compression from 'compression'
-import cors from 'cors'
-import morgan from 'morgan'
 import dns from "dns"
 import env from "./env/envParser"
+import HttpProxy, { createProxyServer } from "http-proxy"
+import http, { IncomingMessage, OutgoingMessage } from "http"
 
 dns.setServers([
     "127.0.0.11",
@@ -14,53 +12,63 @@ dns.setServers([
     "8.8.4.4"
 ])
 
-// import ErrorHandler from './middlewares/errorHandler'
-import createErrorHandler from './ErrorHandlerMiddleware'
-import createContainerProxyMiddleware from './ContainerProxyMiddleware'
+const proxys: {
+    [domain: string]: HttpProxy
+} = {}
 
-// load proxy settings
-console.log(`CProx is starting...`)
-
-// create express app
-const app = express()
-
-// disable etag
-app.set('etag', false)
-
-// trust cloudflare ip ranges
-/*
-app.set('trust proxy', (ip: string) => {
-    env.VERBOSE && console.log(" - VERBOSE: trust proxy check: " + ip + ".\nTrusted:", env.TRUSTED_PROXYS)
-    return env.TRUSTED_PROXYS.includes(ip)
-})
-*/
-/*
-app.get(
-    [
-        "/health-check",
-        "/live",
-        "/ready",
-        "/status"
-    ],
-    (req, res) => res.sendStatus(200)
-)
-*/
-// use ErrorHandler middleware
-// app.use(createErrorHandler())
-
-// app use compression, cors and morgan as middlewares
-// app.use(compression())
-app.use(cors())
-// env.PRODUCTION && app.use(morgan('dev'))
-
-app.use(createContainerProxyMiddleware())
-
-// start server on environment port or 3000
-app.listen(
-    env.PORT,
-    () => {
-        console.log(`CProx started on port ${env.PORT}!`)
+const prepareProxy: (req: IncomingMessage) => string = (req) => {
+    // get request hostname by headers host
+    let hostname = req.headers.host
+    env.VERBOSE && console.log(" - VERBOSE: request from host: " + hostname)
+    // thorw error if hostname is not defined
+    if (!hostname) {
+        throw new Error("No hostname ('host') defined in headers!")
     }
-)
+    if (hostname?.includes(":")) {
+        hostname = hostname.split(":")[0]
+    }
+    if (
+        hostname.length <= env.ORIGIN_HOST.length ||
+        !hostname.endsWith(env.ORIGIN_HOST)
+    ) {
+        throw new Error("Origin host needs to be a subdomain of '" + originHost + "'!")
+    }
+    hostname = hostname.slice(0, -(env.ORIGIN_HOST.length + 1)).toLowerCase()
+    if (hostname.length === 0) {
+        throw new Error("Origin host subdomain '" + env.ORIGIN_HOST + "' needs to be greater than 0!")
+    }
+    env.VERBOSE && console.log(
+        " - VERBOSE: result container address:\n" +
+        "   " + env.CONTAINER_NAME_PREFIX + hostname + env.CONTAINER_NAME_SUFFIX + ":" + env.CONTAINER_PORT
+    )
+
+    // cache proxy middleware in expressProxyMiddlewares
+    if (!proxys[hostname]) {
+        proxys[hostname] = new HttpProxy({
+            target: {
+                host: env.CONTAINER_NAME_PREFIX + hostname + env.CONTAINER_NAME_SUFFIX,
+                port: env.CONTAINER_PORT
+            }
+        })
+    }
+
+    return hostname
+}
+
+const httpServer = http.createServer(function (req, res) {
+    const hostname = prepareProxy(req)
+    proxys[hostname].web(req, res)
+});
+
+httpServer.on('upgrade', function (req, socket, head) {
+    const hostname = prepareProxy(req)
+    proxys[hostname].ws(req, socket, head)
+});
+
+httpServer.listen(env.PORT, env.BIND_ADDRESS, () => {
+    console.log(`CProx started on port ${env.PORT}!`)
+})
+
+
 
 

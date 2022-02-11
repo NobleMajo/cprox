@@ -13,7 +13,7 @@ envParser.define("PORT", "number")
 envParser.define("BIND_ADDRESS", "string")
 envParser.define("TRUSTED_PROXYS", "array")
 
-envParser.require("ORIGIN_HOST_PREFIX", "string")
+envParser.require("ORIGIN_HOST", "string")
 
 envParser.define("CONTAINER_NAME_PREFIX", "string")
 envParser.define("CONTAINER_NAME_SUFFIX", "string")

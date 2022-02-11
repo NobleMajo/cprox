@@ -9,7 +9,7 @@ export default {
 
     VERBOSE: false as boolean,
 
-    ORIGIN_HOST_PREFIX: undefined as any as string,
+    ORIGIN_HOST: undefined as any as string,
 
     CONTAINER_NAME_PREFIX: "codec_" as string,
     CONTAINER_NAME_SUFFIX: "" as string,
