@@ -9,15 +9,17 @@ export const envParser = new EnvironmentParser({
 envParser.define("PRODUCTION", "boolean")
 envParser.define("VERBOSE", "boolean")
 
-envParser.define("PORT", "number")
+envParser.define("DNS_SERVER_ADDRESSES", "array")
+envParser.define("HTTP_PORT", "number")
+envParser.define("HTTPS_PORT", "number")
 envParser.define("BIND_ADDRESS", "string")
-envParser.define("TRUSTED_PROXYS", "array")
-
 envParser.require("ORIGIN_HOST", "string")
 
-envParser.define("CONTAINER_NAME_PREFIX", "string")
-envParser.define("CONTAINER_NAME_SUFFIX", "string")
-envParser.define("CONTAINER_PORT", "number")
+envParser.define("CERT_PATH", "string")
+envParser.define("KEY_PATH", "string")
+envParser.define("CA_PATH", "string")
+
+envParser.define("STATIC_PATH", "string")
 
 export const env = envParser.parseEnv(defaultEnv)
 if (env.exe) {

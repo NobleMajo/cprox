@@ -1,26 +1,27 @@
 {
-    "compilerOptions": {
-        "target": "ES2020",
-        "module": "CommonJS",
-        "lib": [
-            "ES2020",
-            "DOM"
-        ],
-        "esModuleInterop": true,
-        "moduleResolution": "node",
-        "declaration": true,
-        "sourceMap": false,
-        "strict": true,
-        "outDir": "dist",
-        "rootDir": "src",
-        "noImplicitAny": true
-    },
-    "include": [
-        "src/**/*.ts",
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "CommonJS",
+    "lib": [
+      "ES2020",
+      "ES5",
+      "ES6"
     ],
-    "exclude": [
-        "test/**/*",
-        "dist/**/*",
-        "node_modules/**/*"
-    ]
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "declaration": true,
+    "sourceMap": false,
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "noImplicitAny": true
+  },
+  "include": [
+    "src/**/*.ts",
+  ],
+  "exclude": [
+    "test/**/*",
+    "dist/**/*",
+    "node_modules/**/*"
+  ]
 }

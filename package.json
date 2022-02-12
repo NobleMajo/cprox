@@ -7,8 +7,8 @@
   "scripts": {
     "start": "node dist/index.js",
     "tsnode-watch": "nodemon --ext '*.ts' -w ${PWD}/src -x 'npm run tsnode'",
-    "compile": "./node_modules/.bin/tsc -p tsconfig.json",
-    "tsnode": "./node_modules/ts-node/dist/bin.js src/index.ts",
+    "compile": "tsc -p tsconfig.json",
+    "tsnode": "ts-node src/index.ts localhost=www.httpvshttps.com:80",
     "build": "npm run compile",
     "dev": "nodemon --ext '*.ts' -w ${PWD}/src -x 'npm run build; npm run start'",
     "tsdev": "nodemon --ext '*.ts' -w ${PWD}/src -x 'npm run tsnode'",
@@ -20,12 +20,14 @@
   "devDependencies": {
     "@types/http-proxy": "^1.17.8",
     "@types/node": "^16.3.1",
+    "@types/serve-static": "^1.13.10",
     "nodemon": "^2.0.12",
     "ts-node": "^10.2.1",
     "typescript": "^4"
   },
   "dependencies": {
     "http-proxy": "^1.18.1",
+    "serve-static": "^1.14.2",
     "typenvy": "^1.2.2"
   }
 }

@@ -18,6 +18,8 @@ COPY --from=build /app/dist /app/dist
 
 EXPOSE 8080
 
+VOLUME [ "/app/certs" ]
+
 CMD ["/app/dist/index.js"]
 
 
