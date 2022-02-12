@@ -59,7 +59,7 @@ const prepareProxy: (req: IncomingMessage) => string | null = (req) => {
     env.VERBOSE && console.log(" - VERBOSE: request from host: " + hostname)
     // thorw error if hostname is not defined
     if (!hostname) {
-        throw new Error("No hostname ('host') defined in headers!")
+        return null
     }
     if (hostname?.includes(":")) {
         hostname = hostname.split(":")[0]
@@ -106,26 +106,37 @@ var serveStaticFiles: RequestHandler<ServerResponse> = serveStatic(
 
 
 const requestListener: RequestListener = (req, res) => {
-    let key = prepareStaticServe(req)
-    if (key) {
-        maunelServeStaticMiddlewares[key](req, res, () => { })
-        return
+    try {
+        let key = prepareStaticServe(req)
+        if (key) {
+            maunelServeStaticMiddlewares[key](req, res, () => { })
+            return
+        }
+        key = prepareProxy(req)
+        if (key) {
+            proxys[key].web(req, res)
+        }
+        serveStaticFiles(req, res, () => { })
+    } catch (err) {
+        res.statusCode = 500
+        res.end()
+        console.error(err)
     }
-    key = prepareProxy(req)
-    if (key) {
-        proxys[key].web(req, res)
-    }
-    serveStaticFiles(req, res, () => { })
 }
 
 const upgradeListener: UpgradeListener = (req, socket, head) => {
-    let key
-    key = prepareProxy(req)
-    if (key) {
-        proxys[key].ws(req, socket, head)
-        return
+    try {
+        let key
+        key = prepareProxy(req)
+        if (key) {
+            proxys[key].ws(req, socket, head)
+            return
+        }
+        socket.destroy()
+    } catch (err: Error | any) {
+        console.error(err)
+        socket.destroy(err)
     }
-    socket.destroy()
 }
 
 let httpServer: HttpServer | null = null

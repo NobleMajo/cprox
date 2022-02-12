@@ -40,7 +40,7 @@ export async function loadStaticSettings(
             async (rule) => {
                 let [requestPath, targetPath] = rule.split('=')
                 requestPath = "/" + path.join(...requestPath.split("/"))
-                targetPath = "/" + path.join(...requestPath.split("/"))
+                targetPath = "/" + path.join(...targetPath.split("/"))
                 // check if targetPath is a folder or file using fs
                 const stat = await fs.stat(targetPath)
                 if (!stat.isDirectory() && !stat.isFile()) {
