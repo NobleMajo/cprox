@@ -93,7 +93,7 @@ export function loadProxySettings(
     }
 
     return rules.sort(
-        (a, b) => a.originHost.length - b.originHost.length
+        (a, b) => b.originHost.length - a.originHost.length
     )
 }
 

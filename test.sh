@@ -1,4 +1,4 @@
-#!/bin/bash
+^#!/bin/bash
 
 docker rm -f cprox
 
@@ -12,11 +12,12 @@ docker run -it \
     -p 80:80 \
     -p 443:443 \
     -v "$(pwd)/public:/app/public" \
-    -v "$(pwd)/certs:/app/certs" \
-    -e "HTTP_PORT=80" \
+    -v "$(pwd)/certs/coreunit.net:/app/certs" \
+    -e "CERT_PATH=/app/certs/cert1.pem" \
+    -e "KEY_PATH=/app/certs/privkey1.pem" \
+    -e "CA_PATH=/app/certs/fullchain1.pem" \
     -e "VERBOSE=true" \
-    -e "CONTAINER_NAME_PREFFIX=codec_" \
-    -e "STATIC_1=/.well-known=/app/public/.well-known" \
+    -e "STATIC_1=/.well-known=/app/public" \
     -e "PROXY_1=codec.coreunit.net=codec_{0}:8080" \
     -e "PROXY_2=coreunit.net=cunet_website:80" \
     --network codec \

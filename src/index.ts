@@ -88,7 +88,9 @@ var maunelServeStaticMiddlewares: {
 } = {}
 
 const prepareStaticServe: (req: IncomingMessage) => string | null = (req) => {
+    console.log("url: ", req.url)
     for (let index = 0; index < staticRuleKeys.length; index++) {
+        console.log("test: " + req.url + " ?starts with? " + staticRuleKeys[index])
         if (req.url?.startsWith(staticRuleKeys[index])) {
             const reqPath = staticRuleKeys[index]
             maunelServeStaticMiddlewares[reqPath] = serveStatic(
@@ -108,6 +110,7 @@ var serveStaticFiles: RequestHandler<ServerResponse> = serveStatic(
 const requestListener: RequestListener = (req, res) => {
     let key = prepareStaticServe(req)
     if (key) {
+        console.log("found!!!")
         maunelServeStaticMiddlewares[key](req, res, () => { })
         return
     }
