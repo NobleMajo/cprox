@@ -2,14 +2,14 @@
 import dns from "dns"
 import env from "./env/envParser"
 import HttpProxy from "http-proxy"
-import http, { IncomingMessage, RequestListener, Server as HttpServer } from "http"
+import http, { IncomingMessage, OutgoingMessage, RequestListener, Server as HttpServer, ServerResponse } from "http"
 import https, { Server as HttpsServer } from "https"
 import { createMergedProxyResolver, createProxyResolver, loadProxySettings } from "./proxySettings"
 import { Duplex } from "stream"
 import * as fs from "fs"
 import path from "path"
-import serveStatic from "serve-static"
-import { ReadableStreamBYOBRequest } from "stream/web"
+import serveStatic, { RequestHandler } from "serve-static"
+import { loadStaticSettings, StaticRules } from "./staticSettings"
 
 export type UpgradeListener = (req: http.IncomingMessage, socket: Duplex, head: Buffer) => void
 
@@ -27,7 +27,23 @@ export function resolvePath(pathString: string): string {
 
 dns.setServers(env.DNS_SERVER_ADDRESSES)
 
-const resolvers = createProxyResolver(loadProxySettings())
+let staticRules: StaticRules = {}
+let staticRuleKeys: string[] = []
+loadStaticSettings(
+    "STATIC_",
+    false
+)
+    .then((rules) => {
+        staticRules = rules
+        staticRuleKeys = Object.keys(rules)
+            .sort(
+                (a, b) => a.length - b.length
+            )
+        env.VERBOSE && console.log("Verbose| Static file rules:\n", rules)
+    })
+const proxySettings = loadProxySettings()
+env.VERBOSE && console.log("Verbose| Proxy rules:\n", proxySettings)
+const resolvers = createProxyResolver(proxySettings)
 if (resolvers.length == 0) {
     throw new Error("No proxy resolver rules found!")
 }
@@ -38,7 +54,6 @@ const proxys: {
 } = {}
 
 const prepareProxy: (req: IncomingMessage) => string | null = (req) => {
-    req.method
     // get request hostname by headers host
     let hostname = req.headers.host
     env.VERBOSE && console.log(" - VERBOSE: request from host: " + hostname)
@@ -68,25 +83,49 @@ const prepareProxy: (req: IncomingMessage) => string | null = (req) => {
     return hostname
 }
 
-var serveStaticFiles = serveStatic(
+var maunelServeStaticMiddlewares: {
+    [path: string]: RequestHandler<ServerResponse>
+} = {}
+
+const prepareStaticServe: (req: IncomingMessage) => string | null = (req) => {
+    for (let index = 0; index < staticRuleKeys.length; index++) {
+        if (req.url?.startsWith(staticRuleKeys[index])) {
+            const reqPath = staticRuleKeys[index]
+            maunelServeStaticMiddlewares[reqPath] = serveStatic(
+                resolvePath(staticRules[reqPath])
+            )
+            return reqPath
+        }
+    }
+    return null
+}
+
+var serveStaticFiles: RequestHandler<ServerResponse> = serveStatic(
     resolvePath(env.STATIC_PATH)
 )
 
+
 const requestListener: RequestListener = (req, res) => {
-    const hostname = prepareProxy(req)
-    if (hostname) {
-        proxys[hostname].web(req, res)
+    let key = prepareStaticServe(req)
+    if (key) {
+        maunelServeStaticMiddlewares[key](req, res, () => { })
+        return
+    }
+    key = prepareProxy(req)
+    if (key) {
+        proxys[key].web(req, res)
     }
     serveStaticFiles(req, res, () => { })
 }
 
 const upgradeListener: UpgradeListener = (req, socket, head) => {
-    const hostname = prepareProxy(req)
-    if (!hostname) {
-        socket.destroy()
+    let key
+    key = prepareProxy(req)
+    if (key) {
+        proxys[key].ws(req, socket, head)
         return
     }
-    proxys[hostname].ws(req, socket, head)
+    socket.destroy()
 }
 
 let httpServer: HttpServer | null = null

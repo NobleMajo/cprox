@@ -9,7 +9,7 @@ export default {
         "1.1.1.1",
         "8.8.8.8"
     ] as string[],
-    HTTP_PORT: 8080 as number,
+    HTTP_PORT: 80 as number,
     HTTPS_PORT: 443 as number,
     BIND_ADDRESS: "0.0.0.0" as string,
     ORIGIN_HOST: undefined as any as string,
