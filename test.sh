@@ -16,6 +16,7 @@ docker run -it \
     -e "HTTP_PORT=80" \
     -e "VERBOSE=true" \
     -e "CONTAINER_NAME_PREFFIX=codec_" \
+    -e "STATIC_1=/.well-known=/app/public/.well-known" \
     -e "PROXY_1=codec.coreunit.net=codec_{0}:8080" \
     -e "PROXY_2=coreunit.net=cunet_website:80" \
     --network codec \
