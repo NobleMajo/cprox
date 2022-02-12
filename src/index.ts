@@ -22,7 +22,7 @@ export function resolvePath(pathString: string): string {
     if (!pathString.startsWith("/")) {
         pathString = process.cwd() + "/" + pathString
     }
-    return path.join(...pathString.split("/"))
+    return "/" + path.join(...pathString.split("/"))
 }
 
 dns.setServers(env.DNS_SERVER_ADDRESSES)
