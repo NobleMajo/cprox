@@ -6,7 +6,7 @@ docker network create codec
 
 ./build.sh
 
-docker run -it \
+docker run -d \
     --restart unless-stopped \
     --name cprox \
     -p 80:80 \
