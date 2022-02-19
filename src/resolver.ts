@@ -49,13 +49,13 @@ export function partsMatch(
     if (tester.length != searchFor.length) {
         return false
     }
-    for (let index = 0; index < tester.length; index++) {
+    for (let index = 0; index < tester.length && index < searchFor.length; index++) {
         const testerPart = tester[index]
         const searchForPart = searchFor[index]
         if (allowWildcard && searchForPart == "*") {
             continue
         }
-        if (testerPart != searchForPart) {
+        if (testerPart != searchForPart || testerPart.startsWith(searchForPart)) {
             return false
         }
     }
