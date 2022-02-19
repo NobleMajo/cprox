@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "ES6",
     "module": "CommonJS",
     "lib": [
       "ES2020",
@@ -14,7 +14,10 @@
     "strict": true,
     "outDir": "dist",
     "rootDir": "src",
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "types": [
+      "node_modules/**/*.d.ts"
+    ]
   },
   "include": [
     "src/**/*.ts",

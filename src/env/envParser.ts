@@ -18,6 +18,7 @@ envParser.require("ORIGIN_HOST", "string")
 envParser.define("CERT_PATH", "string")
 envParser.define("KEY_PATH", "string")
 envParser.define("CA_PATH", "string")
+envParser.define("IGNORE_EMPTY_CERT", "boolean")
 
 envParser.define("STATIC_PATH", "string")
 

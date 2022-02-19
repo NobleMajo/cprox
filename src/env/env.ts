@@ -18,5 +18,7 @@ export default {
     KEY_PATH: "./certs/privkey.pem" as string,
     CA_PATH: "./certs/chain.pem" as string,
 
+    IGNORE_EMPTY_CERT: true as boolean,
+
     STATIC_PATH: "./public" as string,
 }
