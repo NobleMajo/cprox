@@ -63,6 +63,8 @@ export function hostPartsMatch(
     return true
 }
 
+const proxy = new HttpProxy()
+
 export function createResolver(
     rule: Rule,
     cache: CacheHolder,
@@ -94,29 +96,20 @@ export function createResolver(
                 if (!newPath.startsWith("/")) {
                     newPath = "/" + newPath
                 }
-                const uid = targetHost + "$" + rule.target[1]
-                let proxy: HttpProxy = cache.get(uid)
-                if (!proxy) {
-                    proxy = new HttpProxy({
-                        target: {
-                            host: targetHost,
-                            port: rule.target[1],
-                        }
-                    })
-                    cache.set(uid, proxy, cacheMillis, () => proxy.close())
-                }
                 console.log("newPath: " + newPath)
                 console.log("targetHost: " + targetHost)
                 console.log("targetPort: " + rule.target[1])
                 console.log("proxy:", proxy.constructor.name)
                 proxy.web(req, res, {
                     target: {
+                        host: targetHost,
+                        port: rule.target[1],
                         path: newPath
                     }
                 })
             },
             ws: (data, req, socket, head) => {
-                console.log("http on proxy: " + data.host + "$" + data.path)
+                console.log("ws on proxy: " + data.host + "$" + data.path)
                 let targetHost = rule.target[0]
                 rule.hostVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
@@ -130,22 +123,12 @@ export function createResolver(
                         data.pathParts[v - 1]
                     )
                 })
+                console.log("path: " + data.path + " --- " + targetHost)
                 let newPath = data.path.substring(
                     rule.path.length
                 )
                 if (!newPath.startsWith("/")) {
                     newPath = "/" + newPath
-                }
-                const uid = targetHost + "$" + rule.target[1]
-                let proxy: HttpProxy = cache.get(uid)
-                if (!proxy) {
-                    proxy = new HttpProxy({
-                        target: {
-                            host: targetHost,
-                            port: rule.target[1],
-                        }
-                    })
-                    cache.set(uid, proxy, cacheMillis, () => proxy.close())
                 }
                 console.log("newPath: " + newPath)
                 console.log("targetHost: " + targetHost)
@@ -153,6 +136,8 @@ export function createResolver(
                 console.log("proxy:", proxy.constructor.name)
                 proxy.ws(req, socket, head, {
                     target: {
+                        host: targetHost,
+                        port: rule.target[1],
                         path: newPath
                     }
                 })
