@@ -87,9 +87,12 @@ export function createResolver(
                         data.pathParts[v - 1]
                     )
                 })
-                req.url = data.path.substring(
+                let path = data.path.substring(
                     rule.path.length
                 )
+                if (!path.startsWith("/")) {
+                    path = "/" + path
+                }
                 const uid = targetHost + "$" + rule.target[1]
                 let proxy: HttpProxy = cache.get(uid)
                 if (!proxy) {
@@ -101,14 +104,18 @@ export function createResolver(
                     })
                     cache.set(uid, proxy, cacheMillis, () => proxy.close())
                 }
-                console.log("req.url: " + req.url)
+                console.log("path: " + path)
                 console.log("targetHost: " + targetHost)
                 console.log("targetPort: " + rule.target[1])
                 console.log("proxy:", proxy.constructor.name)
-                proxy.web(req, res)
+                proxy.web(req, res, {
+                    target: {
+                        path: path
+                    }
+                })
             },
             ws: (data, req, socket, head) => {
-                console.log("ws on proxy: " + data.host + "$" + data.path)
+                console.log("http on proxy: " + data.host + "$" + data.path)
                 let targetHost = rule.target[0]
                 rule.hostVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
@@ -122,13 +129,12 @@ export function createResolver(
                         data.pathParts[v - 1]
                     )
                 })
-                req.url = data.path.substring(
+                let path = data.path.substring(
                     rule.path.length
                 )
-                if (!req.url.startsWith("/")) {
-                    req.url = "/" + req.url
+                if (!path.startsWith("/")) {
+                    path = "/" + path
                 }
-
                 const uid = targetHost + "$" + rule.target[1]
                 let proxy: HttpProxy = cache.get(uid)
                 if (!proxy) {
@@ -140,11 +146,15 @@ export function createResolver(
                     })
                     cache.set(uid, proxy, cacheMillis, () => proxy.close())
                 }
-                console.log("req.url: " + req.url)
+                console.log("path: " + path)
                 console.log("targetHost: " + targetHost)
                 console.log("targetPort: " + rule.target[1])
                 console.log("proxy:", proxy.constructor.name)
-                proxy.ws(req, socket, head)
+                proxy.ws(req, socket, head, {
+                    target: {
+                        path: path
+                    }
+                })
             },
         }
     } else if (rule.type == "REDIRECT") {
