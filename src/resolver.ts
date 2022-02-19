@@ -87,14 +87,13 @@ export function createResolver(
                         data.pathParts[v - 1]
                     )
                 })
-                console.log("path: " + data.path + " --- " + targetHost)
-                let newPath = data.path.substring(
+                req.url = data.path.substring(
                     rule.path.length
                 )
-                if (!newPath.startsWith("/")) {
-                    newPath = "/" + newPath
+                if (!req.url.startsWith("/")) {
+                    req.url = "/" + req.url
                 }
-                console.log("newPath: " + newPath)
+                console.log("newPath: " + req.url)
                 console.log("targetHost: " + targetHost)
                 console.log("targetPort: " + rule.target[1])
                 console.log("targetPort: " + rule.target[1])
@@ -102,7 +101,6 @@ export function createResolver(
                     target: {
                         host: targetHost,
                         port: rule.target[1],
-                        path: newPath
                     }
                 }).web(req, res)
             },
@@ -121,21 +119,20 @@ export function createResolver(
                         data.pathParts[v - 1]
                     )
                 })
-                console.log("path: " + data.path + " --- " + targetHost)
-                let newPath = data.path.substring(
+                req.url = data.path.substring(
                     rule.path.length
                 )
-                if (!newPath.startsWith("/")) {
-                    newPath = "/" + newPath
+                if (!req.url.startsWith("/")) {
+                    req.url = "/" + req.url
                 }
-                console.log("newPath: " + newPath)
+                console.log("newPath: " + req.url)
                 console.log("targetHost: " + targetHost)
+                console.log("targetPort: " + rule.target[1])
                 console.log("targetPort: " + rule.target[1])
                 new HttpProxy({
                     target: {
                         host: targetHost,
                         port: rule.target[1],
-                        path: newPath
                     }
                 }).ws(req, socket, head)
             },
