@@ -107,6 +107,9 @@ export function createResolver(rule: Rule): Resolver {
                 req.url = data.path.substring(
                     rule.path.length
                 )
+                if (!req.url.startsWith("/")) {
+                    req.url = "/" + req.url
+                }
                 console.log("WSS data:", data)
                 console.log("rule.path:", rule.path)
                 console.log("originTargetHost:", rule.target[0])
