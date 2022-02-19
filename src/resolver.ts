@@ -70,14 +70,12 @@ export function pathPartsMatch(
     if (tester.length != searchFor.length) {
         return false
     }
-    for (let index = 0; index < tester.length; index++) {
+    for (let index = 0; index < tester.length && index < searchFor.length; index++) {
         const testerPart = tester[index]
         const searchForPart = searchFor[index]
         if (allowWildcard && searchForPart == "*") {
             continue
         }
-        console.log("searchForPart: " + searchForPart)
-        console.log("testerPart: " + testerPart)
         if (testerPart != searchForPart && !testerPart.startsWith(searchForPart)) {
             return false
         }
@@ -115,7 +113,6 @@ export function createResolver(rule: Rule): Resolver {
                 }).web(req, res)
             },
             ws: (data, req, socket, head) => {
-                console.log("ws data: ", data)
                 let targetHost = rule.target[0]
                 rule.hostVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
@@ -249,24 +246,20 @@ export function findResolver(
     resolvers: Resolver[],
     cache: ResolverCache | null = null
 ): Resolver | undefined {
-    console.log("uid: ", data.host + "$" + data.path)
     if (cache && cache[data.host + "$" + data.path]) {
         return cache[data.host + "$" + data.path]
     }
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index];
         if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts, true)) {
-            console.log("mismatch host: ", resolver.rule.hostParts, data.hostParts)
             continue
         }
         if (!pathPartsMatch(resolver.rule.pathParts, data.pathParts, true)) {
-            console.log("mismatch path: ", resolver.rule.pathParts, data.pathParts)
             continue
         }
         if (cache) {
             cache[data.host + "$" + data.path] = resolver
         }
-        console.log("resolver: " + resolver.type + ":" + resolver.rule.host + resolver.rule.path)
         return resolver
     }
     return undefined
