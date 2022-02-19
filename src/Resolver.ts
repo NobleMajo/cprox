@@ -2,8 +2,7 @@ import { IncomingMessage, ServerResponse } from "http"
 import { Duplex } from "stream"
 import { Rule } from "./rule"
 import HttpProxy from "http-proxy"
-import serveStatic, { RequestHandler as ServeStatic } from "serve-static"
-import { readFile } from "fs"
+import serveStatic from "serve-static"
 
 export interface BaseResolver {
     type: "PROXY" | "STATIC" | "REDIRECT",
@@ -73,13 +72,13 @@ export function createResolver(rule: Rule): Resolver {
                 rule.hostVars.forEach((v) => {
                     targetHost = targetHost.replace(
                         "{" + v + "}",
-                        data.hostParts[v]
+                        data.hostParts[v - 1]
                     )
                 })
                 rule.pathVars.forEach((v) => {
                     targetHost = targetHost.replace(
                         "{" + v + "}",
-                        data.pathParts[v]
+                        data.pathParts[v - 1]
                     )
                 })
 
@@ -98,14 +97,14 @@ export function createResolver(rule: Rule): Resolver {
                 let targetHost = rule.target[0]
                 rule.hostVars.forEach((v) => {
                     targetHost = targetHost.replace(
-                        "{" + v + "}",
-                        data.hostParts[v]
+                        "{" + (-v) + "}",
+                        data.hostParts[v - 1]
                     )
                 })
                 rule.pathVars.forEach((v) => {
                     targetHost = targetHost.replace(
-                        "{" + v + "}",
-                        data.pathParts[v]
+                        "{" + (-v) + "}",
+                        data.pathParts[v - 1]
                     )
                 })
 
@@ -126,8 +125,37 @@ export function createResolver(rule: Rule): Resolver {
             type: "REDIRECT",
             rule,
             http: (data, req, res) => {
+                let targetHost = rule.target[1]
+                let targetPath = rule.target[3]
+
+                rule.hostVars.forEach((v) => {
+                    targetHost = targetHost.replace(
+                        "{" + (-v) + "}",
+                        data.hostParts[v - 1]
+                    )
+                })
+                rule.pathVars.forEach((v) => {
+                    targetHost = targetHost.replace(
+                        "{" + v + "}",
+                        data.pathParts[v - 1]
+                    )
+                })
+
+                rule.hostVars.forEach((v) => {
+                    targetPath = targetPath.replace(
+                        "{" + (-v) + "}",
+                        data.hostParts[v - 1]
+                    )
+                })
+                rule.pathVars.forEach((v) => {
+                    targetPath = targetPath.replace(
+                        "{" + v + "}",
+                        data.pathParts[v - 1]
+                    )
+                })
+
                 res.statusCode = 301
-                res.setHeader("Location", rule.target[0] + "://" + rule.target[1] + ":" + rule.target[2] + rule.target[3])
+                res.setHeader("Location", rule.target[0] + "://" + targetHost + ":" + rule.target[2] + targetPath)
                 res.end()
             },
             ws: (data, req, socket, head) => {

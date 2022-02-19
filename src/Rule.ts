@@ -1,5 +1,4 @@
 import { fixPath } from "./certs"
-import os from "os"
 
 export interface RawRules {
     [key: string]: string
@@ -219,11 +218,6 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             }
         })
 
-        // throw error if path is not a valid path
-        if (!/^\/?[a-zA-Z0-9-_.\/]+$/.test(path)) {
-            throw new Error("Invalid path in redirect target: " + path + "\nresponseTarget: " + responseTarget)
-        }
-
         // get variables numbers from domain, and path
         index = domain.indexOf("{")
         let endIndex: number
@@ -250,7 +244,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target path: Unclosed variable: " + responseTarget)
             }
-            const variable = target.substring(index + 1, endIndex)
+            const variable = path.substring(index + 1, endIndex)
             const variableNumber = Number(variable)
             if (isNaN(variableNumber)) {
                 throw new Error("Invalid proxy target path: Invalid variable number: " + variable)
@@ -260,7 +254,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             } else {
                 base.pathVars.push(variableNumber)
             }
-            index = path.indexOf("{")
+            index = path.indexOf("{", endIndex)
         }
 
         const rule: RedirectRule = {
@@ -324,7 +318,7 @@ export function sortRules(rules: Rules): Rules {
 
 export const exampleRules: RawRules = {
     "localhost/youtube": "REDIRECT:https://youtube.com/",
-    "localhost/duckduckgo": "REDIRECT:https://start.duckduckgo.com/",
+    "*.localhost": "REDIRECT:https://duckduckgo.com/?t=vivaldi&ia=web&q={-2}",
     "localhost": "STATIC:./public",
     "localhost/test": "STATIC:./dist",
     // "sdasdasd.codec.coreunit.net": "PROXY:codec_test:80",
