@@ -15,9 +15,6 @@
     "outDir": "dist",
     "rootDir": "src",
     "noImplicitAny": true,
-    "types": [
-      "node_modules/**/*.d.ts"
-    ]
   },
   "include": [
     "src/**/*.ts",
