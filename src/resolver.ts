@@ -63,10 +63,23 @@ export function hostPartsMatch(
     return true
 }
 
+export function defaultProxyErrorHandler(err: Error) {
+    if (err.message == "read ECONNRESET") {
+        return
+    }
+    const stack = err.stack?.split("\n") ?? [err.message]
+    console.error({
+        msg: err.message,
+        name: stack.shift(),
+        stack: stack
+    })
+}
+
 export function createResolver(
     rule: Rule,
     cache: CacheHolder,
     cacheMillis: number = 1000 * 60 * 2,
+    proxyErrorHandler: (err: Error) => any = defaultProxyErrorHandler,
 ): Resolver {
     if (rule.type == "PROXY") {
         return {
@@ -101,12 +114,7 @@ export function createResolver(
                             port: rule.target[1],
                         }
                     })
-                    proxy.on("error", (err) => {
-                        console.error({
-                            msg: err.message,
-                            stack: err.stack
-                        })
-                    })
+                    proxy.on("error", proxyErrorHandler)
                     cache.set(
                         uuid,
                         proxy,
@@ -145,12 +153,7 @@ export function createResolver(
                             port: rule.target[1],
                         }
                     })
-                    proxy.on("error", (err) => {
-                        console.error({
-                            msg: err.message,
-                            stack: err.stack
-                        })
-                    })
+                    proxy.on("error", proxyErrorHandler)
                     cache.set(
                         uuid,
                         proxy,
