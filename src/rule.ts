@@ -315,38 +315,3 @@ export function sortRules(rules: Rules): Rules {
         return b.path.length - a.path.length
     })
 }
-
-/*
-export const exampleRules: RawRules = {
-    // "localhost/youtube": "REDIRECT:https://youtube.com/",
-    // "*.localhost": "REDIRECT:https://duckduckgo.com/?t=vivaldi&ia=web&q={-2}",
-    // "localhost": "STATIC:./public",
-    // "localhost/test": "STATIC:./dist",
-    // "sdasdasd.codec.coreunit.net": "PROXY:codec_test:80",
-    // "*.codec.coreunit.net": "PROXY:codec_{-4}:80",
-    // "a.codec.coreunit.net": "PROXY:codec_test:80",
-    // "test.codec.coreunit.net": "PROXY:codec_test:80",
-    // "tester.test.i.coreunit.net": "PROXY:test_test",
-    // "a.test.i.coreunit.net": "PROXY:test_test",
-    // "*.test.i.coreunit.net": "PROXY:test_{-4}",
-    // "asdsdssss.test.i.coreunit.net": "PROXY:test_test",
-    // "coreunit.net": "STATIC:/var/www/main",
-    // "auth.coreunit.net": "PROXY:keycloak_container:8080",
-    // "auth.coreunit.net/asdd": "PROXY:keycloak_container:8080",
-    // "auth.coreunit.net/a": "PROXY:keycloak_container:8080",
-    // "majo.coreunit.net": "REDIRECT:https://github.com/majo418",
-    // "sysdev.coreunit.net": "REDIRECT:https://github.com/sysdev",
-    // "codec.coreunit.net": "STATIC:/var/www/codec",
-    // "i.coreunit.net": "STATIC:/var/www/intern",
-    // "i.coreunit.net/certs": "STATIC:/home/netde/certs",
-    // "discord.coreunit.net": "REDIRECT:https://discord.gg/pwHNaHRa9W",
-    // "teamspeak.coreunit.net": "REDIRECT:ts3server://coreunit.net",
-    // "github.coreunit.net": "REDIRECT:https://github.com/coreunitnet",
-    // "/.well-known": "STATIC:/home/netde/certs/.well-known",
-    // "/test": "STATIC:/home/netde/certs/.well-known",
-    // "/qweqwesdsdddsdsdsdsde": "STATIC:/home/netde/certs/.well-known",
-}
-Object.keys(exampleRules).forEach((key, i) => {
-    process.env["RULE_" + (i + 1)] = key + "=" + exampleRules[key]
-})
-*/
