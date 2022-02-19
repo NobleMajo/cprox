@@ -222,18 +222,17 @@ export function getRequestData(
 export function findResolver(
     data: RequestData,
     resolvers: Resolver[],
-    cache: ResolverCache | null = null
 ): Resolver | undefined {
     console.log("----- DATA: -----\n", data)
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index]
         console.log(" - check: " + resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
         if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts)) {
-            console.log("!!!hostPartsMatch")
+            console.log("!!!hostPartsMatch:", resolver.rule.hostParts, data.hostParts)
             continue
         }
         if (!data.path.startsWith(resolver.rule.path)) {
-            console.log("!!!data.path.startsWith(resolver.rule.path)")
+            console.log("!!!data.path.startsWith(resolver.rule.path):", data.path, resolver.rule.path)
             continue
         }
         console.log(" +++++ found: " + resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
