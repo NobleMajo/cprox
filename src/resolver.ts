@@ -69,23 +69,27 @@ export function createResolver(rule: Rule): Resolver {
             rule,
             http: (data, req, res) => {
                 let targetHost = rule.target[0]
+                console.log("target: ", targetHost)
                 rule.hostVars.forEach((v) => {
+                    console.log("replace: " + "{" + v + "}" + " with " + data.hostParts[v - 1])
                     targetHost = targetHost.replace(
                         "{" + v + "}",
                         data.hostParts[v - 1]
                     )
                 })
+                console.log("target: ", targetHost)
                 rule.pathVars.forEach((v) => {
+                    console.log("replace: " + "{" + v + "}" + " with " + data.pathParts[v - 1])
                     targetHost = targetHost.replace(
                         "{" + v + "}",
                         data.pathParts[v - 1]
                     )
                 })
-
+                console.log("target: ", targetHost)
                 req.url = data.path.substring(
                     rule.path.length
                 )
-
+                console.log("url: ", req.url)
                 new HttpProxy({
                     target: {
                         host: targetHost,

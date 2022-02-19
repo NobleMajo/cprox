@@ -4,8 +4,8 @@ import env from "./env/envParser"
 import { RequestListener, Server as HttpServer } from "http"
 import { Server as HttpsServer } from "https"
 import { createCertWatcher, fixPath, loadCerts } from "./certs"
-import { loadRawRules, parseRules, sortRules } from "./Rule"
-import { createResolvers, findResolver, getRequestData } from "./Resolver"
+import { loadRawRules, parseRules, sortRules } from "./rule"
+import { createResolvers, findResolver, getRequestData } from "./resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
 
 console.log("CProx| Init...")
