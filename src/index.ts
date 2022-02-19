@@ -4,8 +4,8 @@ import env from "./env/envParser"
 import { RequestListener, Server as HttpServer } from "http"
 import { Server as HttpsServer } from "https"
 import { createCertWatcher, fixPath, loadCerts } from "./certs"
-import { loadRawRules, parseRules, sortRules } from "./rule"
-import { createResolvers, findResolver, getRequestData, ResolverCache } from "./resolver"
+import { loadRawRules, parseRules, sortRules } from "./Rule"
+import { createResolvers, findResolver, getRequestData } from "./Resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
 
 console.log("CProx| Init...")
@@ -18,13 +18,15 @@ const certPaths = {
     ca: fixPath(env.CA_PATH),
 }
 
-console.log("CProx| Load resolver...")
+console.log("CProx| Load rules...")
 const rules = parseRules(loadRawRules())
 if (rules.length == 0) {
     throw new Error("No rules found")
 }
+console.log("CProx| Create resolver...")
 const resolvers = createResolvers(sortRules(rules))
 
+console.log("CProx| Create vars...")
 const requestListener: RequestListener = (req, res) => {
     try {
         if (!req.headers.host || !req.url) {

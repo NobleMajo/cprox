@@ -164,7 +164,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             } else {
                 base.pathVars.push(variableNumber)
             }
-            index = domain.indexOf("{")
+            index = domain.indexOf("{", endIndex)
         }
         const rule: ProxyRule = {
             ...base,
@@ -236,7 +236,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             } else {
                 base.pathVars.push(variableNumber)
             }
-            index = domain.indexOf("{")
+            index = domain.indexOf("{", endIndex)
         }
         index = path.indexOf("{")
         while (index != -1) {
@@ -283,7 +283,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             } else {
                 base.pathVars.push(variableNumber)
             }
-            index = target.indexOf("{")
+            index = target.indexOf("{", endIndex)
         }
 
         const rule: StaticRule = {

@@ -12,7 +12,7 @@ docker run -d \
     -p 80:80 \
     -p 443:443 \
     -v "$(pwd)/public:/app/public" \
-    -v "$(pwd)/certs/coreunit.net:/app/certs" \
+    -v "$HOME/certs/coreunit.net:/app/certs" \
     -e "CERT_PATH=/app/certs/cert1.pem" \
     -e "KEY_PATH=/app/certs/privkey1.pem" \
     -e "CA_PATH=/app/certs/fullchain1.pem" \

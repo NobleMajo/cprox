@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from "http"
 import { Duplex } from "stream"
-import { Rule } from "./rule"
+import { Rule } from "./Rule"
 import HttpProxy from "http-proxy"
 import serveStatic from "serve-static"
 
