@@ -101,6 +101,10 @@ export function createResolver(
                     })
                     cache.set(uid, proxy, cacheMillis, () => proxy.close())
                 }
+                console.log("req.url: " + req.url)
+                console.log("targetHost: " + targetHost)
+                console.log("targetPort: " + rule.target[1])
+                console.log("proxy:", proxy.constructor.name)
                 proxy.web(req, res)
             },
             ws: (data, req, socket, head) => {
@@ -136,6 +140,10 @@ export function createResolver(
                     })
                     cache.set(uid, proxy, cacheMillis, () => proxy.close())
                 }
+                console.log("req.url: " + req.url)
+                console.log("targetHost: " + targetHost)
+                console.log("targetPort: " + rule.target[1])
+                console.log("proxy:", proxy.constructor.name)
                 proxy.ws(req, socket, head)
             },
         }
