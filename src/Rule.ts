@@ -316,11 +316,12 @@ export function sortRules(rules: Rules): Rules {
     })
 }
 
+/*
 export const exampleRules: RawRules = {
-    "localhost/youtube": "REDIRECT:https://youtube.com/",
-    "*.localhost": "REDIRECT:https://duckduckgo.com/?t=vivaldi&ia=web&q={-2}",
-    "localhost": "STATIC:./public",
-    "localhost/test": "STATIC:./dist",
+    // "localhost/youtube": "REDIRECT:https://youtube.com/",
+    // "*.localhost": "REDIRECT:https://duckduckgo.com/?t=vivaldi&ia=web&q={-2}",
+    // "localhost": "STATIC:./public",
+    // "localhost/test": "STATIC:./dist",
     // "sdasdasd.codec.coreunit.net": "PROXY:codec_test:80",
     // "*.codec.coreunit.net": "PROXY:codec_{-4}:80",
     // "a.codec.coreunit.net": "PROXY:codec_test:80",
@@ -348,3 +349,4 @@ export const exampleRules: RawRules = {
 Object.keys(exampleRules).forEach((key, i) => {
     process.env["RULE_" + (i + 1)] = key + "=" + exampleRules[key]
 })
+*/
