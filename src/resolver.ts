@@ -73,6 +73,7 @@ export function createResolver(
             type: "PROXY",
             rule,
             http: (data, req, res) => {
+                console.log("http on proxy: " + data.host + "$" + data.path)
                 let targetHost = rule.target[0]
                 rule.hostVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
@@ -103,6 +104,7 @@ export function createResolver(
                 proxy.web(req, res)
             },
             ws: (data, req, socket, head) => {
+                console.log("ws on proxy: " + data.host + "$" + data.path)
                 let targetHost = rule.target[0]
                 rule.hostVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
@@ -142,6 +144,7 @@ export function createResolver(
             type: "REDIRECT",
             rule,
             http: (data, req, res) => {
+                console.log("http on redirect: " + data.host + "$" + data.path)
                 let targetHost = rule.target[1]
                 let targetPath = rule.target[3]
 
@@ -176,6 +179,7 @@ export function createResolver(
                 res.end()
             },
             ws: (data, req, socket, head) => {
+                console.log("ws not allowed on redirect: " + data.host + "$" + data.path)
                 socket.destroy()
             }
         }
@@ -184,6 +188,7 @@ export function createResolver(
             type: "STATIC",
             rule,
             http: (data, req, res) => {
+                console.log("http on static: " + data.host + "$" + data.path)
                 req.url = data.path.substring(rule.path.slice(1).length)
                 serveStatic(
                     rule.target,
@@ -207,6 +212,7 @@ export function createResolver(
                 )
             },
             ws: (data, req, socket, head) => {
+                console.log("ws not allowed on static: " + data.host + "$" + data.path)
                 socket.destroy()
             }
         }
@@ -245,20 +251,24 @@ export function findResolver(
     cache: CacheHolder,
     cacheMillis: number = 1000 * 20,
 ): Resolver | undefined {
+    console.log("##### DATA:", data)
     if (cache && cache.has(data.host + "$" + data.path)) {
         return cache.get(data.host + "$" + data.path)
     }
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index]
         if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts)) {
+            console.log(" - mismatched host:", resolver.rule.hostParts, data.hostParts)
             continue
         }
         if (!data.path.startsWith(resolver.rule.path)) {
+            console.log(" - mismatched path:", data.path, resolver.rule.path)
             continue
         }
         if (cache) {
             cache?.set(data.host + "$" + data.path, resolver, cacheMillis)
         }
+        console.log("##### ##### FOUND ##### #####")
         return resolver
     }
     return undefined

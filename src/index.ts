@@ -7,7 +7,7 @@ import { createCertWatcher, fixPath, loadCerts } from "./certs"
 import { loadRawRules, parseRules, sortRules } from "./rule"
 import { createResolvers, findResolver, getRequestData } from "./resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
-import { CacheHolder, MemoryCache } from "./cache"
+import { NoCache } from "./cache"
 
 console.log("CProx| Init...")
 
@@ -19,11 +19,11 @@ const certPaths = {
     ca: fixPath(env.CA_PATH),
 }
 
-const cache = new MemoryCache()
-cache.startCheckInterval(1000 * 30, async (p) => {
-    await p
-    console.log(" ... ... ... cache cleared!")
-})
+const cache = new NoCache()
+// cache.startCheckInterval(1000 * 30, async (p) => {
+//     await p
+//     console.log(" ... ... ... cache cleared!")
+// })
 
 console.log("CProx| Load rules...")
 const rules = parseRules(loadRawRules())

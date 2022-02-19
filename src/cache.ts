@@ -116,3 +116,34 @@ export class MemoryCache implements CacheHolder {
     }
 }
 
+export class NoCache implements CacheHolder {
+    public get<T>(key: string): T {
+        return undefined as any
+    }
+
+    public set(): void {
+    }
+
+    public has(): boolean {
+        return false
+    }
+
+    public remove(): void {
+    }
+
+    public async clear(): Promise<void> {
+    }
+
+    public isExpired(): boolean {
+        return true
+    }
+
+    public getExpiry(): number {
+        return -1
+    }
+
+    public async checkExpiry(): Promise<void> {
+    }
+}
+
+
