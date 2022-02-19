@@ -63,8 +63,6 @@ export function hostPartsMatch(
     return true
 }
 
-const proxy = new HttpProxy()
-
 export function createResolver(
     rule: Rule,
     cache: CacheHolder,
@@ -99,14 +97,14 @@ export function createResolver(
                 console.log("newPath: " + newPath)
                 console.log("targetHost: " + targetHost)
                 console.log("targetPort: " + rule.target[1])
-                console.log("proxy:", proxy.constructor.name)
-                proxy.web(req, res, {
+                console.log("targetPort: " + rule.target[1])
+                new HttpProxy({
                     target: {
                         host: targetHost,
                         port: rule.target[1],
                         path: newPath
                     }
-                })
+                }).web(req, res)
             },
             ws: (data, req, socket, head) => {
                 console.log("ws on proxy: " + data.host + "$" + data.path)
@@ -133,14 +131,13 @@ export function createResolver(
                 console.log("newPath: " + newPath)
                 console.log("targetHost: " + targetHost)
                 console.log("targetPort: " + rule.target[1])
-                console.log("proxy:", proxy.constructor.name)
-                proxy.ws(req, socket, head, {
+                new HttpProxy({
                     target: {
                         host: targetHost,
                         port: rule.target[1],
                         path: newPath
                     }
-                })
+                }).ws(req, socket, head)
             },
         }
     } else if (rule.type == "REDIRECT") {
