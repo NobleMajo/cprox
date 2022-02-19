@@ -76,6 +76,8 @@ export function pathPartsMatch(
         if (allowWildcard && searchForPart == "*") {
             continue
         }
+        console.log("searchForPart: " + searchForPart)
+        console.log("testerPart: " + testerPart)
         if (testerPart != searchForPart && !testerPart.startsWith(searchForPart)) {
             return false
         }
