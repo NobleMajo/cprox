@@ -41,7 +41,7 @@ export interface RedirecResolver extends BaseResolver {
 
 export type Resolver = ProxyResolver | StaticResolver | RedirecResolver
 
-export function partsMatch(
+export function hostPartsMatch(
     searchFor: string[],
     tester: string[],
     allowWildcard: boolean = false,
@@ -49,13 +49,34 @@ export function partsMatch(
     if (tester.length != searchFor.length) {
         return false
     }
-    for (let index = 0; index < tester.length && index < searchFor.length; index++) {
+    for (let index = 0; index < tester.length; index++) {
         const testerPart = tester[index]
         const searchForPart = searchFor[index]
         if (allowWildcard && searchForPart == "*") {
             continue
         }
-        if (testerPart != searchForPart || testerPart.startsWith(searchForPart)) {
+        if (testerPart != searchForPart) {
+            return false
+        }
+    }
+    return true
+}
+
+export function pathPartsMatch(
+    searchFor: string[],
+    tester: string[],
+    allowWildcard: boolean = false,
+): boolean {
+    if (tester.length != searchFor.length) {
+        return false
+    }
+    for (let index = 0; index < tester.length; index++) {
+        const testerPart = tester[index]
+        const searchForPart = searchFor[index]
+        if (allowWildcard && searchForPart == "*") {
+            continue
+        }
+        if (testerPart != searchForPart && !testerPart.startsWith(searchForPart)) {
             return false
         }
     }
@@ -232,11 +253,11 @@ export function findResolver(
     }
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index];
-        if (!partsMatch(resolver.rule.hostParts, data.hostParts, true)) {
+        if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts, true)) {
             console.log("mismatch host: ", resolver.rule.hostParts, data.hostParts)
             continue
         }
-        if (!partsMatch(resolver.rule.pathParts, data.pathParts, true)) {
+        if (!pathPartsMatch(resolver.rule.pathParts, data.pathParts, true)) {
             console.log("mismatch path: ", resolver.rule.pathParts, data.pathParts)
             continue
         }
