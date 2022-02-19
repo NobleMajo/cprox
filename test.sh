@@ -16,7 +16,10 @@ docker run -d \
     -e "CERT_PATH=/app/certs/cert1.pem" \
     -e "KEY_PATH=/app/certs/privkey1.pem" \
     -e "CA_PATH=/app/certs/fullchain1.pem" \
-    -e "RULE_1=*.codec.coreunit.net=PROXY:codec_{-4}:80" \
+    -e "RULE_1=*.codec.coreunit.net=PROXY:codec_{-4}:8080" \
+    -e "RULE_2=sysdev.coreunit.net=REDIRECT:https://github.com/PhoenixRaph" \
+    -e "RULE_3=majo.coreunit.net=REDIRECT:https://github.com/majo418" \
+    -e "RULE_4=coreunit.net=STATIC:$HOME/web/main" \
     -e "VERBOSE=true" \
     --network codec \
     cprox
