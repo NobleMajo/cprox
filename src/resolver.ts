@@ -44,7 +44,6 @@ export type Resolver = ProxyResolver | StaticResolver | RedirecResolver
 export function hostPartsMatch(
     searchFor: string[],
     tester: string[],
-    allowWildcard: boolean = false,
 ): boolean {
     if (tester.length != searchFor.length) {
         return false
@@ -52,7 +51,7 @@ export function hostPartsMatch(
     for (let index = 0; index < tester.length; index++) {
         const testerPart = tester[index]
         const searchForPart = searchFor[index]
-        if (allowWildcard && searchForPart == "*") {
+        if (searchForPart == "*") {
             continue
         }
         if (testerPart != searchForPart) {
@@ -225,20 +224,19 @@ export function findResolver(
     resolvers: Resolver[],
     cache: ResolverCache | null = null
 ): Resolver | undefined {
-    if (cache && cache[data.host + "$" + data.path]) {
-        return cache[data.host + "$" + data.path]
-    }
+    console.log("----- DATA: -----\n", data)
     for (let index = 0; index < resolvers.length; index++) {
-        const resolver = resolvers[index];
-        if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts, true)) {
+        const resolver = resolvers[index]
+        console.log(" - check: " + resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
+        if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts)) {
+            console.log("!!!hostPartsMatch")
             continue
         }
         if (!data.path.startsWith(resolver.rule.path)) {
+            console.log("!!!data.path.startsWith(resolver.rule.path)")
             continue
         }
-        if (cache) {
-            cache[data.host + "$" + data.path] = resolver
-        }
+        console.log(" +++++ found: " + resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
         return resolver
     }
     return undefined
