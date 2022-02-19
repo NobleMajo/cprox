@@ -9,6 +9,7 @@ export interface BaseRule {
     pathParts: string[],
     hasWildCard: boolean,
     raw: string,
+    variables: number[],
 }
 
 export interface StaticRule extends BaseRule {
@@ -32,7 +33,7 @@ export type Rules = Rule[]
 
 // create function that loads raw settings from environment and process arguments
 export function loadRawRules(
-    environmentPrefix: string | null = "PROXY_",
+    environmentPrefix: string | null = "RULE_",
     useProcessArguments: boolean = true
 ): RawRules {
     const rawSettings: RawRules = {}
@@ -119,6 +120,7 @@ export function getBaseRule(requestSource: string, responseTarget: string): Base
         hostParts: hostParts,
         pathParts: pathParts,
         raw: requestSource + "=" + responseTarget,
+        variables: [],
     }
 }
 
@@ -140,6 +142,22 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
                 throw new Error("Invalid proxy target port:  " + responseTarget)
             }
         }
+        // get variables numbers from domain
+        let index: number = domain.indexOf("{")
+        let endIndex: number
+        do {
+            endIndex = domain.indexOf("}", index)
+            if (endIndex == -1) {
+                throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
+            }
+            const variable = target.substring(index + 1, endIndex)
+            const variableNumber = Number(variable)
+            if (isNaN(variableNumber)) {
+                throw new Error("Invalid proxy target domain: Invalid variable number: " + variable)
+            }
+            base.variables.push(variableNumber)
+            index = domain.indexOf("{")
+        } while (index != -1)
         const rule: ProxyRule = {
             ...base,
             target: [domain, port],
@@ -197,6 +215,38 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
         if (!/^\/?[a-zA-Z0-9-_.\/]+$/.test(path)) {
             throw new Error("Invalid path in redirect target: " + path + "\nresponseTarget: " + responseTarget)
         }
+
+        // get variables numbers from domain, and path
+        index = domain.indexOf("{")
+        let endIndex: number
+        do {
+            endIndex = domain.indexOf("}", index)
+            if (endIndex == -1) {
+                throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
+            }
+            const variable = target.substring(index + 1, endIndex)
+            const variableNumber = Number(variable)
+            if (isNaN(variableNumber)) {
+                throw new Error("Invalid proxy target domain: Invalid variable number: " + variable)
+            }
+            base.variables.push(variableNumber)
+            index = domain.indexOf("{")
+        } while (index != -1)
+        index = path.indexOf("{")
+        do {
+            endIndex = path.indexOf("}", index)
+            if (endIndex == -1) {
+                throw new Error("Invalid proxy target path: Unclosed variable: " + responseTarget)
+            }
+            const variable = target.substring(index + 1, endIndex)
+            const variableNumber = Number(variable)
+            if (isNaN(variableNumber)) {
+                throw new Error("Invalid proxy target path: Invalid variable number: " + variable)
+            }
+            base.variables.push(variableNumber)
+            index = path.indexOf("{")
+        } while (index != -1)
+
         const rule: RedirectRule = {
             ...base,
             target: [protocol, domain, port, path],
@@ -209,6 +259,24 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
         if (!/^\/[a-zA-Z0-9-_.\/]+$/.test(target)) {
             throw new Error("Invalid path in static target: " + responseTarget)
         }
+
+        // get variables numbers from domain, and path
+        let index: number = target.indexOf("{")
+        let endIndex: number
+        do {
+            endIndex = target.indexOf("}", index)
+            if (endIndex == -1) {
+                throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
+            }
+            const variable = target.substring(index + 1, endIndex)
+            const variableNumber = Number(variable)
+            if (isNaN(variableNumber)) {
+                throw new Error("Invalid proxy target domain: Invalid variable number: " + variable)
+            }
+            base.variables.push(variableNumber)
+            index = target.indexOf("{")
+        } while (index != -1)
+
         const rule: StaticRule = {
             ...base,
             target: target,

@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from "http"
 import { Duplex } from "stream"
-import { Rule } from "./Rule"
+import { Rule } from "./rule"
 import HttpProxy from "http-proxy"
 import serveStatic, { RequestHandler as ServeStatic } from "serve-static"
 
@@ -56,6 +56,7 @@ export function partsMatch(
 }
 
 export function createResolver(rule: Rule): Resolver {
+
     if (rule.type == "PROXY") {
         const proxy = new HttpProxy({
             target: {
@@ -107,7 +108,7 @@ export function createResolver(rule: Rule): Resolver {
             }
         }
     } else {
-        throw new Error("Invalid rule type: " + (rule as any).type)
+        throw new Error("rule type: " + (rule as any).type)
     }
 }
 
