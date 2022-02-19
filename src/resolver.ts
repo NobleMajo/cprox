@@ -108,6 +108,7 @@ export function createResolver(rule: Rule): Resolver {
                     rule.path.length
                 )
                 console.log("WSS data:", data)
+                console.log("rule.path:", rule.path)
                 console.log("originTargetHost:", rule.target[0])
                 console.log("targetHost:", targetHost)
                 console.log("targetPort:", rule.target[1])
