@@ -1,3 +1,6 @@
+import { fixPath } from "./certs"
+import os from "os"
+
 export interface RawRules {
     [key: string]: string
 }
@@ -9,7 +12,8 @@ export interface BaseRule {
     pathParts: string[],
     hasWildCard: boolean,
     raw: string,
-    variables: number[],
+    hostVars: number[],
+    pathVars: number[],
 }
 
 export interface StaticRule extends BaseRule {
@@ -120,7 +124,8 @@ export function getBaseRule(requestSource: string, responseTarget: string): Base
         hostParts: hostParts,
         pathParts: pathParts,
         raw: requestSource + "=" + responseTarget,
-        variables: [],
+        hostVars: [],
+        pathVars: [],
     }
 }
 
@@ -145,7 +150,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
         // get variables numbers from domain
         let index: number = domain.indexOf("{")
         let endIndex: number
-        do {
+        while (index != -1) {
             endIndex = domain.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
@@ -155,9 +160,13 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             if (isNaN(variableNumber)) {
                 throw new Error("Invalid proxy target domain: Invalid variable number: " + variable)
             }
-            base.variables.push(variableNumber)
+            if (variableNumber < 0) {
+                base.hostVars.push(-variableNumber)
+            } else {
+                base.pathVars.push(variableNumber)
+            }
             index = domain.indexOf("{")
-        } while (index != -1)
+        }
         const rule: ProxyRule = {
             ...base,
             target: [domain, port],
@@ -204,12 +213,11 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             throw new Error("Domain : " + responseTarget)
         }
         // throw error if domain is not a valid domain
-        domain.split(".")
-            .forEach((domainPart) => {
-                if (domainPart != "*" && !/^[a-zA-Z0-9-.]+$/.test(domainPart)) {
-                    throw new Error("Invalid domain in redirect target: " + domain + "\nresponseTarget: " + responseTarget)
-                }
-            })
+        domain.split(".").forEach((domainPart) => {
+            if (domainPart != "*" && !/^[a-zA-Z0-9-.]+$/.test(domainPart)) {
+                throw new Error("Invalid domain in redirect target: " + domain + "\nresponseTarget: " + responseTarget)
+            }
+        })
 
         // throw error if path is not a valid path
         if (!/^\/?[a-zA-Z0-9-_.\/]+$/.test(path)) {
@@ -219,7 +227,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
         // get variables numbers from domain, and path
         index = domain.indexOf("{")
         let endIndex: number
-        do {
+        while (index != -1) {
             endIndex = domain.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
@@ -229,11 +237,15 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             if (isNaN(variableNumber)) {
                 throw new Error("Invalid proxy target domain: Invalid variable number: " + variable)
             }
-            base.variables.push(variableNumber)
+            if (variableNumber < 0) {
+                base.hostVars.push(-variableNumber)
+            } else {
+                base.pathVars.push(variableNumber)
+            }
             index = domain.indexOf("{")
-        } while (index != -1)
+        }
         index = path.indexOf("{")
-        do {
+        while (index != -1) {
             endIndex = path.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target path: Unclosed variable: " + responseTarget)
@@ -243,9 +255,13 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             if (isNaN(variableNumber)) {
                 throw new Error("Invalid proxy target path: Invalid variable number: " + variable)
             }
-            base.variables.push(variableNumber)
+            if (variableNumber < 0) {
+                base.hostVars.push(-variableNumber)
+            } else {
+                base.pathVars.push(variableNumber)
+            }
             index = path.indexOf("{")
-        } while (index != -1)
+        }
 
         const rule: RedirectRule = {
             ...base,
@@ -254,16 +270,11 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
         }
         return rule
     } else if (responseTarget.startsWith("STATIC:")) {
-        const target = responseTarget.substring(7)
-        //check if target is a valid path
-        if (!/^\/[a-zA-Z0-9-_.\/]+$/.test(target)) {
-            throw new Error("Invalid path in static target: " + responseTarget)
-        }
-
+        const target = fixPath(responseTarget.substring(7))
         // get variables numbers from domain, and path
         let index: number = target.indexOf("{")
         let endIndex: number
-        do {
+        while (index != -1) {
             endIndex = target.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
@@ -273,9 +284,13 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             if (isNaN(variableNumber)) {
                 throw new Error("Invalid proxy target domain: Invalid variable number: " + variable)
             }
-            base.variables.push(variableNumber)
+            if (variableNumber < 0) {
+                base.hostVars.push(-variableNumber)
+            } else {
+                base.pathVars.push(variableNumber)
+            }
             index = target.indexOf("{")
-        } while (index != -1)
+        }
 
         const rule: StaticRule = {
             ...base,
@@ -308,30 +323,34 @@ export function sortRules(rules: Rules): Rules {
 }
 
 export const exampleRules: RawRules = {
-    "sdasdasd.codec.coreunit.net": "PROXY:codec_test:80",
-    "*.codec.coreunit.net": "PROXY:codec_{-4}:80",
-    "a.codec.coreunit.net": "PROXY:codec_test:80",
-    "test.codec.coreunit.net": "PROXY:codec_test:80",
-    "tester.test.i.coreunit.net": "PROXY:test_test",
-    "a.test.i.coreunit.net": "PROXY:test_test",
-    "*.test.i.coreunit.net": "PROXY:test_{-4}",
-    "asdsdssss.test.i.coreunit.net": "PROXY:test_test",
-    "coreunit.net": "STATIC:/var/www/main",
-    "auth.coreunit.net": "PROXY:keycloak_container:8080",
-    "auth.coreunit.net/asdd": "PROXY:keycloak_container:8080",
-    "auth.coreunit.net/a": "PROXY:keycloak_container:8080",
-    "majo.coreunit.net": "REDIRECT:https://github.com/majo418",
-    "sysdev.coreunit.net": "REDIRECT:https://github.com/sysdev",
-    "codec.coreunit.net": "STATIC:/var/www/codec",
-    "i.coreunit.net": "STATIC:/var/www/intern",
-    "i.coreunit.net/certs": "STATIC:/home/netde/certs",
-    "discord.coreunit.net": "REDIRECT:https://discord.gg/pwHNaHRa9W",
-    "teamspeak.coreunit.net": "REDIRECT:ts3server://coreunit.net",
-    "github.coreunit.net": "REDIRECT:https://github.com/coreunitnet",
-    "/.well-known": "STATIC:/home/netde/certs/.well-known",
-    "/test": "STATIC:/home/netde/certs/.well-known",
-    "/qweqwesdsdddsdsdsdsde": "STATIC:/home/netde/certs/.well-known",
+    "localhost/youtube": "REDIRECT:https://youtube.com/",
+    "localhost/duckduckgo": "REDIRECT:https://start.duckduckgo.com/",
+    "localhost": "STATIC:./public",
+    "localhost/test": "STATIC:./dist",
+    // "sdasdasd.codec.coreunit.net": "PROXY:codec_test:80",
+    // "*.codec.coreunit.net": "PROXY:codec_{-4}:80",
+    // "a.codec.coreunit.net": "PROXY:codec_test:80",
+    // "test.codec.coreunit.net": "PROXY:codec_test:80",
+    // "tester.test.i.coreunit.net": "PROXY:test_test",
+    // "a.test.i.coreunit.net": "PROXY:test_test",
+    // "*.test.i.coreunit.net": "PROXY:test_{-4}",
+    // "asdsdssss.test.i.coreunit.net": "PROXY:test_test",
+    // "coreunit.net": "STATIC:/var/www/main",
+    // "auth.coreunit.net": "PROXY:keycloak_container:8080",
+    // "auth.coreunit.net/asdd": "PROXY:keycloak_container:8080",
+    // "auth.coreunit.net/a": "PROXY:keycloak_container:8080",
+    // "majo.coreunit.net": "REDIRECT:https://github.com/majo418",
+    // "sysdev.coreunit.net": "REDIRECT:https://github.com/sysdev",
+    // "codec.coreunit.net": "STATIC:/var/www/codec",
+    // "i.coreunit.net": "STATIC:/var/www/intern",
+    // "i.coreunit.net/certs": "STATIC:/home/netde/certs",
+    // "discord.coreunit.net": "REDIRECT:https://discord.gg/pwHNaHRa9W",
+    // "teamspeak.coreunit.net": "REDIRECT:ts3server://coreunit.net",
+    // "github.coreunit.net": "REDIRECT:https://github.com/coreunitnet",
+    // "/.well-known": "STATIC:/home/netde/certs/.well-known",
+    // "/test": "STATIC:/home/netde/certs/.well-known",
+    // "/qweqwesdsdddsdsdsdsde": "STATIC:/home/netde/certs/.well-known",
 }
 Object.keys(exampleRules).forEach((key, i) => {
-    process.env["PROXY_" + (i + 1)] = key + "=" + exampleRules[key]
+    process.env["RULE_" + (i + 1)] = key + "=" + exampleRules[key]
 })

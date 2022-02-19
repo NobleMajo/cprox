@@ -5,7 +5,7 @@ import { RequestListener, Server as HttpServer } from "http"
 import { Server as HttpsServer } from "https"
 import { createCertWatcher, fixPath, loadCerts } from "./certs"
 import { loadRawRules, parseRules, sortRules } from "./rule"
-import { createResolvers, findResolver, ResolverCache } from "./resolver"
+import { createResolvers, findResolver, getRequestData, ResolverCache } from "./resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
 
 console.log("CProx| Init...")
@@ -19,14 +19,11 @@ const certPaths = {
 }
 
 console.log("CProx| Load resolver...")
-const resolvers = createResolvers(
-    sortRules(
-        parseRules(
-            loadRawRules()
-        )
-    )
-)
-let resolverCache: ResolverCache = {}
+const rules = parseRules(loadRawRules())
+if (rules.length == 0) {
+    throw new Error("No rules found")
+}
+const resolvers = createResolvers(sortRules(rules))
 
 const requestListener: RequestListener = (req, res) => {
     try {
@@ -35,18 +32,20 @@ const requestListener: RequestListener = (req, res) => {
             res.end()
             return
         }
-        const resolve = findResolver(
+        const data = getRequestData(
             req.headers.host,
-            req.url,
+            req.url
+        )
+        const resolve = findResolver(
+            data,
             resolvers,
-            resolverCache
         )
         if (!resolve) {
             res.writeHead(404)
             res.end()
             return
         }
-        resolve?.http(req, res)
+        resolve?.http(data, req, res)
     } catch (err) {
         res.statusCode = 500
         res.end()
@@ -60,17 +59,19 @@ const upgradeListener: UpgradeListener = (req, socket, head) => {
             socket.destroy()
             return
         }
-        const resolve = findResolver(
+        const data = getRequestData(
             req.headers.host,
-            req.url,
+            req.url
+        )
+        const resolve = findResolver(
+            data,
             resolvers,
-            resolverCache
         )
         if (!resolve) {
             socket.destroy()
             return
         }
-        resolve?.ws(req, socket, head)
+        resolve?.ws(data, req, socket, head)
     } catch (err: Error | any) {
         console.error(err)
         socket.destroy(err)

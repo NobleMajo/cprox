@@ -3,29 +3,37 @@ import { Duplex } from "stream"
 import { Rule } from "./rule"
 import HttpProxy from "http-proxy"
 import serveStatic, { RequestHandler as ServeStatic } from "serve-static"
+import { readFile } from "fs"
 
 export interface BaseResolver {
     type: "PROXY" | "STATIC" | "REDIRECT",
     rule: Rule,
     http: (
+        data: RequestData,
         req: IncomingMessage,
-        res: ServerResponse
+        res: ServerResponse,
     ) => Promise<void> | void,
     ws: (
+        data: RequestData,
         req: IncomingMessage,
         socket: Duplex,
-        head: Buffer
-    ) => Promise<void> | void
+        head: Buffer,
+    ) => Promise<void> | void,
+}
+
+export interface RequestData {
+    host: string,
+    path: string,
+    hostParts: string[],
+    pathParts: string[],
 }
 
 export interface ProxyResolver extends BaseResolver {
     type: "PROXY",
-    proxy: HttpProxy
 }
 
 export interface StaticResolver extends BaseResolver {
     type: "STATIC",
-    serve: ServeStatic<any>
 }
 
 export interface RedirecResolver extends BaseResolver {
@@ -56,54 +64,104 @@ export function partsMatch(
 }
 
 export function createResolver(rule: Rule): Resolver {
-
     if (rule.type == "PROXY") {
-        const proxy = new HttpProxy({
-            target: {
-                host: rule.target[0],
-                port: rule.target[1],
-            }
-        })
         return {
             type: "PROXY",
             rule,
-            proxy,
-            http: (req, res) => proxy.web(req, res),
-            ws: (req, socket, head) => proxy.ws(req, socket, head),
+            http: (data, req, res) => {
+                let targetHost = rule.target[0]
+                rule.hostVars.forEach((v) => {
+                    targetHost = targetHost.replace(
+                        "{" + v + "}",
+                        data.hostParts[v]
+                    )
+                })
+                rule.pathVars.forEach((v) => {
+                    targetHost = targetHost.replace(
+                        "{" + v + "}",
+                        data.pathParts[v]
+                    )
+                })
+
+                req.url = data.path.substring(
+                    rule.path.length
+                )
+
+                new HttpProxy({
+                    target: {
+                        host: targetHost,
+                        port: rule.target[1],
+                    }
+                }).web(req, res)
+            },
+            ws: (data, req, socket, head) => {
+                let targetHost = rule.target[0]
+                rule.hostVars.forEach((v) => {
+                    targetHost = targetHost.replace(
+                        "{" + v + "}",
+                        data.hostParts[v]
+                    )
+                })
+                rule.pathVars.forEach((v) => {
+                    targetHost = targetHost.replace(
+                        "{" + v + "}",
+                        data.pathParts[v]
+                    )
+                })
+
+                req.url = data.path.substring(
+                    rule.path.length
+                )
+
+                new HttpProxy({
+                    target: {
+                        host: targetHost,
+                        port: rule.target[1],
+                    }
+                }).ws(req, socket, head)
+            },
         }
     } else if (rule.type == "REDIRECT") {
         return {
             type: "REDIRECT",
             rule,
-            http: (req, res) => {
+            http: (data, req, res) => {
                 res.statusCode = 301
-                res.setHeader("Location", rule.target[0] + rule.target[1] + rule.target[2] + rule.target[3])
+                res.setHeader("Location", rule.target[0] + "://" + rule.target[1] + ":" + rule.target[2] + rule.target[3])
                 res.end()
             },
-            ws: (req, socket) => {
+            ws: (data, req, socket, head) => {
                 socket.destroy()
             }
         }
     } else if (rule.type == "STATIC") {
-        const staticServer = serveStatic(rule.target)
         return {
             type: "STATIC",
             rule,
-            serve: staticServer,
-            http: (
-                req,
-                res
-            ) => {
-                if (!req.url) {
-                    req.url = rule.target
-                }
-                req.url = req.url.substring(rule.target.length)
-                staticServer(req, res, () => {
-                    res.statusCode = 404
-                    res.end()
-                })
+            http: (data, req, res) => {
+                req.url = data.path.substring(rule.path.slice(1).length)
+                serveStatic(
+                    rule.target,
+                    {
+                        index: [
+                            "index.html",
+                            "index.htm",
+                            "index.php",
+                            "index.md",
+                            "index.txt",
+                            "index.json",
+                        ]
+                    }
+                )(
+                    req,
+                    res,
+                    () => {
+                        res.statusCode = 404
+                        res.end()
+                    }
+                )
             },
-            ws: (req, socket) => {
+            ws: (data, req, socket, head) => {
                 socket.destroy()
             }
         }
@@ -120,30 +178,41 @@ export interface ResolverCache {
     [key: string]: Resolver
 }
 
-export function findResolver(
+export function getRequestData(
     host: string,
-    path: string,
-    resolvers: Resolver[],
-    cache: ResolverCache | null = null
-): Resolver | undefined {
-    if (cache && cache[host + "$" + path]) {
-        return cache[host + "$" + path]
-    }
+    path: string
+): RequestData {
     const hostParts = host.split(".").reverse()
     const pathParts = path.split("/")
     if (pathParts[0] == "") {
         pathParts.shift()
     }
+    return {
+        host: host,
+        path: path,
+        hostParts: hostParts,
+        pathParts: pathParts,
+    }
+}
+
+export function findResolver(
+    data: RequestData,
+    resolvers: Resolver[],
+    cache: ResolverCache | null = null
+): Resolver | undefined {
+    if (cache && cache[data.host + "$" + data.path]) {
+        return cache[data.host + "$" + data.path]
+    }
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index];
-        if (!partsMatch(resolver.rule.hostParts, hostParts, true)) {
+        if (!partsMatch(resolver.rule.hostParts, data.hostParts, true)) {
             continue
         }
-        if (!partsMatch(resolver.rule.pathParts, pathParts, true)) {
+        if (!partsMatch(resolver.rule.pathParts, data.pathParts, true)) {
             continue
         }
         if (cache) {
-            cache[host + "$" + path] = resolver
+            cache[data.host + "$" + data.path] = resolver
         }
         return resolver
     }
