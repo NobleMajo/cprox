@@ -62,27 +62,6 @@ export function hostPartsMatch(
     return true
 }
 
-export function pathPartsMatch(
-    searchFor: string[],
-    tester: string[],
-    allowWildcard: boolean = false,
-): boolean {
-    if (tester.length != searchFor.length) {
-        return false
-    }
-    for (let index = 0; index < tester.length && index < searchFor.length; index++) {
-        const testerPart = tester[index]
-        const searchForPart = searchFor[index]
-        if (allowWildcard && searchForPart == "*") {
-            continue
-        }
-        if (testerPart != searchForPart && !testerPart.startsWith(searchForPart)) {
-            return false
-        }
-    }
-    return true
-}
-
 export function createResolver(rule: Rule): Resolver {
     if (rule.type == "PROXY") {
         return {
@@ -254,7 +233,7 @@ export function findResolver(
         if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts, true)) {
             continue
         }
-        if (!pathPartsMatch(resolver.rule.pathParts, data.pathParts, true)) {
+        if (!data.path.startsWith(resolver.rule.path)) {
             continue
         }
         if (cache) {
