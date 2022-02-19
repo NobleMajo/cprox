@@ -87,11 +87,12 @@ export function createResolver(
                         data.pathParts[v - 1]
                     )
                 })
-                let path = data.path.substring(
+                console.log("path: " + data.path + " --- " + targetHost)
+                let newPath = data.path.substring(
                     rule.path.length
                 )
-                if (!path.startsWith("/")) {
-                    path = "/" + path
+                if (!newPath.startsWith("/")) {
+                    newPath = "/" + newPath
                 }
                 const uid = targetHost + "$" + rule.target[1]
                 let proxy: HttpProxy = cache.get(uid)
@@ -104,13 +105,13 @@ export function createResolver(
                     })
                     cache.set(uid, proxy, cacheMillis, () => proxy.close())
                 }
-                console.log("path: " + path)
+                console.log("newPath: " + newPath)
                 console.log("targetHost: " + targetHost)
                 console.log("targetPort: " + rule.target[1])
                 console.log("proxy:", proxy.constructor.name)
                 proxy.web(req, res, {
                     target: {
-                        path: path
+                        path: newPath
                     }
                 })
             },
@@ -129,11 +130,11 @@ export function createResolver(
                         data.pathParts[v - 1]
                     )
                 })
-                let path = data.path.substring(
+                let newPath = data.path.substring(
                     rule.path.length
                 )
-                if (!path.startsWith("/")) {
-                    path = "/" + path
+                if (!newPath.startsWith("/")) {
+                    newPath = "/" + newPath
                 }
                 const uid = targetHost + "$" + rule.target[1]
                 let proxy: HttpProxy = cache.get(uid)
@@ -146,13 +147,13 @@ export function createResolver(
                     })
                     cache.set(uid, proxy, cacheMillis, () => proxy.close())
                 }
-                console.log("path: " + path)
+                console.log("newPath: " + newPath)
                 console.log("targetHost: " + targetHost)
                 console.log("targetPort: " + rule.target[1])
                 console.log("proxy:", proxy.constructor.name)
                 proxy.ws(req, socket, head, {
                     target: {
-                        path: path
+                        path: newPath
                     }
                 })
             },
