@@ -7,6 +7,7 @@ import { createCertWatcher, fixPath, loadCerts } from "./certs"
 import { loadRawRules, parseRules, sortRules } from "./rule"
 import { createResolvers, findResolver, getRequestData } from "./resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
+import { CacheHolder } from "./cache"
 
 console.log("CProx| Init...")
 
@@ -18,13 +19,15 @@ const certPaths = {
     ca: fixPath(env.CA_PATH),
 }
 
+const cache = new CacheHolder()
+
 console.log("CProx| Load rules...")
 const rules = parseRules(loadRawRules())
 if (rules.length == 0) {
     throw new Error("No rules found")
 }
 console.log("CProx| Create resolver...")
-const resolvers = createResolvers(sortRules(rules))
+const resolvers = createResolvers(sortRules(rules), cache)
 
 console.log("CProx| Create vars...")
 const requestListener: RequestListener = (req, res) => {
@@ -41,6 +44,7 @@ const requestListener: RequestListener = (req, res) => {
         const resolve = findResolver(
             data,
             resolvers,
+            cache
         )
         if (!resolve) {
             res.writeHead(404)

@@ -3,6 +3,8 @@ import { Duplex } from "stream"
 import { Rule } from "./rule"
 import HttpProxy from "http-proxy"
 import serveStatic from "serve-static"
+import { CacheHolder } from "./cache"
+import { createRequire } from "module"
 
 export interface BaseResolver {
     type: "PROXY" | "STATIC" | "REDIRECT",
@@ -61,7 +63,11 @@ export function hostPartsMatch(
     return true
 }
 
-export function createResolver(rule: Rule): Resolver {
+export function createResolver(
+    rule: Rule,
+    cache: CacheHolder,
+    cacheMillis: number = 1000 * 60 * 2,
+): Resolver {
     if (rule.type == "PROXY") {
         return {
             type: "PROXY",
@@ -83,12 +89,18 @@ export function createResolver(rule: Rule): Resolver {
                 req.url = data.path.substring(
                     rule.path.length
                 )
-                new HttpProxy({
-                    target: {
-                        host: targetHost,
-                        port: rule.target[1],
-                    }
-                }).web(req, res)
+                const uid = targetHost + "$" + rule.target[1]
+                let proxy: HttpProxy = cache.get(uid)
+                if (!proxy) {
+                    proxy = new HttpProxy({
+                        target: {
+                            host: targetHost,
+                            port: rule.target[1],
+                        }
+                    })
+                    cache.set(uid, proxy, cacheMillis)
+                }
+                proxy.web(req, res)
             },
             ws: (data, req, socket, head) => {
                 let targetHost = rule.target[0]
@@ -110,18 +122,19 @@ export function createResolver(rule: Rule): Resolver {
                 if (!req.url.startsWith("/")) {
                     req.url = "/" + req.url
                 }
-                console.log("WSS data:", data)
-                console.log("rule.path:", rule.path)
-                console.log("originTargetHost:", rule.target[0])
-                console.log("targetHost:", targetHost)
-                console.log("targetPort:", rule.target[1])
-                console.log("req.url:", req.url)
-                new HttpProxy({
-                    target: {
-                        host: targetHost,
-                        port: rule.target[1],
-                    }
-                }).ws(req, socket, head)
+
+                const uid = targetHost + "$" + rule.target[1]
+                let proxy: HttpProxy = cache.get(uid)
+                if (!proxy) {
+                    proxy = new HttpProxy({
+                        target: {
+                            host: targetHost,
+                            port: rule.target[1],
+                        }
+                    })
+                    cache.set(uid, proxy, cacheMillis)
+                }
+                proxy.ws(req, socket, head)
             },
         }
     } else if (rule.type == "REDIRECT") {
@@ -202,12 +215,11 @@ export function createResolver(rule: Rule): Resolver {
     }
 }
 
-export function createResolvers(rules: Rule[]): Resolver[] {
-    return rules.map(rule => createResolver(rule))
-}
-
-export interface ResolverCache {
-    [key: string]: Resolver
+export function createResolvers(
+    rules: Rule[],
+    cache: CacheHolder,
+): Resolver[] {
+    return rules.map(rule => createResolver(rule, cache))
 }
 
 export function getRequestData(
@@ -230,7 +242,12 @@ export function getRequestData(
 export function findResolver(
     data: RequestData,
     resolvers: Resolver[],
+    cache: CacheHolder,
+    cacheMillis: number = 1000 * 20,
 ): Resolver | undefined {
+    if (cache && cache.has(data.host + "$" + data.path)) {
+        return cache.get(data.host + "$" + data.path)
+    }
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index]
         if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts)) {
@@ -238,6 +255,9 @@ export function findResolver(
         }
         if (!data.path.startsWith(resolver.rule.path)) {
             continue
+        }
+        if (cache) {
+            cache?.set(data.host + "$" + data.path, resolver, cacheMillis)
         }
         return resolver
     }
