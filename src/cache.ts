@@ -6,7 +6,23 @@ export interface CacheEntry<T> {
     onExpire: ((value: T, cache: CacheHolder) => Promise<void> | void) | undefined
 }
 
-export class CacheHolder {
+export interface CacheHolder {
+    get<T>(key: string): T
+    set<T>(
+        key: string,
+        value: T,
+        expireMillis?: number,
+        onExpire?: ((value: T, cache: CacheHolder) => Promise<void> | void) | undefined
+    ): void
+    has(key: string): boolean
+    remove(key: string): void
+    clear(): void
+    isExpired(key: string): boolean
+    getExpiry(key: string): number
+    checkExpiry(): Promise<void>
+}
+
+export class MemoryCache implements CacheHolder {
     private cache: { [key: string]: CacheEntry<any> } = {}
     private checkInterval: NodeJS.Timer | undefined
 
@@ -35,8 +51,22 @@ export class CacheHolder {
         delete this.cache[key]
     }
 
-    public clear(): void {
+    public clear(): Promise<void> {
+        const keys = Object.keys(this.cache)
+        const promises: Promise<void>[] = []
+        for (let index = 0; index < keys.length; index++) {
+            const key = keys[index]
+            const entry = this.cache[key]
+            if (entry.onExpire) {
+                const promise = entry.onExpire(entry.value, this)
+                if (promise) {
+                    promises.push(promise)
+                }
+            }
+            this.remove(key)
+        }
         this.cache = {}
+        return Promise.all(promises).then()
     }
 
     public isExpired(key: string): boolean {

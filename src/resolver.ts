@@ -98,7 +98,7 @@ export function createResolver(
                             port: rule.target[1],
                         }
                     })
-                    cache.set(uid, proxy, cacheMillis)
+                    cache.set(uid, proxy, cacheMillis, () => proxy.close())
                 }
                 proxy.web(req, res)
             },
@@ -132,7 +132,7 @@ export function createResolver(
                             port: rule.target[1],
                         }
                     })
-                    cache.set(uid, proxy, cacheMillis)
+                    cache.set(uid, proxy, cacheMillis, () => proxy.close())
                 }
                 proxy.ws(req, socket, head)
             },
