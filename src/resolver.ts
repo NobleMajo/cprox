@@ -92,12 +92,29 @@ export function createResolver(
                 if (!req.url.startsWith("/")) {
                     req.url = "/" + req.url
                 }
-                new HttpProxy({
-                    target: {
-                        host: targetHost,
-                        port: rule.target[1],
-                    }
-                }).web(req, res)
+                const uuid = targetHost + "$" + rule.target[1]
+                let proxy: HttpProxy = cache.get(uuid)
+                if (!proxy) {
+                    proxy = new HttpProxy({
+                        target: {
+                            host: targetHost,
+                            port: rule.target[1],
+                        }
+                    })
+                    proxy.on("error", (err) => {
+                        console.error({
+                            msg: err.message,
+                            stack: err.stack
+                        })
+                    })
+                    cache.set(
+                        uuid,
+                        proxy,
+                        cacheMillis,
+                        (value) => value.close()
+                    )
+                }
+                proxy.web(req, res)
             },
             ws: (data, req, socket, head) => {
                 let targetHost = rule.target[0]
@@ -119,12 +136,29 @@ export function createResolver(
                 if (!req.url.startsWith("/")) {
                     req.url = "/" + req.url
                 }
-                new HttpProxy({
-                    target: {
-                        host: targetHost,
-                        port: rule.target[1],
-                    }
-                }).ws(req, socket, head)
+                const uuid = targetHost + "$" + rule.target[1]
+                let proxy: HttpProxy = cache.get(uuid)
+                if (!proxy) {
+                    proxy = new HttpProxy({
+                        target: {
+                            host: targetHost,
+                            port: rule.target[1],
+                        }
+                    })
+                    proxy.on("error", (err) => {
+                        console.error({
+                            msg: err.message,
+                            stack: err.stack
+                        })
+                    })
+                    cache.set(
+                        uuid,
+                        proxy,
+                        cacheMillis,
+                        (value) => value.close()
+                    )
+                }
+                proxy.ws(req, socket, head)
             },
         }
     } else if (rule.type == "REDIRECT") {
