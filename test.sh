@@ -1,4 +1,4 @@
-^#!/bin/bash
+#!/bin/bash
 
 docker rm -f cprox
 
@@ -16,10 +16,9 @@ docker run -d \
     -e "CERT_PATH=/app/certs/cert1.pem" \
     -e "KEY_PATH=/app/certs/privkey1.pem" \
     -e "CA_PATH=/app/certs/fullchain1.pem" \
-    -e "IGNORE_EMPTY_CERT=true" \
+    -e "RULE_1=*.codec.coreunit.net=PROXY:codec_{-4}:80" \
     -e "VERBOSE=true" \
-    -e "STATIC_1=/.well-known=/app/public" \
-    -e "PROXY_1=codec.coreunit.net=codec_{0}:8080" \
-    -e "PROXY_2=coreunit.net=cunet_website:80" \
     --network codec \
     cprox
+
+docker attach cprox
