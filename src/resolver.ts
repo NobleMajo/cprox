@@ -107,7 +107,11 @@ export function createResolver(rule: Rule): Resolver {
                 req.url = data.path.substring(
                     rule.path.length
                 )
-
+                console.log("WSS data:", data)
+                console.log("originTargetHost:", rule.target[0])
+                console.log("targetHost:", targetHost)
+                console.log("targetPort:", rule.target[1])
+                console.log("req.url:", req.url)
                 new HttpProxy({
                     target: {
                         host: targetHost,
@@ -223,19 +227,14 @@ export function findResolver(
     data: RequestData,
     resolvers: Resolver[],
 ): Resolver | undefined {
-    console.log("----- DATA: -----\n", data)
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index]
-        console.log(" - check: " + resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
         if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts)) {
-            console.log("!!!hostPartsMatch:", resolver.rule.hostParts, data.hostParts)
             continue
         }
         if (!data.path.startsWith(resolver.rule.path)) {
-            console.log("!!!data.path.startsWith(resolver.rule.path):", data.path, resolver.rule.path)
             continue
         }
-        console.log(" +++++ found: " + resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
         return resolver
     }
     return undefined
