@@ -70,14 +70,12 @@ export function createResolver(rule: Rule): Resolver {
             http: (data, req, res) => {
                 let targetHost = rule.target[0]
                 rule.hostVars.forEach((v: number) => {
-                    console.log("replace: " + "{" + v + "}" + " with " + data.hostParts[v - 1])
                     targetHost = targetHost.replace(
                         "{" + (-v) + "}",
                         data.hostParts[v - 1]
                     )
                 })
                 rule.pathVars.forEach((v: number) => {
-                    console.log("replace: " + "{" + v + "}" + " with " + data.pathParts[v - 1])
                     targetHost = targetHost.replace(
                         "{" + v + "}",
                         data.pathParts[v - 1]
@@ -94,16 +92,15 @@ export function createResolver(rule: Rule): Resolver {
                 }).web(req, res)
             },
             ws: (data, req, socket, head) => {
+                console.log("ws data: ", data)
                 let targetHost = rule.target[0]
                 rule.hostVars.forEach((v: number) => {
-                    console.log("replace: " + "{" + v + "}" + " with " + data.hostParts[v - 1])
                     targetHost = targetHost.replace(
                         "{" + (-v) + "}",
                         data.hostParts[v - 1]
                     )
                 })
                 rule.pathVars.forEach((v: number) => {
-                    console.log("replace: " + "{" + v + "}" + " with " + data.pathParts[v - 1])
                     targetHost = targetHost.replace(
                         "{" + v + "}",
                         data.pathParts[v - 1]
@@ -229,20 +226,24 @@ export function findResolver(
     resolvers: Resolver[],
     cache: ResolverCache | null = null
 ): Resolver | undefined {
+    console.log("uid: ", data.host + "$" + data.path)
     if (cache && cache[data.host + "$" + data.path]) {
         return cache[data.host + "$" + data.path]
     }
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index];
         if (!partsMatch(resolver.rule.hostParts, data.hostParts, true)) {
+            console.log("mismatch host: ", resolver.rule.hostParts, data.hostParts)
             continue
         }
         if (!partsMatch(resolver.rule.pathParts, data.pathParts, true)) {
+            console.log("mismatch path: ", resolver.rule.pathParts, data.pathParts)
             continue
         }
         if (cache) {
             cache[data.host + "$" + data.path] = resolver
         }
+        console.log("resolver: " + resolver.type + ":" + resolver.rule.host + resolver.rule.path)
         return resolver
     }
     return undefined
