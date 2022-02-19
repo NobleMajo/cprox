@@ -69,7 +69,6 @@ export function createResolver(rule: Rule): Resolver {
             rule,
             http: (data, req, res) => {
                 let targetHost = rule.target[0]
-                console.log("target: ", targetHost)
                 rule.hostVars.forEach((v: number) => {
                     console.log("replace: " + "{" + v + "}" + " with " + data.hostParts[v - 1])
                     targetHost = targetHost.replace(
@@ -77,7 +76,6 @@ export function createResolver(rule: Rule): Resolver {
                         data.hostParts[v - 1]
                     )
                 })
-                console.log("target: ", targetHost)
                 rule.pathVars.forEach((v: number) => {
                     console.log("replace: " + "{" + v + "}" + " with " + data.pathParts[v - 1])
                     targetHost = targetHost.replace(
@@ -85,11 +83,9 @@ export function createResolver(rule: Rule): Resolver {
                         data.pathParts[v - 1]
                     )
                 })
-                console.log("target: ", targetHost)
                 req.url = data.path.substring(
                     rule.path.length
                 )
-                console.log("url: ", req.url)
                 new HttpProxy({
                     target: {
                         host: targetHost,
@@ -100,18 +96,19 @@ export function createResolver(rule: Rule): Resolver {
             ws: (data, req, socket, head) => {
                 let targetHost = rule.target[0]
                 rule.hostVars.forEach((v: number) => {
+                    console.log("replace: " + "{" + v + "}" + " with " + data.hostParts[v - 1])
                     targetHost = targetHost.replace(
                         "{" + (-v) + "}",
                         data.hostParts[v - 1]
                     )
                 })
                 rule.pathVars.forEach((v: number) => {
+                    console.log("replace: " + "{" + v + "}" + " with " + data.pathParts[v - 1])
                     targetHost = targetHost.replace(
-                        "{" + (-v) + "}",
+                        "{" + v + "}",
                         data.pathParts[v - 1]
                     )
                 })
-
                 req.url = data.path.substring(
                     rule.path.length
                 )
