@@ -70,7 +70,7 @@ export function createResolver(rule: Rule): Resolver {
             http: (data, req, res) => {
                 let targetHost = rule.target[0]
                 console.log("target: ", targetHost)
-                rule.hostVars.forEach((v) => {
+                rule.hostVars.forEach((v: number) => {
                     console.log("replace: " + "{" + v + "}" + " with " + data.hostParts[v - 1])
                     targetHost = targetHost.replace(
                         "{" + v + "}",
@@ -78,7 +78,7 @@ export function createResolver(rule: Rule): Resolver {
                     )
                 })
                 console.log("target: ", targetHost)
-                rule.pathVars.forEach((v) => {
+                rule.pathVars.forEach((v: number) => {
                     console.log("replace: " + "{" + v + "}" + " with " + data.pathParts[v - 1])
                     targetHost = targetHost.replace(
                         "{" + v + "}",
@@ -99,13 +99,13 @@ export function createResolver(rule: Rule): Resolver {
             },
             ws: (data, req, socket, head) => {
                 let targetHost = rule.target[0]
-                rule.hostVars.forEach((v) => {
+                rule.hostVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
                         "{" + (-v) + "}",
                         data.hostParts[v - 1]
                     )
                 })
-                rule.pathVars.forEach((v) => {
+                rule.pathVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
                         "{" + (-v) + "}",
                         data.pathParts[v - 1]
@@ -132,26 +132,26 @@ export function createResolver(rule: Rule): Resolver {
                 let targetHost = rule.target[1]
                 let targetPath = rule.target[3]
 
-                rule.hostVars.forEach((v) => {
+                rule.hostVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
                         "{" + (-v) + "}",
                         data.hostParts[v - 1]
                     )
                 })
-                rule.pathVars.forEach((v) => {
+                rule.pathVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
                         "{" + v + "}",
                         data.pathParts[v - 1]
                     )
                 })
 
-                rule.hostVars.forEach((v) => {
+                rule.hostVars.forEach((v: number) => {
                     targetPath = targetPath.replace(
                         "{" + (-v) + "}",
                         data.hostParts[v - 1]
                     )
                 })
-                rule.pathVars.forEach((v) => {
+                rule.pathVars.forEach((v: number) => {
                     targetPath = targetPath.replace(
                         "{" + v + "}",
                         data.pathParts[v - 1]
