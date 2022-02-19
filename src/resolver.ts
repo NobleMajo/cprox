@@ -73,7 +73,7 @@ export function createResolver(rule: Rule): Resolver {
                 rule.hostVars.forEach((v: number) => {
                     console.log("replace: " + "{" + v + "}" + " with " + data.hostParts[v - 1])
                     targetHost = targetHost.replace(
-                        "{" + v + "}",
+                        "{" + (-v) + "}",
                         data.hostParts[v - 1]
                     )
                 })
