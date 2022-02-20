@@ -2,8 +2,6 @@
 
 rm -rf $(pwd)/certs/coreunit.net
 
-API_TOKEN="MweXEp-5wyctuxWWadvZbz4tSvsTAPqYLDCorPZk"
-
 echo "dns_cloudflare_api_token = $API_TOKEN" >> ./cloudflare.ini
 chmod 770 ./cloudflare.ini
 
