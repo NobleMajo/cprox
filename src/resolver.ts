@@ -299,9 +299,11 @@ export function findResolver(
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index]
         if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts)) {
+            console.log("mismatch host:", resolver.rule.hostParts, data.hostParts)
             continue
         }
         if (!data.path.startsWith(resolver.rule.path)) {
+            console.log("mismatch path:", data.path, resolver.rule.path) 
             continue
         }
         if (cache) {

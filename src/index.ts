@@ -25,15 +25,17 @@ const cache = new NoCache()
 //     console.log(" ... ... ... cache cleared!")
 // })
 
-console.log("CProx| Load rules...")
+console.log("CProX| Load rules...")
 const rules = parseRules(loadRawRules())
 if (rules.length == 0) {
-    throw new Error("No rules found")
+    console.error("No rules found")
+    process.exit(0)
 }
-console.log("CProx| Create resolver...")
+console.log("CProX| " + rules.length + " rules found!")
+console.log("CProX| Create resolver...")
 const resolvers = createResolvers(sortRules(rules), cache)
 
-console.log("CProx| Create vars...")
+console.log("CProX| Create vars...")
 const requestListener: RequestListener = (req, res) => {
     try {
         if (!req.headers.host || !req.url) {
