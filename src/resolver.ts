@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from "http"
 import { Duplex } from "stream"
 import { Rule } from "./rule"
 import HttpProxy from "http-proxy"
-import serveStatic from "serve-static"
+import serveStatic, { RequestHandler } from "serve-static"
 import { CacheHolder } from "./cache"
 import { createRequire } from "module"
 
@@ -133,7 +133,7 @@ export function createResolver(
                 if (!req.url.startsWith("/")) {
                     req.url = "/" + req.url
                 }
-                const uuid = targetHost + "$" + rule.target[1]
+                const uuid = "P$" + targetHost + "$" + rule.target[1]
                 let proxy: HttpProxy = cache.get(uuid)
                 if (!proxy) {
                     proxy = new HttpProxy({
@@ -172,7 +172,7 @@ export function createResolver(
                 if (!req.url.startsWith("/")) {
                     req.url = "/" + req.url
                 }
-                const uuid = targetHost + "$" + rule.target[1]
+                const uuid = "P$" + targetHost + "$" + rule.target[1]
                 let proxy: HttpProxy = cache.get(uuid)
                 if (!proxy) {
                     proxy = new HttpProxy({
@@ -239,13 +239,30 @@ export function createResolver(
             type: "STATIC",
             rule,
             http: (data, req, res) => {
-                req.url = data.path.substring(rule.path.slice(1).length)
-                serveStatic(
-                    rule.target,
-                    {
-                        index: settings.staticIndexFiles
-                    }
-                )(
+                req.url = data.path.substring(
+                    rule.path.length
+                )
+                if (!req.url.startsWith("/")) {
+                    req.url = "/" + req.url
+                }
+
+                const uuid = "S$" + rule.target
+                let staticServer: RequestHandler<any> = cache.get(uuid)
+                if (!staticServer) {
+                    staticServer = serveStatic(
+                        rule.target,
+                        {
+                            index: settings.staticIndexFiles
+                        }
+                    )
+                    cache.set(
+                        uuid,
+                        staticServer,
+                        settings.cacheMillis
+                    )
+                }
+
+                staticServer(
                     req,
                     res,
                     () => {
@@ -292,6 +309,7 @@ export function findResolver(
     resolvers: Resolver[],
     cache: CacheHolder,
     cacheMillis: number = 1000 * 20,
+    verbose: boolean = false
 ): Resolver | undefined {
     if (cache && cache.has(data.host + "$" + data.path)) {
         return cache.get(data.host + "$" + data.path)
@@ -299,18 +317,20 @@ export function findResolver(
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index]
         if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts)) {
-            console.log("mismatch host:", resolver.rule.hostParts, data.hostParts)
+            verbose && console.log("mismatch host:", resolver.rule.hostParts, data.hostParts)
             continue
         }
         if (!data.path.startsWith(resolver.rule.path)) {
-            console.log("mismatch path:", data.path, resolver.rule.path) 
+            verbose && console.log("mismatch path:", data.path, resolver.rule.path)
             continue
         }
         if (cache) {
             cache?.set(data.host + "$" + data.path, resolver, cacheMillis)
         }
+        verbose && console.log("found resolver:", resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
         return resolver
     }
+    verbose && console.log("no resolver found for:", data.host + data.path)
     return undefined
 }
 
