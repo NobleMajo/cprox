@@ -134,7 +134,7 @@ export function createResolver(
                     req.url = "/" + req.url
                 }
                 const uuid = "P$" + targetHost + "$" + rule.target[1]
-                let proxy: HttpProxy = cache.get(uuid)
+                let proxy: HttpProxy | undefined = cache.get(uuid)
                 if (!proxy) {
                     proxy = new HttpProxy({
                         target: {
@@ -173,7 +173,7 @@ export function createResolver(
                     req.url = "/" + req.url
                 }
                 const uuid = "P$" + targetHost + "$" + rule.target[1]
-                let proxy: HttpProxy = cache.get(uuid)
+                let proxy: HttpProxy | undefined = cache.get(uuid)
                 if (!proxy) {
                     proxy = new HttpProxy({
                         target: {
@@ -247,7 +247,7 @@ export function createResolver(
                 }
 
                 const uuid = "S$" + rule.target
-                let staticServer: RequestHandler<any> = cache.get(uuid)
+                let staticServer: RequestHandler<any> | undefined = cache.get(uuid)
                 if (!staticServer) {
                     staticServer = serveStatic(
                         rule.target,

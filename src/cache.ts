@@ -7,7 +7,7 @@ export interface CacheEntry<T> {
 }
 
 export interface CacheHolder {
-    get<T>(key: string): T
+    get<T>(key: string): T | undefined
     set<T>(
         key: string,
         value: T,
@@ -26,7 +26,10 @@ export class MemoryCache implements CacheHolder {
     private cache: { [key: string]: CacheEntry<any> } = {}
     private checkInterval: NodeJS.Timer | undefined
 
-    public get<T>(key: string): T {
+    public get<T>(key: string): T | undefined {
+        if (!this.cache[key]) {
+            return undefined
+        }
         return this.cache[key].value
     }
 
