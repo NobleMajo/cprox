@@ -75,12 +75,40 @@ export function defaultProxyErrorHandler(err: Error) {
     })
 }
 
+export interface CreateResolverOptions {
+    staticIndexFiles?: string[]
+    proxyErrorHandler?: (err: Error) => any
+    cacheMillis?: number,
+}
+
+export interface CreateResolverSettings extends CreateResolverOptions {
+    staticIndexFiles: string[]
+    proxyErrorHandler: (err: Error) => any
+    cacheMillis: number
+}
+
+export const defaultCreateResolverSettings: CreateResolverSettings = {
+    staticIndexFiles: [
+        "index.html",
+        "index.htm",
+        "index.php",
+        "index.md",
+        "index.txt",
+        "index.json",
+    ],
+    proxyErrorHandler: defaultProxyErrorHandler,
+    cacheMillis: 1000 * 60 * 2
+}
+
 export function createResolver(
     rule: Rule,
     cache: CacheHolder,
-    cacheMillis: number = 1000 * 60 * 2,
-    proxyErrorHandler: (err: Error) => any = defaultProxyErrorHandler,
+    options?: CreateResolverOptions
 ): Resolver {
+    const settings = {
+        ...defaultCreateResolverSettings,
+        ...options
+    }
     if (rule.type == "PROXY") {
         return {
             type: "PROXY",
@@ -114,11 +142,11 @@ export function createResolver(
                             port: rule.target[1],
                         }
                     })
-                    proxy.on("error", proxyErrorHandler)
+                    proxy.on("error", settings.proxyErrorHandler)
                     cache.set(
                         uuid,
                         proxy,
-                        cacheMillis,
+                        settings.cacheMillis,
                         (value) => value.close()
                     )
                 }
@@ -151,13 +179,13 @@ export function createResolver(
                         target: {
                             host: targetHost,
                             port: rule.target[1],
-                        }
+                        },
                     })
-                    proxy.on("error", proxyErrorHandler)
+                    proxy.on("error", settings.proxyErrorHandler)
                     cache.set(
                         uuid,
                         proxy,
-                        cacheMillis,
+                        settings.cacheMillis,
                         (value) => value.close()
                     )
                 }
@@ -215,14 +243,7 @@ export function createResolver(
                 serveStatic(
                     rule.target,
                     {
-                        index: [
-                            "index.html",
-                            "index.htm",
-                            "index.php",
-                            "index.md",
-                            "index.txt",
-                            "index.json",
-                        ]
+                        index: settings.staticIndexFiles
                     }
                 )(
                     req,
