@@ -41,7 +41,7 @@ docker pull cprox:latest
 ```
 
 # configuration
-You configure the server via rules.
+You configure the server via rules.  
 A rule is a key value pair as string that that can be set over the environment variables or via the cli process arguments.
 
 ## examples
@@ -95,10 +95,10 @@ node ./dist/index.js "localhost=STATIC:./public"
 ```
 
 ## variables
-The rules support variables.
-A variables is always a number that is never 0.
-Numbers greater than 0 represent a part of the requested path splitted by `/`.
-Numbers lesser than 0 represent a part of the requested domain splitted by `.`.
+The rules support variables.  
+A variables is always a number that is never 0.  
+Numbers greater than 0 represent a part of the requested path splitted by `/`.  
+Numbers lesser than 0 represent a part of the requested domain splitted by `.`.  
 
 ### examples
 If the requested address is `test.coreunit.net/test/test2/test3` you can get the following variables:
