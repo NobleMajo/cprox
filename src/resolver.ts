@@ -283,8 +283,9 @@ export function createResolver(
 export function createResolvers(
     rules: Rule[],
     cache: CacheHolder,
+    options?: CreateResolverOptions,
 ): Resolver[] {
-    return rules.map(rule => createResolver(rule, cache))
+    return rules.map(rule => createResolver(rule, cache, options))
 }
 
 export function getRequestData(

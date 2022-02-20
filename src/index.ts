@@ -7,7 +7,7 @@ import { createCertWatcher, fixPath, loadCerts } from "./certs"
 import { loadRawRules, parseRules, sortRules } from "./rule"
 import { createResolvers, findResolver, getRequestData } from "./resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
-import { NoCache } from "./cache"
+import { MemoryCache, NoCache } from "./cache"
 
 console.log("CProx| Init...")
 
@@ -19,11 +19,11 @@ const certPaths = {
     ca: fixPath(env.CA_PATH),
 }
 
-const cache = new NoCache()
-// cache.startCheckInterval(1000 * 30, async (p) => {
-//     await p
-//     console.log(" ... ... ... cache cleared!")
-// })
+const cache = new MemoryCache()
+cache.startCheckInterval(1000 * 20, async (p) => {
+    await p
+    console.log(" ... ... ... cache cleared!")
+})
 
 console.log("CProX| Load rules...")
 const rules = parseRules(loadRawRules())
@@ -33,7 +33,13 @@ if (rules.length == 0) {
 }
 console.log("CProX| " + rules.length + " rules found!")
 console.log("CProX| Create resolver...")
-const resolvers = createResolvers(sortRules(rules), cache)
+const resolvers = createResolvers(
+    sortRules(rules),
+    cache,
+    {
+        cacheMillis: 1000 * 60 * 2,
+    }
+)
 
 console.log("CProX| Create vars...")
 const requestListener: RequestListener = (req, res) => {
@@ -50,7 +56,9 @@ const requestListener: RequestListener = (req, res) => {
         const resolve = findResolver(
             data,
             resolvers,
-            cache
+            cache,
+            1000 * 30,
+            env.VERBOSE
         )
         if (!resolve) {
             res.writeHead(404)
@@ -78,7 +86,9 @@ const upgradeListener: UpgradeListener = (req, socket, head) => {
         const resolve = findResolver(
             data,
             resolvers,
-            cache
+            cache,
+            1000 * 30,
+            env.VERBOSE
         )
         if (!resolve) {
             socket.destroy()
