@@ -79,12 +79,14 @@ export interface CreateResolverOptions {
     staticIndexFiles?: string[]
     proxyErrorHandler?: (err: Error) => any
     cacheMillis?: number,
+    verbose?: boolean,
 }
 
 export interface CreateResolverSettings extends CreateResolverOptions {
-    staticIndexFiles: string[]
-    proxyErrorHandler: (err: Error) => any
-    cacheMillis: number
+    staticIndexFiles: string[],
+    proxyErrorHandler: (err: Error) => any,
+    cacheMillis: number,
+    verbose: boolean,
 }
 
 export const defaultCreateResolverSettings: CreateResolverSettings = {
@@ -97,7 +99,8 @@ export const defaultCreateResolverSettings: CreateResolverSettings = {
         "index.json",
     ],
     proxyErrorHandler: defaultProxyErrorHandler,
-    cacheMillis: 1000 * 60 * 2
+    cacheMillis: 1000 * 60 * 2,
+    verbose: false,
 }
 
 export function createResolver(
@@ -150,6 +153,7 @@ export function createResolver(
                         (value) => value.close()
                     )
                 }
+                settings.verbose && console.log("PROXY_WEB:", targetHost, "on", req.url)
                 proxy.web(req, res)
             },
             ws: (data, req, socket, head) => {
@@ -189,6 +193,7 @@ export function createResolver(
                         (value) => value.close()
                     )
                 }
+                settings.verbose && console.log("PROXY_WS:", targetHost, "on", req.url)
                 proxy.ws(req, socket, head)
             },
         }
@@ -226,6 +231,7 @@ export function createResolver(
                     )
                 })
 
+                settings.verbose && console.log("REDIRECT_WEB:", rule.target[0] + "://" + targetHost + ":" + rule.target[2] + targetPath)
                 res.statusCode = 301
                 res.setHeader("Location", rule.target[0] + "://" + targetHost + ":" + rule.target[2] + targetPath)
                 res.end()
@@ -262,10 +268,12 @@ export function createResolver(
                     )
                 }
 
+                settings.verbose && console.log("STATIC:", rule.target)
                 staticServer(
                     req,
                     res,
                     () => {
+                        settings.verbose && console.log("STATIC_NEXT:", rule.target)
                         res.statusCode = 404
                         res.end()
                     }

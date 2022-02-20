@@ -9,7 +9,7 @@ import { createResolvers, findResolver, getRequestData } from "./resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
 import { MemoryCache, NoCache } from "./cache"
 
-console.log("CProx| Init...")
+console.log("CProX| Init...")
 
 dns.setServers(env.DNS_SERVER_ADDRESSES)
 
@@ -22,7 +22,7 @@ const certPaths = {
 const cache = new MemoryCache()
 cache.startCheckInterval(1000 * 20, async (p) => {
     await p
-    console.log(" ... ... ... cache cleared!")
+    env.VERBOSE && console.log("CProX| Cache: cleared!")
 })
 
 console.log("CProX| Load rules...")
@@ -38,6 +38,7 @@ const resolvers = createResolvers(
     cache,
     {
         cacheMillis: 1000 * 60 * 2,
+        verbose: env.VERBOSE,
     }
 )
 
@@ -121,7 +122,7 @@ const restart: () => Promise<void> = async () => {
 
 const start: () => Promise<void> = async () => {
     console.log("------------------------------------------------------")
-    console.log("CProx| Starting...")
+    console.log("CProX| Starting...")
     httpServerPromise = createHttpServer(
         env.HTTP_PORT,
         env.BIND_ADDRESS,
@@ -143,7 +144,7 @@ const start: () => Promise<void> = async () => {
     ])
     httpServer = httpServer2
     httpsServer = httpsServer2
-    console.log("CProx| Started!")
+    console.log("CProX| Started!")
 }
 
 const watcher = createCertWatcher(certPaths, () => restart())
