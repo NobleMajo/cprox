@@ -1,15 +1,10 @@
 #!/bin/bash
 
-# check if the first argument is set
-if [ -z "$1" ]; then
-    echo "Usage: $0 <CLOUDFLARE_API_TOKEN>"
-    exit 1
-fi
+CLOUDFLARE_API_TOKEN=$1
 
-# check if the first argument is a minimum 20 character cloudflare api token
-if [ ${#1} -lt 20 ]; then
-    echo "Usage: $0 <CLOUDFLARE_API_TOKEN>"
-    exit 1
+# request password input via prompt if CLOUDFLARE_API_TOKEN is empty
+if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+    read -p "Cloudflare API token: " CLOUDFLARE_API_TOKEN
 fi
 
 CLOUDFLARE_API_TOKEN=$1

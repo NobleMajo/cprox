@@ -19,7 +19,7 @@ docker run -d \
     -e "RULE_4=*.codec.coreunit.net=PROXY:codec_{-4}:8080" \
     -e "RULE_3=sysdev.coreunit.net=REDIRECT:https://github.com/PhoenixRaph" \
     -e "RULE_2=majo.coreunit.net=REDIRECT:https://github.com/majo418" \
-    -e "RULE_1=static.coreunit.net=STATIC:/var/www/html" \
+    -e "RULE_1=coreunit.net=STATIC:/var/www/html" \
     -e "VERBOSE=true" \
     --network codec \
     cprox
