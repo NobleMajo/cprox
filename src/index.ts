@@ -7,9 +7,13 @@ import { createCertWatcher, fixPath, loadCerts } from "./certs"
 import { loadRawRules, parseRules, sortRules } from "./rule"
 import { createResolvers, findResolver, getRequestData } from "./resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
-import { MemoryCache, NoCache } from "./cache"
+import { MemoryCache } from "./cache"
 
 console.log("CProX| Init...")
+
+if (!env.PRODUCTION) {
+    process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0"
+}
 
 dns.setServers(env.DNS_SERVER_ADDRESSES)
 
@@ -45,6 +49,8 @@ const resolvers = createResolvers(
 console.log("CProX| Create vars...")
 const requestListener: RequestListener = (req, res) => {
     try {
+        res.setHeader("X-powered-by", "CProX")
+        res.setHeader("Server", "CProX")
         if (!req.headers.host || !req.url) {
             res.writeHead(404)
             res.end()

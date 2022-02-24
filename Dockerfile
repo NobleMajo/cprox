@@ -21,7 +21,3 @@ EXPOSE 8080
 VOLUME [ "/app/certs" ]
 
 CMD ["/app/dist/index.js"]
-
-
-
-

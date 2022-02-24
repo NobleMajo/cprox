@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 docker run -d \
     --restart unless-stopped \
     --name cprox \
