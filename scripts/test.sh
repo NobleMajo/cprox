@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd ..
+
 docker network create codec
 
 docker rm -f cprox
