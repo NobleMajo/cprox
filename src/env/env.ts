@@ -1,4 +1,4 @@
-import { EnvType, VariablesTypes } from "typenvy"
+import typenvy, { EnvType, VariablesTypes } from "typenvy"
 export const defaultEnv: EnvType = {
     PRODUCTION: (process.env.NODE_ENV === "production") as boolean,
     VERBOSE: false as boolean,
@@ -22,22 +22,16 @@ export const defaultEnv: EnvType = {
 
     STATIC_PATH: "./public" as string,
 }
-/*
-envParser.define("PRODUCTION", "boolean")
-envParser.define("VERBOSE", "boolean")
-
-envParser.define("DNS_SERVER_ADDRESSES", "array")
-envParser.define("HTTP_PORT", "number")
-envParser.define("HTTPS_PORT", "number")
-envParser.define("BIND_ADDRESS", "string")
-
-envParser.define("CERT_PATH", "string")
-envParser.define("KEY_PATH", "string")
-envParser.define("CA_PATH", "string")
-envParser.define("IGNORE_EMPTY_CERT", "boolean")
-
-envParser.define("STATIC_PATH", "string")
-*/
 export const variablesTypes: VariablesTypes = {
-
+    PRODUCTION: [typenvy.TC_BOOLEAN],
+    VERBOSE: [typenvy.TC_BOOLEAN],
+    DNS_SERVER_ADDRESSES: [typenvy.TC_ARRAY],
+    HTTP_PORT: [typenvy.TC_NUMBER],
+    HTTPS_PORT: [typenvy.TC_NUMBER],
+    BIND_ADDRESS: [typenvy.TC_STRING],
+    CERT_PATH: [typenvy.TC_PATH],
+    KEY_PATH: [typenvy.TC_PATH],
+    CA_PATH: [typenvy.TC_PATH],
+    IGNORE_EMPTY_CERT: [typenvy.TC_BOOLEAN],
+    STATIC_PATH: [typenvy.TC_PATH],
 }
