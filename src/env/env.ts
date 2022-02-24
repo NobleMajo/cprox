@@ -1,4 +1,5 @@
-import typenvy, { EnvType, VariablesTypes } from "typenvy"
+import * as typenvy from "typenvy"
+import { EnvType, VariablesTypes } from "typenvy"
 export const defaultEnv: EnvType = {
     PRODUCTION: (process.env.NODE_ENV === "production") as boolean,
     VERBOSE: false as boolean,
