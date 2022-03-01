@@ -33,16 +33,10 @@ export function parseRequestUrl(
         if (portSeperatorIndex > 0) {
             host = host.substring(0, portSeperatorIndex)
         }
-        if (
-            (
-                allowWildcards ?
-                    domainRegex :
-                    domainWildcardRegex
-            ).test(host)
-        ) {
-            hostParts = host.split(".").reverse()
-        } else {
+        if (ipv4Regex.test(host)) {
             hostParts = [host]
+        } else {
+            hostParts = host.split(".").reverse()
         }
     }
 
