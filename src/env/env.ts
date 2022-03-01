@@ -1,6 +1,4 @@
 import * as typenvy from "typenvy"
-console.log("keys: ", Object.keys(typenvy))
-console.log("obj: ", typenvy)
 export const defaultEnv = {
     PRODUCTION: (process.env.NODE_ENV === "production") as boolean,
     VERBOSE: false as boolean,
