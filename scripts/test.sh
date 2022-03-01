@@ -2,7 +2,7 @@
 
 cd ..
 
-docker network create codec
+docker network create ff_cunet
 
 docker rm -f cprox
 
@@ -23,5 +23,5 @@ docker run -d \
     -e "RULE_2=majo.coreunit.net=REDIRECT:https://github.com/majo418" \
     -e "RULE_1=coreunit.net=STATIC:/var/www/html" \
     -e "VERBOSE=true" \
-    --network codec \
+    --network ff_cunet \
     cprox
