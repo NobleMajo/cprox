@@ -1,4 +1,5 @@
 import { fixPath } from "./certs"
+import { parseRequestUrl } from './consts';
 
 export interface RawRules {
     [key: string]: string
@@ -101,27 +102,11 @@ export function getBaseRule(requestSource: string, responseTarget: string): Base
     const path = index != -1 ?
         requestSource.substring(index) :
         "/"
-    const hostParts = host.split(".").reverse()
-    let wildcard: boolean = false
-    for (let index = hostParts.length; index > hostParts.length; index--) {
-        const part = hostParts[index]
-        if (part == "*") {
-            wildcard = true
-        } else if (!/^\/?[a-zA-Z0-9-_\/]+$/.test(part)) {
-            throw new Error("Invalid host part: " + part)
-        }
-    }
-    const pathParts = path.split("/")
-    if (pathParts[0] == "") {
-        pathParts.shift()
-    }
+    const data = parseRequestUrl(host, path, true)
 
     return {
-        host,
-        path,
-        hasWildCard: wildcard,
-        hostParts: hostParts,
-        pathParts: pathParts,
+        ...data,
+        hasWildCard: data.host.includes("*"),
         raw: requestSource + "=" + responseTarget,
         hostVars: [],
         pathVars: [],

@@ -5,9 +5,10 @@ import { RequestListener, Server as HttpServer } from "http"
 import { Server as HttpsServer } from "https"
 import { createCertWatcher, fixPath, loadCerts } from "./certs"
 import { loadRawRules, parseRules, sortRules } from "./rule"
-import { createResolvers, findResolver, getRequestData } from "./resolver"
+import { createResolvers, findResolver } from "./resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
 import { MemoryCache } from "./cache"
+import { parseRequestUrl } from "./consts"
 
 console.log("CProX| Init...")
 
@@ -30,15 +31,16 @@ cache.startCheckInterval(1000 * 20, async (p) => {
 })
 
 console.log("CProX| Load rules...")
-const rules = parseRules(loadRawRules())
+const rules = sortRules(parseRules(loadRawRules()))
 if (rules.length == 0) {
     console.error("No rules found")
     process.exit(0)
 }
+env.VERBOSE && console.log("CProX| Rules:\n", rules)
 console.log("CProX| " + rules.length + " rules found!")
 console.log("CProX| Create resolver...")
 const resolvers = createResolvers(
-    sortRules(rules),
+    rules,
     cache,
     {
         cacheMillis: 1000 * 60 * 2,
@@ -56,7 +58,7 @@ const requestListener: RequestListener = (req, res) => {
             res.end()
             return
         }
-        const data = getRequestData(
+        const data = parseRequestUrl(
             req.headers.host,
             req.url
         )
@@ -76,7 +78,7 @@ const requestListener: RequestListener = (req, res) => {
     } catch (err) {
         res.statusCode = 500
         res.end()
-        console.error(err)
+        console.error("Error on request!\npath:" + req.url + "\nhost:", req.headers.host, "\n", err)
     }
 }
 
@@ -86,7 +88,7 @@ const upgradeListener: UpgradeListener = (req, socket, head) => {
             socket.destroy()
             return
         }
-        const data = getRequestData(
+        const data = parseRequestUrl(
             req.headers.host,
             req.url
         )

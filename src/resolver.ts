@@ -4,7 +4,7 @@ import { Rule } from "./rule"
 import HttpProxy from "http-proxy"
 import serveStatic, { RequestHandler } from "serve-static"
 import { CacheHolder } from "./cache"
-import { createRequire } from "module"
+import { domainRegex, ipv6Regex, RequestData } from "./consts"
 
 export interface BaseResolver {
     type: "PROXY" | "STATIC" | "REDIRECT",
@@ -20,13 +20,6 @@ export interface BaseResolver {
         socket: Duplex,
         head: Buffer,
     ) => Promise<void> | void,
-}
-
-export interface RequestData {
-    host: string,
-    path: string,
-    hostParts: string[],
-    pathParts: string[],
 }
 
 export interface ProxyResolver extends BaseResolver {
@@ -153,7 +146,7 @@ export function createResolver(
                         (value) => value.close()
                     )
                 }
-                settings.verbose && console.log("PROXY_WEB:", targetHost, "on", req.url)
+                settings.verbose && console.log("PROXY_WEB:", targetHost, "\non Host:", data.hostParts, "\non Path:", data.pathParts)
                 proxy.web(req, res)
             },
             ws: (data, req, socket, head) => {
@@ -193,7 +186,7 @@ export function createResolver(
                         (value) => value.close()
                     )
                 }
-                settings.verbose && console.log("PROXY_WS:", targetHost, "on", req.url)
+                settings.verbose && console.log("PROXY_WS:", targetHost, "\non Host:", data.hostParts, "\non Path:", data.pathParts)
                 proxy.ws(req, socket, head)
             },
         }
@@ -231,7 +224,7 @@ export function createResolver(
                     )
                 })
 
-                settings.verbose && console.log("REDIRECT_WEB:", rule.target[0] + "://" + targetHost + ":" + rule.target[2] + targetPath)
+                settings.verbose && console.log("REDIRECT_WEB:", rule.target[0] + "://" + targetHost + ":" + rule.target[2] + targetPath, "\non Host:", data.hostParts, "\non Path:", data.pathParts)
                 res.statusCode = 301
                 res.setHeader("Location", rule.target[0] + "://" + targetHost + ":" + rule.target[2] + targetPath)
                 res.end()
@@ -294,23 +287,6 @@ export function createResolvers(
     options?: CreateResolverOptions,
 ): Resolver[] {
     return rules.map(rule => createResolver(rule, cache, options))
-}
-
-export function getRequestData(
-    host: string,
-    path: string
-): RequestData {
-    const hostParts = host.split(".").reverse()
-    const pathParts = path.split("/")
-    if (pathParts[0] == "") {
-        pathParts.shift()
-    }
-    return {
-        host: host,
-        path: path,
-        hostParts: hostParts,
-        pathParts: pathParts,
-    }
 }
 
 export function findResolver(

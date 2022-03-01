@@ -1,5 +1,7 @@
-import typenvy, { EnvType, VariablesTypes } from "typenvy"
-export const defaultEnv: EnvType = {
+import * as typenvy from "typenvy"
+console.log("keys: ", Object.keys(typenvy))
+console.log("obj: ", typenvy)
+export const defaultEnv = {
     PRODUCTION: (process.env.NODE_ENV === "production") as boolean,
     VERBOSE: false as boolean,
 
@@ -22,7 +24,7 @@ export const defaultEnv: EnvType = {
 
     STATIC_PATH: "./public" as string,
 }
-export const variablesTypes: VariablesTypes = {
+export const variablesTypes: typenvy.VariablesTypes = {
     PRODUCTION: [typenvy.TC_BOOLEAN],
     VERBOSE: [typenvy.TC_BOOLEAN],
     DNS_SERVER_ADDRESSES: [typenvy.TC_ARRAY],

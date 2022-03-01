@@ -1,5 +1,4 @@
 
-
 export interface CacheEntry<T> {
     expiresAt: number,
     value: any,
