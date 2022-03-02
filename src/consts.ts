@@ -14,7 +14,6 @@ export const ipv6Regex = /^((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[
 export function parseRequestUrl(
     host: string,
     path: string,
-    allowWildcards: boolean = false,
 ): RequestData {
     let hostParts: string[]
     if (host.startsWith("[")) {

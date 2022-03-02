@@ -4,7 +4,7 @@ import { Rule } from "./rule"
 import HttpProxy from "http-proxy"
 import serveStatic, { RequestHandler } from "serve-static"
 import { CacheHolder } from "./cache"
-import { domainRegex, ipv6Regex, RequestData } from "./consts"
+import { RequestData } from "./consts"
 
 export interface BaseResolver {
     type: "PROXY" | "STATIC" | "REDIRECT",
@@ -40,15 +40,21 @@ export function hostPartsMatch(
     searchFor: string[],
     tester: string[],
 ): boolean {
-    if (tester.length != searchFor.length) {
-        return false
-    }
+    let wasWildcard = false
     for (let index = 0; index < tester.length; index++) {
         const testerPart = tester[index]
-        const searchForPart = searchFor[index]
-        if (searchForPart == "*") {
+        const searchForPart: string | undefined = searchFor[index] ?? undefined
+        if (
+            searchForPart == "*" ||
+            (
+                wasWildcard &&
+                searchForPart == undefined
+            )
+        ) {
+            wasWildcard = true
             continue
         }
+        wasWildcard = false
         if (testerPart != searchForPart) {
             return false
         }

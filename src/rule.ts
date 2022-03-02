@@ -38,7 +38,8 @@ export type Rules = Rule[]
 // create function that loads raw settings from environment and process arguments
 export function loadRawRules(
     environmentPrefix: string | null = "RULE_",
-    useProcessArguments: boolean = true
+    useProcessArguments: boolean = true,
+    verbose: boolean = false
 ): RawRules {
     const rawSettings: RawRules = {}
 
@@ -48,24 +49,28 @@ export function loadRawRules(
 
     // check all environment variables that start with environmentPrefix
     let i = 1
+    verbose && console.log("Load environment vars with '" + environmentPrefix + "' as prefix:")
     if (environmentPrefix) {
         while (true) {
-            const RawRules = process.env[environmentPrefix + i]
-            if (!RawRules) {
+            const rawRule = process.env[environmentPrefix + i]
+            verbose && console.log(" - '" + environmentPrefix + i + "': ", rawRule)
+            if (!rawRule) {
                 break
             }
-            const index = RawRules.indexOf("=")
-            const key = RawRules.substring(0, index)
-            const value = RawRules.substring(index + 1)
+            const index = rawRule.indexOf("=")
+            const key = rawRule.substring(0, index)
+            const value = rawRule.substring(index + 1)
             rawSettings[key] = value
             i++
         }
     }
+    verbose && console.log("Load process arguments:")
     if (useProcessArguments) {
         const args = process.argv.slice(2)
         i = 0
         while (i < args.length) {
             const arg = args[i]
+            verbose && console.log(" - " + i + ": ", arg)
             const index = arg.indexOf("=")
             if (index != -1) {
                 const key = arg.substring(0, index)
@@ -102,7 +107,7 @@ export function getBaseRule(requestSource: string, responseTarget: string): Base
     const path = index != -1 ?
         requestSource.substring(index) :
         "/"
-    const data = parseRequestUrl(host, path, true)
+    const data = parseRequestUrl(host, path)
 
     return {
         ...data,
