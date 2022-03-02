@@ -12,10 +12,6 @@ import { parseRequestUrl } from "./consts"
 
 console.log("CProX| Init...")
 
-if (!env.PRODUCTION) {
-    process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0"
-}
-
 dns.setServers(env.DNS_SERVER_ADDRESSES)
 
 const certPaths = {
@@ -31,12 +27,16 @@ cache.startCheckInterval(1000 * 20, async (p) => {
 })
 
 console.log("CProX| Load rules...")
-const rules = sortRules(parseRules(loadRawRules()))
+const rawRules = loadRawRules("RULE_", true, env.VERBOSE)
+env.VERBOSE && console.log("CProX| RawRules:\n", Object.keys(rawRules))
+const parsedRules = parseRules(rawRules)
+env.VERBOSE && console.log("CProX| ParsedRules:\n", parsedRules.length)
+const rules = sortRules(parsedRules)
 if (rules.length == 0) {
     console.error("No rules found")
     process.exit(0)
 }
-env.VERBOSE && console.log("CProX| Rules:\n", rules)
+env.VERBOSE && console.log("CProX| SortedRules:\n", rules.length)
 console.log("CProX| " + rules.length + " rules found!")
 console.log("CProX| Create resolver...")
 const resolvers = createResolvers(
@@ -47,6 +47,7 @@ const resolvers = createResolvers(
         verbose: env.VERBOSE,
     }
 )
+env.VERBOSE && console.log("CProX| Resolvers:\n", resolvers.length)
 
 console.log("CProX| Create vars...")
 const requestListener: RequestListener = (req, res) => {
