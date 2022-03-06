@@ -73,22 +73,32 @@ Its containers the origin target, rule type and rule target:
 
 ### types
 #### redirect
-The following rule all requests to the host `example.com` on the path `/test` to `https://youtube.com`:  
-`example.com/test=REDIRECT:https://youtube.com`
+The following rule all requests to the host `example.com` on the path `/test` to `https://youtube.com`:
+```md
+example.com/test=REDIRECT:https://youtube.com
+```
 
-The following rule redirects all requests on the path `/redirect` to `https://hub.docker.com`:  
-`*/redirect=REDIRECT:https://hub.docker.com`
+The following rule redirects all requests on the path `/redirect` to `https://hub.docker.com`:
+```md
+*/redirect=REDIRECT:https://hub.docker.com
+```
 
 #### static
-The following rule provides the static content of the `/var/www/html` folder as website if `example.com` is the host address:  
-`example.com=STATIC:/var/www/html`
+The following rule provides the static content of the `/var/www/html` folder as website if `example.com` is the host address:
+```md
+example.com=STATIC:/var/www/html
+```
 
 #### proxy
-The following rule forward `localhost` to `http://localhost:8080`:  
-`localhost=PROXY:localhost:8080`
+The following rule forward `localhost` to `http://localhost:8080`:
+```md
+localhost=PROXY:localhost:8080
+```
 
-The following rule forward `auth.coreunit.net` to a keycloak docker container in the same network that not publish a port:  
-`auth.coreunit.net=PROXY:keycloak:8080`
+The following rule forward `auth.coreunit.net` to a keycloak docker container in the same network that not publish a port:
+```md
+auth.coreunit.net=PROXY:keycloak:8080
+```
 
 ### other examples
  - localhost/youtube=REDIRECT:https://youtube.com/
