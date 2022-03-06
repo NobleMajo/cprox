@@ -26,6 +26,8 @@
   - [pull the image](#pull-the-image)
   - [(or) build the image locally](#or-build-the-image-locally)
   - [run the container](#run-the-container)
+- [static example](#static-example)
+- [environment variables](#environment-variables)
 - [contribution](#contribution)
 
 # about
@@ -149,6 +151,19 @@ docker pull majo418/cprox
 ```sh
 ./start.sh
 ```
+
+# static example
+```sh
+docker run -it --rm 
+    --name cprox 
+    -e "RULE_1=stat.coreunit.net=STATIC:/var/www/html" 
+    -v /var/www/html:/var/www/html 
+    -p 443:443 
+    cprox
+```
+
+# environment variables
+[https://github.com/majo418/cprox/blob/main/src/env/env.ts](https://github.com/majo418/cprox/blob/main/src/env/env.ts)
 
 # contribution
  - 1. fork the project

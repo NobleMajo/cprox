@@ -1,4 +1,4 @@
-FROM node:16 as build
+FROM node:16-alpine as build
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN npm i
 COPY . /app
 RUN npm run build
 
-FROM node:16
+FROM node:16-alpine
 
 RUN npm i -g npm@latest
 

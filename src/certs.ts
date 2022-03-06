@@ -1,23 +1,24 @@
 import path from "path"
 import { FSWatcher, promises as fs, watch } from "fs"
 import os from "os"
+const selfsigned = require("selfsigned")
 
 export interface CertPaths {
     cert: string,
     key: string,
-    ca: string,
+    ca: string | undefined,
 }
 
 export interface Certs {
     cert: string,
     key: string,
-    ca: string,
+    ca: string | undefined,
 }
 
 export interface CertWatcher {
     cert: FSWatcher,
     key: FSWatcher,
-    ca: FSWatcher,
+    ca: FSWatcher | undefined,
 }
 
 export function fixPath(pathString: string): string {
@@ -46,51 +47,23 @@ export function fixPath(pathString: string): string {
     return pathString
 }
 
-export function touch(filePath: string): Promise<void> {
-    return new Promise<void>(async (res, rej) => {
-        try {
-            let stat
-            try {
-                stat = await fs.stat(filePath)
-                if (stat.isFile()) {
-                    return res()
-                }
-            } catch (error) {
-            }
-            const splitedPath: string[] = filePath.split("/")
-            const fileName = splitedPath.pop()
-            if (!fileName) {
-                throw new Error("The path '" + filePath + "' is not a file")
-            }
-            const folder = splitedPath.join("/")
-            try {
-                stat = await fs.stat(folder)
-                if (!stat.isDirectory()) {
-                    await fs.mkdir(folder, { recursive: true })
-                }
-            } catch (error) {
-                await fs.mkdir(folder, { recursive: true })
-            }
-            await fs.writeFile(folder + "/" + fileName, "", "utf8")
-            res()
-        } catch (err: Error | any) {
-            err.stack += "\n" + new Error().stack?.split("\n").slice(1).join("\n")
-            rej(err)
-        }
-    })
-}
-
 export function createCertWatcher(
     certPaths: CertPaths,
     changes: (path: string) => any
 ): Promise<CertWatcher> {
     return new Promise<CertWatcher>(async (res, rej) => {
         try {
-            await Promise.all([
-                touch(certPaths.cert),
-                touch(certPaths.key),
-                touch(certPaths.ca)
-            ])
+            if (certPaths.ca) {
+                try {
+                    const stat = await fs.stat(certPaths.ca)
+                    if (stat.isFile()) {
+                        certPaths.ca = undefined
+                    }
+                } catch (err) {
+                    certPaths.ca = undefined
+                }
+            }
+
             res({
                 cert: watch(
                     certPaths.cert,
@@ -102,11 +75,13 @@ export function createCertWatcher(
                     (event) =>
                         event == "change" ? changes(certPaths.key) : null
                 ),
-                ca: watch(
-                    certPaths.ca,
-                    (event) =>
-                        event == "change" ? changes(certPaths.ca) : null
-                )
+                ca: certPaths.ca ?
+                    watch(
+                        certPaths.ca,
+                        (event) =>
+                            event == "change" ? changes(certPaths.ca as any) : null
+                    ) :
+                    undefined
             })
         } catch (err: Error | any) {
             err.stack += "\n" + new Error().stack?.split("\n").slice(1).join("\n")
@@ -115,18 +90,11 @@ export function createCertWatcher(
     })
 }
 
-
 export async function loadCerts(
     certPaths: CertPaths,
-    ignoreEmptyCert: boolean,
 ): Promise<Certs> {
     return new Promise<Certs>(async (res, rej) => {
         try {
-            await Promise.all([
-                touch(certPaths.cert),
-                touch(certPaths.key),
-                touch(certPaths.ca)
-            ])
             const certPromise = fs.readFile(
                 certPaths.cert,
                 "utf8",
@@ -139,15 +107,35 @@ export async function loadCerts(
             )
                 .then((buf) => buf.toString())
                 .catch(() => "" as string)
-            const caPromise = fs.readFile(
-                certPaths.ca,
-                "utf8",
-            )
-                .then((buf) => buf.toString())
-                .catch(() => "" as string)
+            let caPromise
+            if (certPaths.ca) {
+                caPromise = fs.readFile(
+                    certPaths.ca,
+                    "utf8",
+                )
+                    .then((buf) => buf.toString())
+                    .catch(() => "" as string)
+            }
+
             const cert: string = await certPromise
             const key: string = await keyPromise
-            const ca: string = await caPromise
+            let ca: string | undefined
+            if (caPromise) {
+                ca = await caPromise
+            }
+            if (!cert || cert.length == 0) {
+                console.log("error test")
+                rej(new Error("Can't load public cert file!"))
+                return
+            }
+            if (!key || key.length == 0) {
+                rej(new Error("Can't load private key file!"))
+                return
+            }
+            if (ca && ca.length == 0) {
+                rej(new Error("Can't load ca file!"))
+                return
+            }
             res({
                 cert: cert,
                 key: key,
@@ -157,5 +145,46 @@ export async function loadCerts(
             err.stack += "\n" + new Error().stack?.split("\n").slice(1).join("\n")
             rej(err)
         }
+    })
+}
+
+export function generateSelfSigned(
+    domainName: string,
+    paths: CertPaths,
+): Promise<void> {
+    return new Promise<void>((res, rej) => {
+        selfsigned.generate(
+            null,
+            {
+                name: domainName,
+                value: domainName,
+                keySize: 4092,
+                days: 365,
+                //algorithm: 'sha256',
+                /*extensions: [
+                    {
+                        name: 'basicConstraints',
+                        cA: true,
+                    }
+                ],*/
+                //pkcs7: false,
+                //clientCertificate: false,
+                //clientCertificateCN: 'none'
+            },
+            async (
+                err: Error | any,
+                pems: { [key: string]: any }
+            ) => {
+                if (err) {
+                    rej(err)
+                    return
+                }
+                await Promise.all([
+                    fs.writeFile(paths.cert, pems.cert),
+                    fs.writeFile(paths.key, pems.private),
+                ])
+                res()
+            }
+        )
     })
 }

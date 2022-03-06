@@ -3,7 +3,7 @@ import dns from "dns"
 import env from "./env/envParser"
 import { RequestListener, Server as HttpServer } from "http"
 import { Server as HttpsServer } from "https"
-import { createCertWatcher, fixPath, loadCerts } from "./certs"
+import { createCertWatcher, fixPath, loadCerts, Certs, generateSelfSigned } from './certs';
 import { loadRawRules, parseRules, sortRules } from "./rule"
 import { createResolvers, findResolver } from "./resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
@@ -117,7 +117,7 @@ let httpServerPromise: Promise<HttpServer> | undefined
 let httpsServerPromise: Promise<HttpsServer> | undefined
 let restartPromise: Promise<void> | undefined
 
-const restart: () => Promise<void> = async () => {
+export async function restart(): Promise<void> {
     if (restartPromise) {
         restartPromise = restartPromise.then(() => start())
         return
@@ -129,7 +129,9 @@ const restart: () => Promise<void> = async () => {
     }
 }
 
-const start: () => Promise<void> = async () => {
+export async function start(): Promise<void> {
+    const certs: Certs = await loadCerts(certPaths)
+
     console.log("------------------------------------------------------")
     console.log("CProX| Starting...")
     httpServerPromise = createHttpServer(
@@ -145,7 +147,7 @@ const start: () => Promise<void> = async () => {
         requestListener,
         upgradeListener,
         httpsServer,
-        () => loadCerts(certPaths, env.IGNORE_EMPTY_CERT),
+        certs,
     )
     const [httpServer2, httpsServer2] = await Promise.all([
         httpServerPromise,
@@ -156,5 +158,20 @@ const start: () => Promise<void> = async () => {
     console.log("CProX| Started!")
 }
 
-const watcher = createCertWatcher(certPaths, () => restart())
-restart()
+export async function init() {
+    try {
+        await loadCerts(certPaths)
+    } catch (err) {
+        if (!env.GENERATE_SELFSIGNED_CERT) {
+            throw err
+        }
+        await generateSelfSigned(env.DOMAIN_NAME, certPaths)
+    }
+
+    const watcher = createCertWatcher(
+        certPaths,
+        () => restart()
+    )
+    await restart()
+}
+init()

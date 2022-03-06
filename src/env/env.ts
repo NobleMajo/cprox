@@ -18,7 +18,8 @@ export const defaultEnv = {
     KEY_PATH: "./certs/privkey.pem" as string,
     CA_PATH: "./certs/chain.pem" as string,
 
-    IGNORE_EMPTY_CERT: true as boolean,
+    SELF_SINGED_IF_NEEDED: true as boolean,
+    SELF_SINGED_DOMAIN: "example.com" as string,
 
     STATIC_PATH: "./public" as string,
 }
@@ -31,7 +32,8 @@ export const variablesTypes: typenvy.VariablesTypes = {
     BIND_ADDRESS: [typenvy.TC_STRING],
     CERT_PATH: [typenvy.TC_PATH],
     KEY_PATH: [typenvy.TC_PATH],
-    CA_PATH: [typenvy.TC_PATH],
-    IGNORE_EMPTY_CERT: [typenvy.TC_BOOLEAN],
+    CA_PATH: [typenvy.TC_PATH, typenvy.TC_NULL],
+    SELF_SINGED_IF_NEEDED: [typenvy.TC_BOOLEAN],
+    SELF_SINGED_DOMAIN: [typenvy.TC_STRING],
     STATIC_PATH: [typenvy.TC_PATH],
 }

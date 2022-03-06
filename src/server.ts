@@ -11,7 +11,7 @@ export function createHttpsServer(
     requestListener: RequestListener,
     upgradeListener: UpgradeListener,
     oldServer: HttpsServer | undefined,
-    certCallback: () => Promise<Certs>,
+    certs: Certs,
 ): Promise<HttpsServer> {
     return new Promise(async (res, rej) => {
         try {
@@ -29,7 +29,7 @@ export function createHttpsServer(
 
             const server: HttpsServer = https.createServer(
                 {
-                    ...await certCallback(),
+                    ...certs,
                 },
                 requestListener
             )
