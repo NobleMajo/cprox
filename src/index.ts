@@ -162,16 +162,16 @@ export async function init() {
     try {
         await loadCerts(certPaths)
     } catch (err) {
-        if (!env.GENERATE_SELFSIGNED_CERT) {
+        if (!env.SELF_SINGED_IF_NEEDED) {
             throw err
         }
-        await generateSelfSigned(env.DOMAIN_NAME, certPaths)
+        await generateSelfSigned(env.SELF_SINGED_DOMAIN, certPaths)
     }
 
+    await restart()
     const watcher = createCertWatcher(
         certPaths,
         () => restart()
     )
-    await restart()
 }
 init()

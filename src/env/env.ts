@@ -20,8 +20,6 @@ export const defaultEnv = {
 
     SELF_SINGED_IF_NEEDED: true as boolean,
     SELF_SINGED_DOMAIN: "example.com" as string,
-
-    STATIC_PATH: "./public" as string,
 }
 export const variablesTypes: typenvy.VariablesTypes = {
     PRODUCTION: [typenvy.TC_BOOLEAN],
@@ -35,5 +33,4 @@ export const variablesTypes: typenvy.VariablesTypes = {
     CA_PATH: [typenvy.TC_PATH, typenvy.TC_NULL],
     SELF_SINGED_IF_NEEDED: [typenvy.TC_BOOLEAN],
     SELF_SINGED_DOMAIN: [typenvy.TC_STRING],
-    STATIC_PATH: [typenvy.TC_PATH],
 }

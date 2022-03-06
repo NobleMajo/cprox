@@ -26,8 +26,10 @@
   - [pull the image](#pull-the-image)
   - [(or) build the image locally](#or-build-the-image-locally)
   - [run the container](#run-the-container)
-- [static example](#static-example)
 - [environment variables](#environment-variables)
+- [examples](#examples-3)
+  - [static example](#static-example)
+  - [big example](#big-example)
 - [contribution](#contribution)
 
 # about
@@ -152,18 +154,40 @@ docker pull majo418/cprox
 ./start.sh
 ```
 
-# static example
+# environment variables
+[https://github.com/majo418/cprox/blob/main/src/env/env.ts](https://github.com/majo418/cprox/blob/main/src/env/env.ts)
+
+# examples
+
+## static example
 ```sh
-docker run -it --rm 
-    --name cprox 
-    -e "RULE_1=stat.coreunit.net=STATIC:/var/www/html" 
-    -v /var/www/html:/var/www/html 
-    -p 443:443 
+docker run -it --rm \
+    --name cprox \
+    -e "RULE_1=stat.coreunit.net=STATIC:/var/www/html" \
+    -v /var/www/html:/var/www/html \
+    -p 8443:443 \
     cprox
 ```
 
-# environment variables
-[https://github.com/majo418/cprox/blob/main/src/env/env.ts](https://github.com/majo418/cprox/blob/main/src/env/env.ts)
+## big example
+```sh
+docker run -it --rm \
+    --name cprox \
+    -e "VERBOSE=true" \
+    -e "PRODUCTION=true" \
+    -e "RULE_1=static.test.net=STATIC:/var/www/html" \
+    -e "RULE_2=redirect.test.net=REDIRECT:http://target.test2.net" \
+    -e "RULE_1=proxy.test.net=PROXY:http://my.target.test2.net:8080" \
+    -e "SELF_SINGED_DOMAIN=test.net" \ # -e "SELF_SINGED_IF_NEEDED=false" to disable self singed certs
+    -e "CERT_PATH=/app/certs/pub.pem" \
+    -e "KEY_PATH=/app/certs/key.pem" \
+    -e "CA_PATH=/app/certs/chain.pem" \
+    -v "/var/www/html:/var/www/html" \
+    -v "/home/certs:/app/certs" \
+    -p 443:443 \
+    -p 80:80 \
+    cprox
+```
 
 # contribution
  - 1. fork the project
