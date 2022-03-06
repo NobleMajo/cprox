@@ -11,23 +11,24 @@
 - [CProX](#cprox)
 - [table of contents](#table-of-contents)
 - [about](#about)
-- [configuration](#configuration)
-    - [examples](#examples)
-  - [arguments](#arguments)
-    - [container example](#container-example)
-    - [node example](#node-example)
-  - [variables](#variables)
-    - [examples](#examples-1)
-    - [use](#use)
 - [gettings started](#gettings-started)
   - [requirements](#requirements)
-  - [pull the image](#pull-the-image)
-  - [(or) build the image locally](#or-build-the-image-locally)
-  - [run the container](#run-the-container)
-- [environment variables](#environment-variables)
+  - [run with docker](#run-with-docker)
+- [configuration](#configuration)
+  - [environment variables](#environment-variables)
   - [rules](#rules)
-    - [examples](#examples-2)
-- [examples](#examples-3)
+    - [types](#types)
+      - [redirect](#redirect)
+      - [static](#static)
+      - [proxy](#proxy)
+    - [other examples](#other-examples)
+    - [set rules](#set-rules)
+    - [variables](#variables)
+    - [variable mapping](#variable-mapping)
+    - [wildcards in variables](#wildcards-in-variables)
+    - [use variables](#use-variables)
+    - [examples](#examples)
+- [examples](#examples-1)
   - [static example](#static-example)
   - [big example](#big-example)
 - [contribution](#contribution)
@@ -43,40 +44,83 @@ CProX is easy customizable static, redirct and proxy server.
 docker pull majo418/cprox:latest
 ```
 
+# gettings started
+Checkout the `test.sh` and the `start.sh` scripts to understand what you need to think about and how to start the server.
+
+## requirements
+ - Docker
+ - Linus distribution
+
+## run with docker
+```sh
+docke run -it --rm \
+    -p 80:80 \
+    -p 443:443 \
+    -e "RULE_1=*=REDIRECT:https://start.duckduckgo.com"
+    majo418/cprox
+```
+
 # configuration
-You configure the server via rules.  
-A rule is a key value pair as string that that can be set over the environment variables or via the cli process arguments.
+You configure the server via rules and environment variables.
+## environment variables
+[https://github.com/majo418/cprox/blob/main/src/env/env.ts](https://github.com/majo418/cprox/blob/main/src/env/env.ts)
+## rules
+A rule is a key value pair as string that that can be set over 
+the environment variables or via the cli process arguments.
 
-### examples
+Its containers the origin target, rule type and rule target:  
+`<origin>=<type>:<target>`
+
+### types
+#### redirect
+The following rule all requests to the host `example.com` on the path `/test` to `https://youtube.com`:  
+`example.com/test=REDIRECT:https://youtube.com`
+
+The following rule redirects all requests on the path `/redirect` to `https://hub.docker.com`:  
+`*/redirect=REDIRECT:https://hub.docker.com`
+
+#### static
+The following rule provides the static content of the `/var/www/html` folder as website if `example.com` is the host address:  
+`example.com=STATIC:/var/www/html`
+
+#### proxy
+The following rule forward `localhost` to `http://localhost:8080`:  
+`localhost=PROXY:localhost:8080`
+
+The following rule forward `auth.coreunit.net` to a keycloak docker container in the same network that not publish a port:  
+`auth.coreunit.net=PROXY:keycloak:8080`
+
+### other examples
+ - localhost/youtube=REDIRECT:https://youtube.com/
+ - *.localhost=REDIRECT:https://duckduckgo.com/?t=vivaldi&ia=web&q={-2}
+ - localhost=STATIC:./public
+
+### set rules
+Just pass the rules as arguments to the process:
 ```sh
-RULE_1="localhost/youtube=REDIRECT:https://youtube.com/"
-RULE_2="*.localhost=REDIRECT:https://duckduckgo.com/?t=vivaldi&ia=web&q={-2}"
-RULE_3="localhost=STATIC:./public"
+docke run \
+    (...) \
+    majo418/cprox \
+        <rule1> \
+        <rule2> \
+        <rule3>
 ```
-
-## arguments
-Just pass the rules as arguments to the process.
+Or via environment variables via `RULE_<n>` where `<n>` is the rule number:
 ```sh
-cprox <rule1> <rule2> <rule3> ...
+docke run \
+    (...) \
+    -e "RULE_1=<rule1>" \ 
+    -e "RULE_2=<rule2>" \
+    -e "RULE_3=<rule3>" \
+    majo418/cprox
 ```
-
-### container example
-```sh
-docker run -it --rm --name cprox (...) majo418/cprox "localhost=STATIC:./public"
-```
-
-### node example
-```sh
-node ./dist/index.js "localhost=STATIC:./public"
-```
-
-## variables
+### variables
 The rules support variables.  
 A variables is always a number that is never 0.  
 Numbers greater than 0 represent a part of the requested path splitted by `/`.  
 Numbers lesser than 0 represent a part of the requested domain splitted by `.`.  
 
-### examples
+### variable mapping
 If the requested address is `test.coreunit.net/test/test2/test3` you can get the following variables:
  - `{-3}` = "test"
  - `{-2}` = "coreunit"
@@ -85,6 +129,7 @@ If the requested address is `test.coreunit.net/test/test2/test3` you can get the
  - `{2}` = "test2"
  - `{3}` = "test3"
 
+### wildcards in variables
 That also works with wildcards!
 If the requested address is `*.test.coreunit.net` you can get the following variables:
  - `{-4}` = <the wildcard value>
@@ -92,7 +137,7 @@ If the requested address is `*.test.coreunit.net` you can get the following vari
  - `{-2}` = "coreunit"
  - `{-1}` = "net"
 
-### use
+### use variables
 You can use the variables in the value part of the rules like that:  
 `*.localhost=REDIRECT:https://duckduckgo.com/?q={-2}`  
 If you request `some_test.localhost` you will get redirected to `https://duckduckgo.com/?q=some_test`.
@@ -106,32 +151,6 @@ Here is a example with docker containers:
 `*.con.localhost=PROXY:c_{-3}:8080`  
 If you request `mynginx.con.localhost` the request get proxied to `c_mynginx:8080`.
 
-# gettings started
-Checkout the `test.sh` and the `start.sh` scripts to understand what you need to think about and how to start the server.
-
-## requirements
- - Docker
- - Linus distribution
-
-## pull the image
-```sh
-docker pull majo418/cprox
-```
-## (or) build the image locally
-```sh
-./build.sh
-```
-
-## run the container
-```sh
-./start.sh
-```
-
-# environment variables
-[https://github.com/majo418/cprox/blob/main/src/env/env.ts](https://github.com/majo418/cprox/blob/main/src/env/env.ts)
-
-## rules
-To set a rule, you can set the environment variable `RULE_<n>` where `<n>` is the rule number.
 
 ### examples
 Here some rule examples:
