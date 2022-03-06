@@ -12,14 +12,12 @@
 - [table of contents](#table-of-contents)
 - [about](#about)
 - [configuration](#configuration)
-  - [examples](#examples)
-  - [environment](#environment)
-    - [examples](#examples-1)
+    - [examples](#examples)
   - [arguments](#arguments)
     - [container example](#container-example)
     - [node example](#node-example)
   - [variables](#variables)
-    - [examples](#examples-2)
+    - [examples](#examples-1)
     - [use](#use)
 - [gettings started](#gettings-started)
   - [requirements](#requirements)
@@ -27,6 +25,8 @@
   - [(or) build the image locally](#or-build-the-image-locally)
   - [run the container](#run-the-container)
 - [environment variables](#environment-variables)
+  - [rules](#rules)
+    - [examples](#examples-2)
 - [examples](#examples-3)
   - [static example](#static-example)
   - [big example](#big-example)
@@ -40,39 +40,12 @@
 |  
 CProX is easy customizable static, redirct and proxy server.
 ```sh
-docker pull cprox:latest
+docker pull majo418/cprox:latest
 ```
 
 # configuration
 You configure the server via rules.  
 A rule is a key value pair as string that that can be set over the environment variables or via the cli process arguments.
-
-## examples
-Here some rule examples:
-```sh
- - "localhost/youtube=REDIRECT:https://youtube.com/"
- - "*.localhost=REDIRECT:https://duckduckgo.com/?q={-2}"
- - "localhost=STATIC:./public"
- - "localhost/test=STATIC:./dist"
- - "*.codec.coreunit.net=PROXY:codec_{-4}:8080"
- - "*.test.i.coreunit.net=PROXY:test_{-4}"
- - "coreunit.net=STATIC:/var/www/main"
- - "auth.coreunit.net=PROXY:keycloak_container:8080"
- - "majo.coreunit.net=REDIRECT:https://github.com/majo418"
- - "sysdev.coreunit.net=REDIRECT:https://github.com/sysdev"
- - "codec.coreunit.net=STATIC:/var/www/codec"
- - "i.coreunit.net=STATIC:/var/www/intern"
- - "i.coreunit.net/certs=STATIC:/home/netde/certs"
- - "discord.coreunit.net=REDIRECT:https://discord.gg/pwHNaHRa9W"
- - "teamspeak.coreunit.net=REDIRECT:ts3server://coreunit.net"
- - "github.coreunit.net=REDIRECT:https://github.com/coreunitnet"
- - "/.well-known=STATIC:/home/netde/certs/.well-known"
- - "/test=STATIC:/home/netde/certs/.well-known"
- - "/qweqwesdsdddsdsdsdsde=STATIC:/home/netde/certs/.well-known"
-```
-
-## environment
-To set a rule, you can set the environment variable `RULE_<n>` where `<n>` is the rule number.
 
 ### examples
 ```sh
@@ -89,7 +62,7 @@ cprox <rule1> <rule2> <rule3> ...
 
 ### container example
 ```sh
-docker run -it --rm --name cprox (...) cprox "localhost=STATIC:./public"
+docker run -it --rm --name cprox (...) majo418/cprox "localhost=STATIC:./public"
 ```
 
 ### node example
@@ -157,6 +130,33 @@ docker pull majo418/cprox
 # environment variables
 [https://github.com/majo418/cprox/blob/main/src/env/env.ts](https://github.com/majo418/cprox/blob/main/src/env/env.ts)
 
+## rules
+To set a rule, you can set the environment variable `RULE_<n>` where `<n>` is the rule number.
+
+### examples
+Here some rule examples:
+```sh
+ - "localhost/youtube=REDIRECT:https://youtube.com/"
+ - "*.localhost=REDIRECT:https://duckduckgo.com/?q={-2}"
+ - "localhost=STATIC:./public"
+ - "localhost/test=STATIC:./dist"
+ - "*.codec.coreunit.net=PROXY:codec_{-4}:8080"
+ - "*.test.i.coreunit.net=PROXY:test_{-4}"
+ - "coreunit.net=STATIC:/var/www/main"
+ - "auth.coreunit.net=PROXY:keycloak_container:8080"
+ - "majo.coreunit.net=REDIRECT:https://github.com/majo418"
+ - "sysdev.coreunit.net=REDIRECT:https://github.com/sysdev"
+ - "codec.coreunit.net=STATIC:/var/www/codec"
+ - "i.coreunit.net=STATIC:/var/www/intern"
+ - "i.coreunit.net/certs=STATIC:/home/netde/certs"
+ - "discord.coreunit.net=REDIRECT:https://discord.gg/pwHNaHRa9W"
+ - "teamspeak.coreunit.net=REDIRECT:ts3server://coreunit.net"
+ - "github.coreunit.net=REDIRECT:https://github.com/coreunitnet"
+ - "/.well-known=STATIC:/home/netde/certs/.well-known"
+ - "/test=STATIC:/home/netde/certs/.well-known"
+ - "/qweqwesdsdddsdsdsdsde=STATIC:/home/netde/certs/.well-known"
+```
+
 # examples
 
 ## static example
@@ -166,7 +166,7 @@ docker run -it --rm \
     -e "RULE_1=stat.coreunit.net=STATIC:/var/www/html" \
     -v /var/www/html:/var/www/html \
     -p 8443:443 \
-    cprox
+    majo418/cprox
 ```
 
 ## big example
@@ -186,7 +186,7 @@ docker run -it --rm \
     -v "/home/certs:/app/certs" \
     -p 443:443 \
     -p 80:80 \
-    cprox
+    majo418/cprox
 ```
 
 # contribution
