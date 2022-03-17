@@ -3,8 +3,8 @@ import { Duplex } from "stream"
 import { Rule } from "./rule"
 import HttpProxy from "http-proxy"
 import serveStatic, { RequestHandler } from "serve-static"
-import { CacheHolder } from "./cache"
-import { RequestData } from "./consts"
+import { CacheHolder, NoCache } from "./cache"
+import { RequestData } from './reqdata';
 
 export interface BaseResolver {
     type: "PROXY" | "STATIC" | "REDIRECT",
@@ -41,6 +41,9 @@ export function hostPartsMatch(
     tester: string[],
 ): boolean {
     let wasWildcard = false
+    if (searchFor.length > tester.length) {
+        return false
+    }
     for (let index = 0; index < tester.length; index++) {
         const testerPart = tester[index]
         const searchForPart: string | undefined = searchFor[index] ?? undefined
@@ -287,21 +290,24 @@ export function createResolver(
     }
 }
 
+export const noCache = new NoCache()
 export function createResolvers(
     rules: Rule[],
-    cache: CacheHolder,
+    cache: CacheHolder = noCache,
     options?: CreateResolverOptions,
 ): Resolver[] {
     return rules.map(rule => createResolver(rule, cache, options))
 }
 
+export type FoundResolver = Resolver & { req: RequestData }
+
 export function findResolver(
     data: RequestData,
     resolvers: Resolver[],
-    cache: CacheHolder,
+    cache: CacheHolder = noCache,
     cacheMillis: number = 1000 * 20,
     verbose: boolean = false
-): Resolver | undefined {
+): FoundResolver | undefined {
     if (cache && cache.has(data.host + "$" + data.path)) {
         return cache.get(data.host + "$" + data.path)
     }
@@ -319,7 +325,10 @@ export function findResolver(
             cache?.set(data.host + "$" + data.path, resolver, cacheMillis)
         }
         verbose && console.log("found resolver:", resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
-        return resolver
+        return {
+            ...resolver,
+            req: data
+        }
     }
     verbose && console.log("no resolver found for:", data.host + data.path)
     return undefined

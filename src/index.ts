@@ -8,7 +8,7 @@ import { loadRawRules, parseRules, sortRules } from "./rule"
 import { createResolvers, findResolver } from "./resolver"
 import { createHttpServer, createHttpsServer, UpgradeListener } from "./server"
 import { MemoryCache } from "./cache"
-import { parseRequestUrl } from "./consts"
+import { parseRequestUrl } from "./reqdata"
 
 console.log("CProX| Init...")
 

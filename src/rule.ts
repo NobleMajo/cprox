@@ -1,5 +1,5 @@
 import { fixPath } from "./certs"
-import { parseRequestUrl } from './consts';
+import { parseRequestUrl } from './reqdata';
 
 export interface RawRules {
     [key: string]: string
@@ -288,7 +288,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
 }
 
 export function sortRules(rules: Rules): Rules {
-    return rules.sort((a, b) => {
+    return [...rules].sort((a, b) => {
         if (a.hostParts.length != b.hostParts.length) {
             return b.hostParts.length - a.hostParts.length
         }

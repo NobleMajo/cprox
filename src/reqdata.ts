@@ -43,6 +43,9 @@ export function parseRequestUrl(
     if (pathParts[0] == "") {
         pathParts.shift()
     }
+    if (hostParts[0] == "") {
+        hostParts.shift()
+    }
     return {
         host: host,
         path: path,
