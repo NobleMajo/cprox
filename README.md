@@ -31,6 +31,10 @@
 - [examples](#examples-1)
   - [static example](#static-example)
   - [big example](#big-example)
+- [npm scripts](#npm-scripts)
+  - [use](#use)
+  - [base scripts](#base-scripts)
+  - [watch mode](#watch-mode)
 - [contribution](#contribution)
 
 # about
@@ -218,6 +222,32 @@ docker run -it --rm \
     majo418/cprox
 ```
 
+# npm scripts
+The npm scripts are made for linux but can also work on mac and windows.
+## use
+You can run npm scripts in the project folder like this:
+```sh
+npm run <scriptname>
+```
+Here is an example:
+```sh
+npm run test
+```
+
+## base scripts
+You can find all npm scripts in the `package.json` file.
+This is a list of the most important npm scripts:
+ - test // test the app
+ - build // build the app
+ - exec // run the app
+ - start // build and run the app
+
+## watch mode
+Like this example you can run all npm scripts in watch mode:
+```sh
+npm run start:watch
+```
+
 # contribution
  - 1. fork the project
  - 2. implement your idea
@@ -229,7 +259,6 @@ docker run -it --rm \
 ---
 **cya ;3**  
 *by majo418*
-
 
 
 
