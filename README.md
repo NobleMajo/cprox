@@ -57,7 +57,7 @@ Checkout the `test.sh` and the `start.sh` scripts to understand what you need to
 
 ## run with docker
 ```sh
-docke run -it --rm \
+dockerrun -it --rm \
     -p 80:80 \
     -p 443:443 \
     -e "RULE_1=*=REDIRECT:https://start.duckduckgo.com"
@@ -69,7 +69,7 @@ You configure the server via rules and environment variables.
 ## environment variables
 [https://github.com/majo418/cprox/blob/main/src/env/env.ts](https://github.com/majo418/cprox/blob/main/src/env/env.ts)
 ## rules
-A rule is a key value pair as string that that can be set over 
+A rule is a key value pair as string that can be set over 
 the environment variables or via the cli process arguments.
 
 Its containers the origin target, rule type and rule target:  
@@ -112,7 +112,7 @@ auth.coreunit.net=PROXY:keycloak:8080
 ### set rules
 Just pass the rules as arguments to the process:
 ```sh
-docke run \
+dockerrun \
     (...) \
     majo418/cprox \
         <rule1> \
@@ -121,7 +121,7 @@ docke run \
 ```
 Or via environment variables via `RULE_<n>` where `<n>` is the rule number:
 ```sh
-docke run \
+dockerrun \
     (...) \
     -e "RULE_1=<rule1>" \ 
     -e "RULE_2=<rule2>" \
