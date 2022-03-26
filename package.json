@@ -16,15 +16,15 @@
     "redirect"
   ],
   "scripts": {
+    "tsc": "tsc -p tsconfig.json",
     "start": "ts-node src/index.ts",
     "exec": "node dist/index.js",
-    "tsc": "tsc -p tsconfig.json",
     "test": "mocha --require ts-node/register src/test/**/*.test.ts",
     "build": "npm run tsc",
-    "start:watch": "nodemon --ext \"*.ts\" -w \"${PWD}/src/**/*\" -x \"npm run start\"",
-    "build:watch": "nodemon --ext \"*.ts\" -w \"${PWD}/src/**/*\" -x \"npm run build\"",
-    "test:watch": "nodemon -w \"${PWD}/src/**/*\" -x \"npm run test\"",
-    "exec:watch": "nodemon -w \"${PWD}/dist/**/*\" -x \"npm run exec\"",
+    "start:watch": "nodemon -w ./src -x \"npm run start\" --ext *.ts",
+    "build:watch": "nodemon -w ./src -x \"npm run build\" --ext *.ts",
+    "test:watch": "nodemon -w ./src -x \"npm run test\" --ext *.ts",
+    "exec:watch": "nodemon -w ./dist -x \"npm run exec\"",
     "dev": "npm run start:watch"
   },
   "devDependencies": {
