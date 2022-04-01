@@ -1,11 +1,13 @@
 # CProX
-[![](https://img.shields.io/docker/image-size/majo418/cprox)](https://hub.docker.com/r/majo418/cprox)
-![CI](https://github.com/majo418/cprox/workflows/Image/badge.svg)
+![Docker](https://img.shields.io/docker/image-size/majo418/cprox)
+![CI/CD](https://github.com/majo418/cprox/workflows/Image/badge.svg)
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
-![](https://img.shields.io/badge/dynamic/json?color=darkred&label=Issues&query=open_issues&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
-![](https://img.shields.io/badge/dynamic/json?color=navy&label=Forks&query=forks&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
-![](https://img.shields.io/badge/dynamic/json?color=green&label=Subscribers&query=subscribers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=green&label=watchers&query=watchers&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=yellow&label=stars&query=stargazers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=orange&label=subscribers&query=subscribers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=navy&label=forks&query=forks&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=darkred&label=open%20issues&query=open_issues&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
 
 # table of contents
 - [CProX](#cprox)
@@ -173,13 +175,13 @@ Here some rule examples:
  - "*.localhost=REDIRECT:https://duckduckgo.com/?q={-2}"
  - "localhost=STATIC:./public"
  - "localhost/test=STATIC:./dist"
- - "*.codec.coreunit.net=PROXY:codec_{-4}:8080"
+ - "*.cprox.coreunit.net=PROXY:cprox_{-4}:8080"
  - "*.test.i.coreunit.net=PROXY:test_{-4}"
  - "coreunit.net=STATIC:/var/www/main"
  - "auth.coreunit.net=PROXY:keycloak_container:8080"
  - "majo.coreunit.net=REDIRECT:https://github.com/majo418"
  - "sysdev.coreunit.net=REDIRECT:https://github.com/sysdev"
- - "codec.coreunit.net=STATIC:/var/www/codec"
+ - "cprox.coreunit.net=STATIC:/var/www/cprox"
  - "i.coreunit.net=STATIC:/var/www/intern"
  - "i.coreunit.net/certs=STATIC:/home/netde/certs"
  - "discord.coreunit.net=REDIRECT:https://discord.gg/pwHNaHRa9W"
