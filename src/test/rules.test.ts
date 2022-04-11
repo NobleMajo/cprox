@@ -1,7 +1,7 @@
 import chai from "chai";
 import 'mocha';
 import * as rule from "../rule";
-import { sortRules, RawRules } from '../rule';
+import { RawRules } from '../rule';
 import { expect } from 'chai';
 
 export const exampleRules = [
@@ -9,7 +9,7 @@ export const exampleRules = [
     "example.com=PROXY:example_nginx:18080",
     "majo.test.com=REDIRECT:github.com/majo418",
     "sysdev.test.com=REDIRECT:github.com/sysdev",
-    "*=PROXY:nginx_test:8080",
+    "*=PROXY:https://nginx_test:8080",
     "*.example.com=STATIC:/var/www/html",
     "*.redirect.com=REDIRECT:https://test.test.com",
     "*.test.com=STATIC:/var/www/test",
@@ -62,7 +62,7 @@ describe('loadRawRules()', () => {
             'example.com': 'PROXY:example_nginx:18080',
             'majo.test.com': 'REDIRECT:github.com/majo418',
             'sysdev.test.com': 'REDIRECT:github.com/sysdev',
-            '*': 'PROXY:nginx_test:8080',
+            '*': 'PROXY:https://nginx_test:8080',
             '*.example.com': 'STATIC:/var/www/html',
             '*.redirect.com': 'REDIRECT:https://test.test.com',
             '*.test.com': 'STATIC:/var/www/test'
@@ -251,7 +251,7 @@ describe('parseRules()', () => {
                 raw: 'example.com=PROXY:example_nginx:18080',
                 hostVars: [],
                 pathVars: [],
-                target: ['example_nginx', 18080],
+                target: [false, 'example_nginx', 18080],
                 type: 'PROXY'
             },
             {
@@ -284,10 +284,10 @@ describe('parseRules()', () => {
                 hostParts: ['*'],
                 pathParts: [''],
                 hasWildCard: true,
-                raw: '*=PROXY:nginx_test:8080',
+                raw: '*=PROXY:https://nginx_test:8080',
                 hostVars: [],
                 pathVars: [],
-                target: ['nginx_test', 8080],
+                target: [true, 'nginx_test', 8080],
                 type: 'PROXY'
             },
             {

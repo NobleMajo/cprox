@@ -3,10 +3,9 @@ import 'mocha';
 import * as rule from "../rule";
 import * as resolver from "../resolver";
 import { exampleRules } from './rules.test';
-import { NoCache } from '../cache';
 import { expect } from 'chai';
 import { findResolver } from '../resolver';
-import { parseRequestUrl, RequestData } from '../reqdata';
+import { parseRequestUrl } from '../reqdata';
 
 function clearEnvironment(prefix: string): void {
     for (let index = 1; true; index++) {
@@ -155,10 +154,11 @@ describe('findResolver()', () => {
                     ""
                 ],
                 "hasWildCard": true,
-                "raw": "*=PROXY:nginx_test:8080",
+                "raw": "*=PROXY:https://nginx_test:8080",
                 "hostVars": [],
                 "pathVars": [],
                 "target": [
+                    true,
                     "nginx_test",
                     8080
                 ],
@@ -181,10 +181,11 @@ describe('findResolver()', () => {
                     ""
                 ],
                 "hasWildCard": true,
-                "raw": "*=PROXY:nginx_test:8080",
+                "raw": "*=PROXY:https://nginx_test:8080",
                 "hostVars": [],
                 "pathVars": [],
                 "target": [
+                    true,
                     "nginx_test",
                     8080
                 ],

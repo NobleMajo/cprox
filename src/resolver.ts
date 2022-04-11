@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from "http"
 import { Duplex } from "stream"
-import { Rule } from "./rule"
+import { Rule, ProxyRule, StaticRule, RedirectRule } from './rule';
 import HttpProxy from "http-proxy"
 import serveStatic, { RequestHandler } from "serve-static"
 import { CacheHolder, NoCache } from "./cache"
@@ -24,17 +24,20 @@ export interface BaseResolver {
 
 export interface ProxyResolver extends BaseResolver {
     type: "PROXY",
+    rule: ProxyRule,
 }
 
 export interface StaticResolver extends BaseResolver {
     type: "STATIC",
+    rule: StaticRule,
 }
 
-export interface RedirecResolver extends BaseResolver {
+export interface RedirectResolver extends BaseResolver {
     type: "REDIRECT",
+    rule: RedirectRule
 }
 
-export type Resolver = ProxyResolver | StaticResolver | RedirecResolver
+export type Resolver = ProxyResolver | StaticResolver | RedirectResolver
 
 export function hostPartsMatch(
     searchFor: string[],

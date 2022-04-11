@@ -23,7 +23,7 @@ export interface StaticRule extends BaseRule {
 
 export interface ProxyRule extends BaseRule {
     type: "PROXY"
-    target: SplitedURL // [secure, host, port]
+    target: [boolean, string, number] // [secure, host, port]
 }
 
 export interface RedirectRule extends BaseRule {
@@ -233,9 +233,14 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             }
             index = rawUrl.indexOf("{", endIndex)
         }
+        const target = splitUrl(rawUrl)
         const rule: ProxyRule = {
             ...base,
-            target: splitUrl(rawUrl),
+            target: [
+                target[0] == "https" || target[0] == "wss",
+                target[1],
+                target[2],
+            ],
             type: "PROXY"
         }
         return rule
@@ -288,7 +293,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
         // get variables numbers from domain, and path
         index = domain.indexOf("{")
         let endIndex: number
-        while (index < 0) {
+        while (index > -1) {
             endIndex = domain.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
@@ -306,7 +311,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             index = domain.indexOf("{", endIndex)
         }
         index = path.indexOf("{")
-        while (index < 0) {
+        while (index > -1) {
             endIndex = path.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target path: Unclosed variable: " + responseTarget)
@@ -335,7 +340,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
         // get variables numbers from domain, and path
         let index: number = target.indexOf("{")
         let endIndex: number
-        while (index < 0) {
+        while (index > -1) {
             endIndex = target.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
