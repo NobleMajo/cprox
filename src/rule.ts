@@ -23,12 +23,12 @@ export interface StaticRule extends BaseRule {
 
 export interface ProxyRule extends BaseRule {
     type: "PROXY"
-    target: [string, number] // [host, port]
+    target: SplitedURL // [secure, host, port]
 }
 
 export interface RedirectRule extends BaseRule {
     type: "REDIRECT"
-    target: [string, string, number, string] // [protocol, domain, port, path]
+    target: SplitedURL // [protocol, domain, port, path]
 }
 
 export type Rule = RedirectRule | ProxyRule | StaticRule
@@ -118,33 +118,110 @@ export function getBaseRule(requestSource: string, responseTarget: string): Base
     }
 }
 
+export function splitAtFirst(
+    value: string,
+    searchFor: string
+): [string, string] {
+    if (searchFor.length < 1) {
+        throw new Error("Can't find a string value with a length of '" + searchFor.length + "'!")
+    }
+    const index: number = value.indexOf(searchFor)
+    if (index < 0) {
+        return ["", value]
+    }
+    return [
+        value.substring(0, index),
+        value.substring(index + searchFor.length),
+    ]
+}
+
+export function splitAtLast(
+    value: string,
+    searchFor: string
+): [string, string] {
+    if (searchFor.length < 1) {
+        throw new Error("Can't find a string value with a length of '" + searchFor.length + "'!")
+    }
+    const index: number = value.lastIndexOf(searchFor)
+    if (index < 0) {
+        return [value, ""]
+    }
+    return [
+        value.substring(0, index),
+        value.substring(index + searchFor.length),
+    ]
+}
+
+export type SplitedURL = [string, string, number, string]
+export function splitUrl(
+    target: string,
+    defaultPort: number = 80,
+    defaultProtocol: string = "http",
+): SplitedURL {
+    let protocol: string
+    let host: string
+    let port: number
+    let path: string
+
+    let splitted: [string, string]
+
+    splitted = splitAtFirst(target, "://")
+    if (splitted[0].length == 0) {
+        protocol = defaultProtocol
+    } else {
+        protocol = splitted[0]
+    }
+    splitted = splitAtLast(splitted[1], "/")
+    if (splitted[1].length == 0) {
+        path = "/"
+    } else {
+        path = splitted[1]
+    }
+    if (
+        splitted[0].endsWith("]") &&
+        splitted[0].startsWith("[")
+    ) {
+        host = splitted[0]
+        port = defaultPort
+    } else {
+        splitted = splitAtLast(splitted[0], ":")
+        if (splitted[1].length == 0) {
+            host = splitted[0]
+            port = defaultPort
+        } else {
+            host = splitted[0]
+            port = Number(splitted[1])
+            if (isNaN(port)) {
+                throw new Error(
+                    "Invalid URL: Invalid Port: '" +
+                    splitted[1] +
+                    "'"
+                )
+            }
+        }
+    }
+
+    return [
+        protocol,
+        host,
+        port,
+        path
+    ]
+}
+
 export function parseRule(requestSource: string, responseTarget: string): Rule {
     const base = getBaseRule(requestSource, responseTarget)
     if (responseTarget.startsWith("PROXY:")) {
-        const target = responseTarget.substring(6)
-        let domain: string
-        let port: number
-        // split target into host and port
-        const portStart = target.lastIndexOf(":")
-        if (portStart == -1) {
-            domain = target
-            port = 443
-        } else {
-            domain = target.substring(0, portStart)
-            port = Number(target.substring(portStart + 1))
-            if (isNaN(port)) {
-                throw new Error("Invalid proxy target port:  " + responseTarget)
-            }
-        }
-        // get variables numbers from domain
-        let index: number = domain.indexOf("{")
+        const rawUrl = responseTarget.substring(6)
+
+        let index: number = rawUrl.indexOf("{")
         let endIndex: number
         while (index != -1) {
-            endIndex = domain.indexOf("}", index)
+            endIndex = rawUrl.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
             }
-            const variable = target.substring(index + 1, endIndex)
+            const variable = rawUrl.substring(index + 1, endIndex)
             const variableNumber = Number(variable)
             if (isNaN(variableNumber)) {
                 throw new Error("Invalid proxy target domain: Invalid variable number: " + variable)
@@ -154,11 +231,11 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             } else {
                 base.pathVars.push(variableNumber)
             }
-            index = domain.indexOf("{", endIndex)
+            index = rawUrl.indexOf("{", endIndex)
         }
         const rule: ProxyRule = {
             ...base,
-            target: [domain, port],
+            target: splitUrl(rawUrl),
             type: "PROXY"
         }
         return rule
@@ -211,7 +288,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
         // get variables numbers from domain, and path
         index = domain.indexOf("{")
         let endIndex: number
-        while (index != -1) {
+        while (index < 0) {
             endIndex = domain.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
@@ -229,7 +306,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
             index = domain.indexOf("{", endIndex)
         }
         index = path.indexOf("{")
-        while (index != -1) {
+        while (index < 0) {
             endIndex = path.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target path: Unclosed variable: " + responseTarget)
@@ -258,7 +335,7 @@ export function parseRule(requestSource: string, responseTarget: string): Rule {
         // get variables numbers from domain, and path
         let index: number = target.indexOf("{")
         let endIndex: number
-        while (index != -1) {
+        while (index < 0) {
             endIndex = target.indexOf("}", index)
             if (endIndex == -1) {
                 throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)

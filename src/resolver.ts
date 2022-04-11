@@ -119,7 +119,7 @@ export function createResolver(
             type: "PROXY",
             rule,
             http: (data, req, res) => {
-                let targetHost = rule.target[0]
+                let targetHost = rule.target[1]
                 rule.hostVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
                         "{" + (-v) + "}",
@@ -143,9 +143,16 @@ export function createResolver(
                 if (!proxy) {
                     proxy = new HttpProxy({
                         target: {
+                            protocol: rule.target[0] ? "https:" : "http:",
                             host: targetHost,
-                            port: rule.target[1],
-                        }
+                            port: rule.target[2],
+                        },
+                        ws: true,
+                        secure: false,
+                        changeOrigin: true,
+                        proxyTimeout: 1000 * 16,
+                        timeout: 1000 * 2,
+                        followRedirects: true,
                     })
                     proxy.on("error", settings.proxyErrorHandler)
                     cache.set(
@@ -159,7 +166,7 @@ export function createResolver(
                 proxy.web(req, res)
             },
             ws: (data, req, socket, head) => {
-                let targetHost = rule.target[0]
+                let targetHost = rule.target[1]
                 rule.hostVars.forEach((v: number) => {
                     targetHost = targetHost.replace(
                         "{" + (-v) + "}",
@@ -183,9 +190,16 @@ export function createResolver(
                 if (!proxy) {
                     proxy = new HttpProxy({
                         target: {
+                            protocol: rule.target[0] ? "wss:" : "ws:",
                             host: targetHost,
-                            port: rule.target[1],
+                            port: rule.target[2],
                         },
+                        ws: true,
+                        secure: false,
+                        changeOrigin: true,
+                        proxyTimeout: 1000 * 16,
+                        timeout: 1000 * 2,
+                        followRedirects: true,
                     })
                     proxy.on("error", settings.proxyErrorHandler)
                     cache.set(
