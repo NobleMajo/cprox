@@ -152,10 +152,9 @@ export function createResolver(
                         },
                         ws: true,
                         secure: false,
-                        changeOrigin: true,
                         proxyTimeout: 1000 * 16,
                         timeout: 1000 * 2,
-                        followRedirects: true,
+                        followRedirects: false,
                     })
                     proxy.on("error", settings.proxyErrorHandler)
                     cache.set(
@@ -199,10 +198,9 @@ export function createResolver(
                         },
                         ws: true,
                         secure: false,
-                        changeOrigin: true,
                         proxyTimeout: 1000 * 16,
                         timeout: 1000 * 2,
-                        followRedirects: true,
+                        followRedirects: false,
                     })
                     proxy.on("error", settings.proxyErrorHandler)
                     cache.set(
