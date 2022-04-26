@@ -34,7 +34,7 @@ env.VERBOSE && console.log("CProX| ParsedRules:\n", parsedRules.length)
 const rules = sortRules(parsedRules)
 if (rules.length == 0) {
     console.error("No rules found")
-    process.exit(0)
+    process.exit(1)
 }
 env.VERBOSE && console.log("CProX| SortedRules:\n", rules.length)
 console.log("CProX| " + rules.length + " rules found!")
