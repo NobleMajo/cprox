@@ -59,7 +59,7 @@ Checkout the `test.sh` and the `start.sh` scripts to understand what you need to
 
 ## run with docker
 ```sh
-dockerrun -it --rm \
+docker run -it --rm \
     -p 80:80 \
     -p 443:443 \
     -e "RULE_1=*=REDIRECT:https://start.duckduckgo.com"
@@ -114,7 +114,7 @@ auth.coreunit.net=PROXY:keycloak:8080
 ### set rules
 Just pass the rules as arguments to the process:
 ```sh
-dockerrun \
+docker run \
     (...) \
     majo418/cprox \
         <rule1> \
@@ -123,7 +123,7 @@ dockerrun \
 ```
 Or via environment variables via `RULE_<n>` where `<n>` is the rule number:
 ```sh
-dockerrun \
+docker run \
     (...) \
     -e "RULE_1=<rule1>" \ 
     -e "RULE_2=<rule2>" \

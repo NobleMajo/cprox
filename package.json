@@ -15,6 +15,10 @@
     "static",
     "redirect"
   ],
+  "bin": {
+    "cprox": "./bin/cprox",
+    "cproxdev": "./bin/cproxdev"
+  },
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "start": "ts-node src/index.ts",
