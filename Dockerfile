@@ -18,4 +18,4 @@ VOLUME [ "/app/certs" ]
 EXPOSE 80
 EXPOSE 433
 
-CMD [ "node", "/app/dist/index.js" ]
+ENTRYPOINT [ "node", "/app/dist/index.js" ]
