@@ -4,7 +4,7 @@ CURRENT_SCRIPT=$(realpath $0)
 CURRENT_SCRIPT_DIR=$(dirname $CURRENT_SCRIPT)
 FLEETFORM_DIR="$CURRENT_SCRIPT_DIR/.."
 TSNODE_BIN="$FLEETFORM_DIR/node_modules/.bin/ts-node"
-INDEX_TS="$FLEETFORM_DIR/src/bin.ts"
+INDEX_TS="$FLEETFORM_DIR/src/index.ts"
 
 $TSNODE_BIN \
     $INDEX_TS \
