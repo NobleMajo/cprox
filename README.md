@@ -14,18 +14,26 @@
 - [table of contents](#table-of-contents)
 - [about](#about)
 - [gettings started](#gettings-started)
-  - [requirements](#requirements)
-  - [run with docker](#run-with-docker)
+  - [NodeJS](#nodejs)
+    - [requirements](#requirements)
+    - [install](#install)
+    - [run](#run)
+  - [Docker](#docker)
+    - [requirements](#requirements-1)
+    - [run](#run-1)
 - [configuration](#configuration)
+  - [cli](#cli)
   - [environment variables](#environment-variables)
-  - [rules](#rules)
-    - [types](#types)
-      - [redirect](#redirect)
-      - [static](#static)
-      - [proxy](#proxy)
+- [rules](#rules)
+- [rule order](#rule-order)
+  - [set rules in docker](#set-rules-in-docker)
+  - [set rules for cli tool](#set-rules-for-cli-tool)
+  - [rule types](#rule-types)
+    - [redirect](#redirect)
+    - [static](#static)
+    - [proxy](#proxy)
     - [other examples](#other-examples)
-    - [set rules](#set-rules)
-    - [variables](#variables)
+  - [rule variables](#rule-variables)
     - [variable mapping](#variable-mapping)
     - [wildcards in variables](#wildcards-in-variables)
     - [use variables](#use-variables)
@@ -53,32 +61,119 @@ docker pull majo418/cprox:latest
 # gettings started
 Checkout the `test.sh` and the `start.sh` scripts to understand what you need to think about and how to start the server.
 
-## requirements
- - Docker
- - Linus distribution
+## NodeJS
+### requirements
+ - node v16
+ - Linus distrubotion
 
-## run with docker
+### install
+```sh
+npm i -g cprox
+```
+
+### run
+```sh
+cprox \
+    *=REDIRECT:https://start.duckduckgo.com
+```
+
+## Docker
+
+### requirements
+ - docker cli
+ - Linus distrubotion
+
+### run
 ```sh
 docker run -it --rm \
     -p 80:80 \
     -p 443:443 \
-    -e "RULE_1=*=REDIRECT:https://start.duckduckgo.com"
-    majo418/cprox
+    majo418/cprox \
+        *=REDIRECT:https://start.duckduckgo.com
 ```
 
 # configuration
-You configure the server via rules and environment variables.
+You configure the server with variables and rules.
+That config is adjustable via environment variables or the cli.
+
+## cli
+This is the output of the `cprox -h` cli command.
+You can overwrite the default environment varaible values by using the flags.
+The none flag arugments are the cprox rules.
+```md
+# CPROX #
+
+Usage: cprox [OPTIONS] [ARGUMENTS]
+
+CProX is a easy to configure redirect, proxy and static webserver.
+
+Options:
+  -v, --verbose                         Show basic flag adn target informations.
+  -p, --http-port [number]              Set the http port (default: 80 but disabled if any port is set)
+  -s, --https-port [number]             Set the https port (default: 443 but disabled if any port is set)
+  -t, --trust-all-certs [string]        Trust all certificats on proxy.
+  -b, --bind-host-address [string]      Set the host where the server pind the ports.
+      --self-singed-if-needed [boolean] Generate self singed certificates if not exist.
+  -d, --self-singed-domain [string]     Set the domain name for self singed certificates.
+  -h, --help                            Shows this help output
+
+Details:
+You can use CProX as webserver. It can proxy, redirect and service static content on requests.
+
+! Fleetform | by majo418 | supported by CoreUnit.NET !
+```
+
 ## environment variables
+The environment variables configure the webserver settings like http port, https port, certificat path, certificat name and bound host address.
+The default values can be overwriten by the cli tool flags. 
+You can find the adjustable environment variables here:
 [https://github.com/majo418/cprox/blob/main/src/env/env.ts](https://github.com/majo418/cprox/blob/main/src/env/env.ts)
-## rules
+
+# rules
 A rule is a key value pair as string that can be set over 
 the environment variables or via the cli process arguments.
 
 Its containers the origin target, rule type and rule target:  
 `<origin>=<type>:<target>`
 
-### types
-#### redirect
+# rule order
+CProX automatically sort the rules by this order:
+ - host parts ("." as seperator)
+if equal 
+ - host part size
+if equal 
+ - rule insert order (environemtn varaibles first)
+
+## set rules in docker
+Just pass the rules as arguments to the process:
+```sh
+docker run -p 80:80 majo418/cprox <rule1> <rule2> <rule3>
+```
+Or via environment variables via `RULE_<n>` where `<n>` is the rule number:
+```sh
+docker run \
+    -p 80:80 \
+    -e "RULE_1=<rule1>" \ 
+    -e "RULE_2=<rule2>" \
+    -e "RULE_3=<rule3>" \
+    majo418/cprox
+```
+
+## set rules for cli tool
+Just pass the rules as arguments to the process:
+```sh
+cprox <rule1> <rule2> <rule3>
+```
+Or via environment variables via `RULE_<n>` where `<n>` is the rule number:
+```sh
+export RULE_1="<rule1>"
+export RULE_1="<rule2>"
+export RULE_1="<rule3>"
+cprox
+```
+
+## rule types
+### redirect
 The following rule all requests to the host `example.com` on the path `/test` to `https://youtube.com`:
 ```md
 example.com/test=REDIRECT:https://youtube.com
@@ -89,13 +184,13 @@ The following rule redirects all requests on the path `/redirect` to `https://hu
 */redirect=REDIRECT:https://hub.docker.com
 ```
 
-#### static
+### static
 The following rule provides the static content of the `/var/www/html` folder as website if `example.com` is the host address:
 ```md
 example.com=STATIC:/var/www/html
 ```
 
-#### proxy
+### proxy
 The following rule forward `localhost` to `http://localhost:8080`:
 ```md
 localhost=PROXY:localhost:8080
@@ -111,26 +206,7 @@ auth.coreunit.net=PROXY:keycloak:8080
  - *.localhost=REDIRECT:https://duckduckgo.com/?t=vivaldi&ia=web&q={-2}
  - localhost=STATIC:./public
 
-### set rules
-Just pass the rules as arguments to the process:
-```sh
-docker run \
-    (...) \
-    majo418/cprox \
-        <rule1> \
-        <rule2> \
-        <rule3>
-```
-Or via environment variables via `RULE_<n>` where `<n>` is the rule number:
-```sh
-docker run \
-    (...) \
-    -e "RULE_1=<rule1>" \ 
-    -e "RULE_2=<rule2>" \
-    -e "RULE_3=<rule3>" \
-    majo418/cprox
-```
-### variables
+## rule variables
 The rules support variables.  
 A variables is always a number that is never 0.  
 Numbers greater than 0 represent a part of the requested path splitted by `/`.  
@@ -166,7 +242,6 @@ That also works with proxy and static rules!
 Here is a example with docker containers:  
 `*.con.localhost=PROXY:c_{-3}:8080`  
 If you request `mynginx.con.localhost` the request get proxied to `c_mynginx:8080`.
-
 
 ### examples
 Here some rule examples:
