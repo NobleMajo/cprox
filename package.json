@@ -19,6 +19,10 @@
     "cprox": "./bin/cprox",
     "cproxdev": "./bin/cproxdev"
   },
+  "repository": {
+    "url": "git@github.com:majo418/cprox.git",
+    "type": "git"
+  },
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "start": "ts-node src/index.ts",
@@ -44,6 +48,7 @@
     "typescript": "^4"
   },
   "dependencies": {
+    "cmdy": "^1.2.5",
     "http-proxy": "^1.18.1",
     "selfsigned": "^2.0.0",
     "serve-static": "^1.14.2",

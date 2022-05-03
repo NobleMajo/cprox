@@ -41,7 +41,7 @@ describe('loadRawRules()', () => {
             ]
         )
 
-        const rules = rule.loadRawRules("RULE_", false, false)
+        const rules = rule.loadRawRules([], "RULE_", false, false)
         const ruleKeys = Object.keys(rules)
 
         chai.expect(Object.keys(rules).length).is.equals(1)
@@ -56,7 +56,7 @@ describe('loadRawRules()', () => {
             exampleRules
         )
 
-        const rules = rule.loadRawRules("RULE_", false, false)
+        const rules = rule.loadRawRules([], "RULE_", false, false)
         const expectRules: any = {
             'test.com': 'STATIC:/var/www/test',
             'example.com': 'PROXY:example_nginx:18080',
@@ -197,7 +197,7 @@ describe('parseRules()', () => {
             ]
         )
 
-        const rawRule = rule.loadRawRules("RULE_", false, false)
+        const rawRule = rule.loadRawRules([], "RULE_", false, false)
         const rule2 = rule.parseRules(rawRule)
 
         const expectRule = [
@@ -227,7 +227,7 @@ describe('parseRules()', () => {
             exampleRules
         )
 
-        const rawRules = rule.loadRawRules("RULE_", false, false)
+        const rawRules = rule.loadRawRules([], "RULE_", false, false)
         const rules = rule.parseRules(rawRules)
         const expectRules = [
             {

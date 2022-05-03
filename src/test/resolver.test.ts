@@ -33,7 +33,7 @@ describe('loadRawRules()', () => {
             ]
         )
 
-        const rawRules = rule.loadRawRules("RULE_", false, false)
+        const rawRules = rule.loadRawRules([], "RULE_", false, false)
         const rules = rule.parseRules(rawRules)
         const resolver2 = resolver.createResolvers(rules)
 
@@ -47,7 +47,7 @@ describe('loadRawRules()', () => {
             exampleRules
         )
 
-        const rawRules = rule.loadRawRules("RULE_", false, false)
+        const rawRules = rule.loadRawRules([], "RULE_", false, false)
         const rules = rule.parseRules(rawRules)
         const resolver2 = resolver.createResolvers(rules)
 
@@ -65,7 +65,7 @@ describe('findResolver()', () => {
             ]
         )
 
-        const rawRules = rule.loadRawRules("RULE_", false, false)
+        const rawRules = rule.loadRawRules([], "RULE_", false, false)
         const rules = rule.parseRules(rawRules)
         const resolver2 = resolver.createResolvers(rules)
 
@@ -96,7 +96,7 @@ describe('findResolver()', () => {
             exampleRules
         )
 
-        const rawRules = rule.loadRawRules("RULE_", false, false)
+        const rawRules = rule.loadRawRules([], "RULE_", false, false)
         const rules = rule.parseRules(rawRules)
         const sortedRules = rule.sortRules(rules)
         const resolver2 = resolver.createResolvers(sortedRules)

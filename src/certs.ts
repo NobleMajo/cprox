@@ -153,6 +153,7 @@ export function generateSelfSigned(
     paths: CertPaths,
 ): Promise<void> {
     return new Promise<void>((res, rej) => {
+
         selfsigned.generate(
             null,
             {

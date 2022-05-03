@@ -37,6 +37,7 @@ export type Rules = Rule[]
 
 // create function that loads raw settings from environment and process arguments
 export function loadRawRules(
+    processArgs: string[],
     environmentPrefix: string | null = "RULE_",
     useProcessArguments: boolean = true,
     verbose: boolean = false
@@ -66,10 +67,9 @@ export function loadRawRules(
     }
     verbose && console.log("Load process arguments:")
     if (useProcessArguments) {
-        const args = process.argv.slice(2)
         i = 0
-        while (i < args.length) {
-            const arg = args[i]
+        while (i < processArgs.length) {
+            const arg = processArgs[i]
             verbose && console.log(" - " + i + ": ", arg)
             const index = arg.indexOf("=")
             if (index != -1) {

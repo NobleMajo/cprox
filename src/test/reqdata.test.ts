@@ -1,10 +1,6 @@
 import chai from "chai";
 import 'mocha';
-import * as rule from "../rule";
-import * as resolver from "../resolver";
-import { exampleRules } from './rules.test';
 import { expect } from 'chai';
-import { findResolver } from '../resolver';
 import { parseRequestUrl } from "../reqdata";
 
 describe('parseRequestUrl()', () => {
