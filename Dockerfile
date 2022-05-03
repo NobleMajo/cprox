@@ -1,4 +1,5 @@
 FROM node:16-alpine as build
+LABEL version="1.0" maintainer="Majo Richter <majo418@coreunit.net>"
 WORKDIR /app
 
 RUN npm i -g npm@latest
@@ -8,6 +9,7 @@ COPY . /app
 RUN npm run build
 
 FROM node:16-alpine
+LABEL version="1.0" maintainer="Majo Richter <majo418@coreunit.net>"
 WORKDIR /app
 
 COPY --from=build /app/package*.json /app/
