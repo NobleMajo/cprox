@@ -1,7 +1,7 @@
 {
   "name": "cprox",
   "description": "Node express.js redirect, static serve and proxy server",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "main": "dist/index.js",
   "author": "majo418",
   "license": "MIT",
