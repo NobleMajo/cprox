@@ -87,42 +87,50 @@ const root: CmdDefinition = {
     allowUnknownArgs: true,
     cmds: [],
     exe: async (cmd) => {
+        console.log("tesT: ", cmd)
+
+        const rawSelfSingedDomain = cmd.valueFlags["self-singed-domain"]
         let selfSingedDomain: undefined | string =
-            cmd.valueFlags["self-singed-domain"] &&
-                cmd.valueFlags["self-singed-domain"][0] &&
-                cmd.valueFlags["self-singed-domain"][0].length != 0 ?
-                cmd.valueFlags["self-singed-domain"][0] :
-                cmd.valueFlags["self-singed-domain"][0]
+            rawSelfSingedDomain &&
+                rawSelfSingedDomain[0] &&
+                rawSelfSingedDomain[0].length != 0 ?
+                rawSelfSingedDomain[0] :
+                rawSelfSingedDomain[0]
+        const rawSelfSingedIfNeeded = cmd.valueFlags["self-singed-if-needed"]
         let selfSingedIfNeeded: undefined | boolean =
-            cmd.valueFlags["self-singed-if-needed"] &&
-                cmd.valueFlags["self-singed-if-needed"][0] &&
-                cmd.valueFlags["self-singed-if-needed"][0].length != 0 ?
-                cmd.valueFlags["self-singed-if-needed"][0].toLowerCase() == "true" :
+            rawSelfSingedIfNeeded &&
+                rawSelfSingedIfNeeded[0] &&
+                rawSelfSingedIfNeeded[0].length != 0 ?
+                rawSelfSingedIfNeeded[0].toLowerCase() == "true" :
                 undefined
+        const rawBindHostAddress = cmd.valueFlags["bind-host-address"]
         let bindHostAddress: undefined | string =
-            cmd.valueFlags["bind-host-address"] &&
-                cmd.valueFlags["bind-host-address"][0] &&
-                cmd.valueFlags["bind-host-address"][0].length != 0 ?
-                cmd.valueFlags["bind-host-address"][0] :
+            rawBindHostAddress &&
+                rawBindHostAddress[0] &&
+                rawBindHostAddress[0].length != 0 ?
+                rawBindHostAddress[0] :
                 undefined
+        const rawTrustAllCerts = cmd.valueFlags["trust-all-certs"]
         let trustAllCerts: undefined | boolean =
-            cmd.valueFlags["trust-all-certs"] &&
-                cmd.valueFlags["trust-all-certs"][0] &&
-                cmd.valueFlags["trust-all-certs"][0].length != 0 ?
-                cmd.valueFlags["trust-all-certs"][0].toLowerCase() == "true" :
+            rawTrustAllCerts &&
+                rawTrustAllCerts[0] &&
+                rawTrustAllCerts[0].length != 0 ?
+                rawTrustAllCerts[0].toLowerCase() == "true" :
                 undefined
+        const rawHttpsPort = cmd.valueFlags["https-port"]
         let httpsPort =
-            cmd.valueFlags["https-port"] &&
-                cmd.valueFlags["https-port"][0] ?
-                Number(cmd.valueFlags["https-port"][0]) :
+            rawHttpsPort &&
+                rawHttpsPort[0] ?
+                Number(rawHttpsPort[0]) :
                 NaN
+        const rawHttpPort = cmd.valueFlags["http-port"]
         let httpPort =
-            cmd.valueFlags["http-port"] &&
-                cmd.valueFlags["http-port"][0] ?
-                Number(cmd.valueFlags["http-port"][0]) :
+            rawHttpPort &&
+                rawHttpPort[0] ?
+                Number(rawHttpPort[0]) :
                 NaN
-        let verbose: boolean =
-            cmd.flags.includes("verbose")
+        let verbose: boolean = cmd.flags
+            .includes("verbose")
 
         if (typeof selfSingedDomain == "string") {
             env.SELF_SINGED_DOMAIN = selfSingedDomain
@@ -171,7 +179,6 @@ const root: CmdDefinition = {
             key: fixPath(env.CERT_PATH + "/" + env.KEY_NAME),
             ca: fixPath(env.CERT_PATH + "/" + env.CA_NAME),
         }
-
 
         env.VERBOSE && console.log("CProX| Setup cache...")
         const cache = new MemoryCache()
