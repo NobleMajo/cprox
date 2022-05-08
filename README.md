@@ -108,14 +108,25 @@ Usage: cprox [OPTIONS] [ARGUMENTS]
 CProX is a easy to configure redirect, proxy and static webserver.
 
 Options:
-  -v, --verbose                         Show basic flag adn target informations.
-  -p, --http-port [number]              Set the http port (default: 80 but disabled if any port is set)
-  -s, --https-port [number]             Set the https port (default: 443 but disabled if any port is set)
-  -t, --trust-all-certs [string]        Trust all certificats on proxy.
-  -b, --bind-host-address [string]      Set the host where the server pind the ports.
-      --self-singed-if-needed [boolean] Generate self singed certificates if not exist.
-  -d, --self-singed-domain [string]     Set the domain name for self singed certificates.
-  -h, --help                            Shows this help output
+  -v, --verbose                                  Show basic flag adn target informations.
+  -p, --http-port [number]                       Set the http port (default: 80 but disabled if any port is set)
+  -s, --https-port [number]                      Set the https port (default: 443 but disabled if any port is set)
+  -t, --trust-all-certs                          Trust all certificates on proxy.
+  -b, --bind-host-address [string]               Set the host where the server pind the ports.
+      --disable-self-singed                      Disable generating self singed certificates if not exist.
+  -d, --self-singed-domain [string]              Set the domain name for self singed certificates.
+      --dns-server-address [string]              Add a dns address to the existing dns addresses.
+      --cert-path [string]                       Define the path for the certificates.
+      --cert-name [string]                       Define the name for the certificates cert file.
+      --key-name [string]                        Define the name for the certificates key file.
+      --ca-name [string]                         Define the name for the certificate ca file.
+  -r, --rule [string]                            CProX rules
+      --request-timeout [number | string]        Define the maximum time in miliseconds (or as millisecond calucaltion) for the request content.
+      --connection-timeout [number | string]     Define the maximum time in miliseconds (or as millisecond calucaltion) for a open conneciton.
+      --proxy-reaction-timeout [number | string] Define the maximum time in miliseconds (or as millisecond calucaltion) that the proxy target has to respond.
+      --proxy-verify-certificate                 Proxy verify target certificates
+      --proxy-follow-redirects                   Proxy follow redirects
+  -h, --help                                     Shows this help output
 
 Details:
 You can use CProX as webserver. It can proxy, redirect and service static content on requests.
