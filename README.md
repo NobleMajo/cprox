@@ -72,9 +72,21 @@ npm i -g cprox
 ```
 
 ### run
+Run as redirect server:
 ```sh
-cprox \
-    *=REDIRECT:https://start.duckduckgo.com
+cprox *=REDIRECT:https://start.duckduckgo.com
+```
+Run as static file server:
+```sh
+cprox *=STATIC:/var/www/html
+```
+Run as proxy server:
+```sh
+cprox *=PROXY:http://127.0.0.1:8080
+```
+Help:
+```sh
+cprox -h
 ```
 
 ## Docker
@@ -85,11 +97,11 @@ cprox \
 
 ### run
 ```sh
-docker run -it --rm \
-    -p 80:80 \
-    -p 443:443 \
-    majo418/cprox \
-        *=REDIRECT:https://start.duckduckgo.com
+docker run -it --rm -p 80:80 -p 443:443 majo418/cprox *=REDIRECT:https://start.duckduckgo.com
+```
+Help:
+```sh
+docker run -it --rm majo418/cprox -h
 ```
 
 # configuration
