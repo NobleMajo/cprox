@@ -22,21 +22,40 @@ export const defaultEnv = {
     KEY_NAME: "privkey.pem" as string,
     CA_NAME: "chain.pem" as string | null,
 
-    SELF_SINGED_IF_NEEDED: true as boolean,
+    DISABLE_SELF_SINGED: false as boolean,
     SELF_SINGED_DOMAIN: "example.com" as string,
+
+    REQUEST_TIMEOUT: 1000 * 3 as number,
+    CONNECTION_TIMEOUT: 1000 * 60 * 2 as number,
+
+    PROXY_REACTION_TIMEOUT: 1000 * 3 as number,
+    PROXY_VERIFY_CERTIFICATE: false as boolean,
+    PROXY_FOLLOW_REDIRECTS: false as boolean,
 }
+
 export const variablesTypes: typenvy.VariablesTypes = {
     PRODUCTION: [typenvy.TC_BOOLEAN],
     VERBOSE: [typenvy.TC_BOOLEAN],
     TRUST_ALL_CERTS: [typenvy.TC_BOOLEAN],
-    DNS_SERVER_ADDRESSES: [typenvy.TC_ARRAY],
-    HTTP_PORT: [typenvy.TC_NUMBER, typenvy.TC_NULL],
-    HTTPS_PORT: [typenvy.TC_NUMBER, typenvy.TC_NULL],
+
+    DNS_SERVER_ADDRESSES: [typenvy.TC_JSON_ARRAY, typenvy.TC_CSV_ARRAY],
+
+    HTTP_PORT: [typenvy.TC_PORT, typenvy.TC_NULL],
+    HTTPS_PORT: [typenvy.TC_PORT, typenvy.TC_NULL],
     BIND_ADDRESS: [typenvy.TC_STRING],
+
     CERT_PATH: [typenvy.TC_PATH],
     CERT_NAME: [typenvy.TC_STRING],
     KEY_NAME: [typenvy.TC_STRING],
     CA_NAME: [typenvy.TC_STRING, typenvy.TC_NULL],
-    SELF_SINGED_IF_NEEDED: [typenvy.TC_BOOLEAN],
+
+    DISABLE_SELF_SINGED: [typenvy.TC_BOOLEAN],
     SELF_SINGED_DOMAIN: [typenvy.TC_STRING],
+
+    REQUEST_TIMEOUT: [typenvy.TC_CALCULATION, typenvy.TC_NUMBER],
+    CONNECTION_TIMEOUT: [typenvy.TC_CALCULATION, typenvy.TC_NUMBER],
+
+    PROXY_REACTION_TIMEOUT: [typenvy.TC_CALCULATION, typenvy.TC_NUMBER],
+    PROXY_VERIFY_CERTIFICATE: [typenvy.TC_BOOLEAN],
+    PROXY_FOLLOW_REDIRECTS: [typenvy.TC_BOOLEAN],
 }

@@ -1,4 +1,4 @@
-import { Flag, CmdDefinition, CmdParserOptions } from "cmdy"
+import { CmdDefinition, CmdParserOptions, BoolFlag, ValueFlag } from "cmdy"
 import env from "../env/envParser"
 import dns from "dns"
 import { RequestListener, Server as HttpServer } from "http"
@@ -10,67 +10,231 @@ import { createHttpServer, createHttpsServer, UpgradeListener } from "../server"
 import { CacheHolder, MemoryCache } from "../cache"
 import { parseRequestUrl } from "../reqdata"
 import { promises as fs } from "fs"
+import { cmdFlag } from "typenvy"
+import { variablesTypes } from "../env/env"
 
-export const verbose: Flag = {
-    name: "verbose",
-    shorthand: "v",
-    description: "Show basic flag adn target informations.",
-}
+export const verbose: BoolFlag = cmdFlag(
+    {
+        name: "verbose",
+        shorthand: "v",
+        description: "Show basic flag adn target informations.",
+    },
+    "VERBOSE",
+    variablesTypes,
+    env
+)
 
-export const httpPort: Flag = {
-    name: "http-port",
-    alias: ["http"],
-    shorthand: "p",
-    types: ["number"],
-    description: "Set the http port (default: 80 but disabled if any port is set)",
-}
-
-export const httpsPort: Flag = {
-    name: "https-port",
-    alias: ["https"],
-    shorthand: "s",
-    types: ["number"],
-    description: "Set the https port (default: 443 but disabled if any port is set)",
-}
-
-export const trustAllCerts: Flag = {
-    name: "trust-all-certs",
-    alias: ["t-a-c", "tac"],
-    shorthand: "t",
+export const rules: ValueFlag = {
+    name: "rule",
+    alias: ["rul"],
+    shorthand: "r",
     types: ["string"],
-    description: "Trust all certificats on proxy.",
+    multiValues: true,
+    description: "CProX rules",
 }
 
-export const bindHostAddress: Flag = {
-    name: "bind-host-address",
-    alias: ["b-h-a", "bha", "bind-host-address"],
-    shorthand: "b",
-    types: ["string"],
-    description: "Set the host where the server pind the ports.",
-}
+export const httpPort: ValueFlag = cmdFlag(
+    {
+        name: "http-port",
+        alias: ["http"],
+        shorthand: "p",
+        types: ["number"],
+        description: "Set the http port (default: 80 but disabled if any port is set)",
+    }
+    ,
+    "HTTP_PORT",
+    variablesTypes,
+    env
+)
 
-export const selfSingedIfNeeded: Flag = {
-    name: "self-singed-if-needed",
-    alias: ["ssin", "s-s-i-n"],
-    types: ["boolean"],
-    description: "Generate self singed certificates if not exist.",
-}
+export const httpsPort: ValueFlag = cmdFlag(
+    {
+        name: "https-port",
+        alias: ["https"],
+        shorthand: "s",
+        types: ["number"],
+        description: "Set the https port (default: 443 but disabled if any port is set)",
+    },
+    "HTTPS_PORT",
+    variablesTypes,
+    env
+)
 
-export const selfSingedDomain: Flag = {
-    name: "self-singed-domain",
-    alias: ["selfsingeddomain", "s-s-d", "ssd", "domain", "dom"],
-    shorthand: "d",
-    types: ["string"],
-    description: "Set the domain name for self singed certificates.",
-}
+export const trustAllCerts: BoolFlag = cmdFlag(
+    {
+        name: "trust-all-certs",
+        alias: ["t-a-c", "tac"],
+        shorthand: "t",
+        description: "Trust all certificates on proxy.",
+    },
+    "TRUST_ALL_CERTS",
+    variablesTypes,
+    env
+)
 
-export const certPath: Flag = {
-    name: "cert-path",
-    alias: ["certpath", "cp"],
-    shorthand: "c",
-    types: ["string"],
-    description: "Define the path for the certificats.",
-}
+export const disableSelfSinged: BoolFlag = cmdFlag(
+    {
+        name: "disable-self-singed",
+        alias: ["disableselfsinged", "d-s-s", "dss"],
+        description: "Disable generating self singed certificates if not exist.",
+    },
+    "DISABLE_SELF_SINGED",
+    variablesTypes,
+    env
+)
+
+export const bindHostAddress: ValueFlag = cmdFlag(
+    {
+        name: "bind-host-address",
+        alias: ["b-h-a", "bha", "bind-host-address"],
+        shorthand: "b",
+        types: ["string"],
+        description: "Set the host where the server pind the ports.",
+    },
+    "BIND_ADDRESS",
+    variablesTypes,
+    env
+)
+
+export const dnsServerAddress: ValueFlag = cmdFlag(
+    {
+        name: "dns-server-address",
+        alias: ["dns-server", "dnsserveraddress", "dns-address", "dns"],
+        types: ["string"],
+        description: "Add a dns address to the existing dns addresses.",
+        multiValues: true,
+    },
+    "DNS_SERVER_ADDRESSES",
+    variablesTypes,
+    env
+)
+
+export const selfSingedDomain: ValueFlag = cmdFlag(
+    {
+        name: "self-singed-domain",
+        alias: ["selfsingeddomain", "s-s-d", "ssd", "domain", "dom"],
+        shorthand: "d",
+        types: ["string"],
+        description: "Set the domain name for self singed certificates.",
+    },
+    "SELF_SINGED_DOMAIN",
+    variablesTypes,
+    env
+)
+
+export const certPath: ValueFlag = cmdFlag(
+    {
+        name: "cert-path",
+        alias: ["certpath"],
+        types: ["string"],
+        description: "Define the path for the certificates.",
+    },
+    "CERT_PATH",
+    variablesTypes,
+    env
+)
+
+export const certName: ValueFlag = cmdFlag(
+    {
+        name: "cert-name",
+        alias: ["certname"],
+        types: ["string"],
+        description: "Define the name for the certificates cert file.",
+    },
+    "CERT_NAME",
+    variablesTypes,
+    env
+)
+
+export const keyName: ValueFlag = cmdFlag(
+    {
+        name: "key-name",
+        alias: ["keyname"],
+        types: ["string"],
+        description: "Define the name for the certificates key file.",
+    },
+    "KEY_NAME",
+    variablesTypes,
+    env
+)
+export const caName: ValueFlag = cmdFlag(
+    {
+        name: "ca-name",
+        alias: ["caname"],
+        types: ["string"],
+        description: "Define the name for the certificate ca file.",
+    },
+    "CA_NAME",
+    variablesTypes,
+    env
+)
+
+export const requestTimeout: ValueFlag = cmdFlag(
+    {
+        name: "request-timeout",
+        alias: ["requesttimeout", "requestt", "rtimeout"],
+        types: ["number", "string"],
+        description: "Define the maximum time in miliseconds (or as millisecond calucaltion) for the request content.",
+    },
+    "REQUEST_TIMEOUT",
+    variablesTypes,
+    env
+)
+
+export const connectionTimeout: ValueFlag = cmdFlag(
+    {
+        name: "connection-timeout",
+        alias: ["connect-timeout", "connecttimeout", "connectt", "connectiontimeout", "connectiont", "ctimeout"],
+        types: ["number", "string"],
+        description: "Define the maximum time in miliseconds (or as millisecond calucaltion) for a open conneciton.",
+    },
+    "CONNECTION_TIMEOUT",
+    variablesTypes,
+    env
+)
+
+export const proxyReactionTimeout: ValueFlag = cmdFlag(
+    {
+        name: "proxy-reaction-timeout",
+        alias: ["proxyreactiontimeout", "prt"],
+        types: ["number", "string"],
+        description: "Define the maximum time in miliseconds (or as millisecond calucaltion) that the proxy target has to respond.",
+    },
+    "PROXY_REACTION_TIMEOUT",
+    variablesTypes,
+    env
+)
+
+export const proxyVerifyCertificate: BoolFlag = cmdFlag(
+    {
+        name: "proxy-verify-certificate",
+        alias: ["proxyverifycertificate", "pvc"],
+        description: "Proxy verify target certificates",
+    },
+    "PROXY_VERIFY_CERTIFICATE",
+    variablesTypes,
+    env
+)
+
+export const proxyFollowRedirects: BoolFlag = cmdFlag(
+    {
+        name: "proxy-follow-redirects",
+        alias: ["proxyfollowredirects", "pfr"],
+        description: "Proxy follow redirects",
+    },
+    "PROXY_FOLLOW_REDIRECTS",
+    variablesTypes,
+    env
+)
+
+/*
+REQUEST_TIMEOUT: 1000 * 3 as number,
+CONNECTION_TIMEOUT: 1000 * 60 * 2 as number,
+
+PROXY_VERIFY_CERTIFICAT: false as boolean,
+PROXY_REACTION_TIMEOUT: 1000 * 3 as number,
+PROXY_FOLLOW_REDIRECTS: false as boolean,
+*/
 
 const root: CmdDefinition = {
     name: "cprox",
@@ -81,72 +245,28 @@ const root: CmdDefinition = {
         httpsPort,
         trustAllCerts,
         bindHostAddress,
-        selfSingedIfNeeded,
+        disableSelfSinged,
         selfSingedDomain,
+        dnsServerAddress,
+        certPath,
+        certName,
+        keyName,
+        caName,
+        rules,
+        requestTimeout,
+        connectionTimeout,
+        proxyReactionTimeout,
+        proxyVerifyCertificate,
+        proxyFollowRedirects,
     ],
     allowUnknownArgs: true,
     cmds: [],
     exe: async (cmd) => {
-        console.log("tesT: ", cmd)
+        console.debug("ENV: ", env)
 
-        const rawSelfSingedDomain = cmd.valueFlags["self-singed-domain"]
-        let selfSingedDomain: undefined | string =
-            rawSelfSingedDomain &&
-                rawSelfSingedDomain[0] &&
-                rawSelfSingedDomain[0].length != 0 ?
-                rawSelfSingedDomain[0] :
-                rawSelfSingedDomain[0]
-        const rawSelfSingedIfNeeded = cmd.valueFlags["self-singed-if-needed"]
-        let selfSingedIfNeeded: undefined | boolean =
-            rawSelfSingedIfNeeded &&
-                rawSelfSingedIfNeeded[0] &&
-                rawSelfSingedIfNeeded[0].length != 0 ?
-                rawSelfSingedIfNeeded[0].toLowerCase() == "true" :
-                undefined
-        const rawBindHostAddress = cmd.valueFlags["bind-host-address"]
-        let bindHostAddress: undefined | string =
-            rawBindHostAddress &&
-                rawBindHostAddress[0] &&
-                rawBindHostAddress[0].length != 0 ?
-                rawBindHostAddress[0] :
-                undefined
-        const rawTrustAllCerts = cmd.valueFlags["trust-all-certs"]
-        let trustAllCerts: undefined | boolean =
-            rawTrustAllCerts &&
-                rawTrustAllCerts[0] &&
-                rawTrustAllCerts[0].length != 0 ?
-                rawTrustAllCerts[0].toLowerCase() == "true" :
-                undefined
-        const rawHttpsPort = cmd.valueFlags["https-port"]
-        let httpsPort =
-            rawHttpsPort &&
-                rawHttpsPort[0] ?
-                Number(rawHttpsPort[0]) :
-                NaN
-        const rawHttpPort = cmd.valueFlags["http-port"]
-        let httpPort =
-            rawHttpPort &&
-                rawHttpPort[0] ?
-                Number(rawHttpPort[0]) :
-                NaN
-        let verbose: boolean = cmd.flags
-            .includes("verbose")
+        let httpsPort = Number(cmd.valueFlags["https-port"])
+        let httpPort = Number(cmd.valueFlags["http-port"])
 
-        if (typeof selfSingedDomain == "string") {
-            env.SELF_SINGED_DOMAIN = selfSingedDomain
-        }
-        if (typeof selfSingedIfNeeded == "boolean") {
-            env.SELF_SINGED_IF_NEEDED = selfSingedIfNeeded
-        }
-        if (typeof trustAllCerts == "boolean") {
-            env.TRUST_ALL_CERTS = trustAllCerts
-        }
-        if (typeof bindHostAddress == "string") {
-            env.BIND_ADDRESS = bindHostAddress
-        }
-        if (verbose) {
-            env.VERBOSE = true
-        }
         if (
             !isNaN(httpsPort) ||
             !isNaN(httpPort)
@@ -188,7 +308,16 @@ const root: CmdDefinition = {
         })
 
         env.VERBOSE && console.log("CProX| Load rules...")
-        const rawRules = loadRawRules(cmd.args, "RULE_", true, env.VERBOSE)
+
+        const rawRules = loadRawRules(
+            [
+                ...cmd.arrayFlags.rule,
+                ...cmd.args
+            ],
+            "RULE_",
+            true,
+            env.VERBOSE
+        )
 
         env.VERBOSE && console.log("CProX| RawRules:\n", Object.keys(rawRules))
         const parsedRules = parseRules(rawRules)
@@ -196,7 +325,8 @@ const root: CmdDefinition = {
         env.VERBOSE && console.log("CProX| ParsedRules:\n", parsedRules.length)
         const rules = sortRules(parsedRules)
         if (rules.length == 0) {
-            console.error("No rules found")
+            console.error("No rules found!")
+            console.error("Try to run this command with '--help' flag.")
             process.exit(1)
         }
 
@@ -349,7 +479,7 @@ export class CProX {
             try {
                 await loadCerts(this.certPaths)
             } catch (err) {
-                if (!env.SELF_SINGED_IF_NEEDED) {
+                if (env.DISABLE_SELF_SINGED) {
                     throw err
                 }
                 await fs.mkdir(env.CERT_PATH, {
