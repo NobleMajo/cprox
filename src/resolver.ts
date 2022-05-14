@@ -5,6 +5,7 @@ import HttpProxy from "http-proxy"
 import serveStatic, { RequestHandler } from "serve-static"
 import { CacheHolder, NoCache } from "./cache"
 import { RequestData } from './reqdata';
+import env from "./env/envParser"
 
 export interface BaseResolver {
     type: "PROXY" | "STATIC" | "REDIRECT",
@@ -151,10 +152,10 @@ export function createResolver(
                             port: rule.target[2],
                         },
                         ws: true,
-                        secure: false,
-                        proxyTimeout: 1000 * 16,
-                        timeout: 1000 * 2,
-                        followRedirects: false,
+                        secure: env.PROXY_VERIFY_CERTIFICATE,
+                        proxyTimeout: env.PROXY_REACTION_TIMEOUT,
+                        timeout: env.CONNECTION_TIMEOUT,
+                        followRedirects: env.PROXY_FOLLOW_REDIRECTS,
                     })
                     proxy.on("error", settings.proxyErrorHandler)
                     cache.set(
@@ -197,10 +198,10 @@ export function createResolver(
                             port: rule.target[2],
                         },
                         ws: true,
-                        secure: false,
-                        proxyTimeout: 1000 * 16,
-                        timeout: 1000 * 2,
-                        followRedirects: false,
+                        secure: env.PROXY_VERIFY_CERTIFICATE,
+                        proxyTimeout: env.PROXY_REACTION_TIMEOUT,
+                        timeout: env.CONNECTION_TIMEOUT,
+                        followRedirects: env.PROXY_FOLLOW_REDIRECTS,
                     })
                     proxy.on("error", settings.proxyErrorHandler)
                     cache.set(
@@ -275,7 +276,7 @@ export function createResolver(
                     staticServer = serveStatic(
                         rule.target,
                         {
-                            index: settings.staticIndexFiles
+                            index: settings.staticIndexFiles,
                         }
                     )
                     cache.set(
