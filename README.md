@@ -41,6 +41,10 @@
 - [examples](#examples-1)
   - [static example](#static-example)
   - [big example](#big-example)
+- [Load balancing](#load-balancing)
+  - [Define targets](#define-targets)
+  - [Redirect](#redirect-1)
+  - [Proxy](#proxy-1)
 - [npm scripts](#npm-scripts)
   - [use](#use)
   - [base scripts](#base-scripts)
@@ -321,6 +325,49 @@ docker run -it --rm \
     -p 80:80 \
     majo418/cprox
 ```
+
+# Load balancing
+A feature of CProX is load balancing.
+This is available for `REDIRECT` and `PROXY` rules.
+
+## Define targets
+You define multiple load balancer targets using commas.  
+Example:
+```
+*=REDIRECT:https://start.duckduckgo.com,https://startpage.com,https://google.de
+```
+
+## Redirect
+If you define multiple targets in a `REDIRECT` rule, CProx will use the available targets alternately.  
+Example:
+```
+*=REDIRECT:https://start.duckduckgo.com,https://startpage.com,https://google.de
+```
+
+Response Location header example:
+1. Location: https://start.duckduckgo.com
+2. Location: https://startpage.com
+3. Location: https://google.de
+4. Location: https://start.duckduckgo.com
+
+## Proxy
+If you define multiple targets in a `PROXY` rule, CProx will use the available targets alternately.
+**But**, if there are still open proxy connections, CProX will use the least used target for new incomming request.
+Example:
+```
+*=PROXY:http://127.0.0.1:8080,http://127.0.0.1:8081,http://127.0.0.1:8082
+```
+
+Request proxy target example:
+1. Open: http://127.0.0.1:8080
+2. Open: http://127.0.0.1:8081
+3. Open: http://127.0.0.1:8082
+4. Open: http://127.0.0.1:8080
+5. Open: http://127.0.0.1:8081
+7. Close: http://127.0.0.1:8081
+8. Close: http://127.0.0.1:8081
+9. Open: http://127.0.0.1:8081
+10. Open: http://127.0.0.1:8081
 
 # npm scripts
 The npm scripts are made for linux but can also work on mac and windows.
