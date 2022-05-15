@@ -23,12 +23,12 @@ export interface StaticRule extends BaseRule {
 
 export interface ProxyRule extends BaseRule {
     type: "PROXY"
-    target: [boolean, string, number] // [secure, host, port]
+    target: ProxyTarget[]
 }
 
 export interface RedirectRule extends BaseRule {
     type: "REDIRECT"
-    target: SplitedURL // [protocol, domain, port, path]
+    target: SplitedURL[]
 }
 
 export type Rule = RedirectRule | ProxyRule | StaticRule
@@ -152,12 +152,35 @@ export function splitAtLast(
     ]
 }
 
+export type ProxyTarget = [boolean, string, number]
 export type SplitedURL = [string, string, number, string]
 export function splitUrl(
+    baseRule: BaseRule,
     target: string,
+    defaultProtocol: string = "https",
     defaultPort: number = 80,
-    defaultProtocol: string = "http",
+    defaultSecuresPort: number = 443,
 ): SplitedURL {
+    let index: number = target.indexOf("{")
+    let endIndex: number
+    while (index != -1) {
+        endIndex = target.indexOf("}", index)
+        if (endIndex == -1) {
+            throw new Error("Invalid target: Unclosed variable: " + target)
+        }
+        const variable = target.substring(index + 1, endIndex)
+        const variableNumber = Number(variable)
+        if (isNaN(variableNumber)) {
+            throw new Error("Invalid target: Invalid variable number: " + variable)
+        }
+        if (variableNumber < 0) {
+            baseRule.hostVars.push(-variableNumber)
+        } else {
+            baseRule.pathVars.push(variableNumber)
+        }
+        index = target.indexOf("{", endIndex)
+    }
+
     let protocol: string
     let host: string
     let port: number
@@ -171,35 +194,53 @@ export function splitUrl(
     } else {
         protocol = splitted[0]
     }
-    splitted = splitAtLast(splitted[1], "/")
+    if (!splitted[1].includes("/")) {
+        splitted[1] = splitted[1] + "/"
+    }
+    splitted = splitAtFirst(splitted[1], "/")
     if (splitted[1].length == 0) {
         path = "/"
     } else {
-        path = splitted[1]
+        path = "/" + splitted[1]
     }
     if (
         splitted[0].endsWith("]") &&
         splitted[0].startsWith("[")
     ) {
         host = splitted[0]
-        port = defaultPort
+        port = protocol == "https" || protocol == "wss" ? defaultSecuresPort : defaultPort
     } else {
         splitted = splitAtLast(splitted[0], ":")
         if (splitted[1].length == 0) {
             host = splitted[0]
-            port = defaultPort
+            port = protocol == "https" || protocol == "wss" ? defaultSecuresPort : defaultPort
         } else {
             host = splitted[0]
             port = Number(splitted[1])
-            if (isNaN(port)) {
-                throw new Error(
-                    "Invalid URL: Invalid Port: '" +
-                    splitted[1] +
-                    "'"
-                )
-            }
         }
     }
+
+    if (
+        isNaN(port) ||
+        !(port > -1 && port < 65536)
+    ) {
+        throw new Error(
+            "Invalid URL: Invalid Port: '" +
+            splitted[1] +
+            "' (just 0-65536 is allowed)"
+        )
+    }
+
+    host.split(".").forEach((hostPart) => {
+        if (hostPart.length < 1 && hostPart != "*" && !/^[a-zA-Z0-9-.]+$/.test(hostPart)) {
+            throw new Error("Invalid Host: " + hostPart + " \nresponseTarget: " + target + "\nResult: " + JSON.stringify([
+                protocol,
+                host,
+                port,
+                path
+            ], null, 4))
+        }
+    })
 
     return [
         protocol,
@@ -209,158 +250,62 @@ export function splitUrl(
     ]
 }
 
-export function parseRule(requestSource: string, responseTarget: string): Rule {
-    const base = getBaseRule(requestSource, responseTarget)
-    if (responseTarget.startsWith("PROXY:")) {
-        const rawUrl = responseTarget.substring(6)
+export function splitUrls(
+    baseRule: BaseRule,
+    target: string,
+    defaultProtocol: string = "https",
+    defaultPort: number = 80,
+    defaultSecuresPort: number = 443,
+): SplitedURL[] {
+    return target.split(",").map(
+        (v) => splitUrl(
+            baseRule,
+            v,
+            defaultProtocol,
+            defaultPort,
+            defaultSecuresPort,
+        )
+    )
+}
 
-        let index: number = rawUrl.indexOf("{")
-        let endIndex: number
-        while (index != -1) {
-            endIndex = rawUrl.indexOf("}", index)
-            if (endIndex == -1) {
-                throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
-            }
-            const variable = rawUrl.substring(index + 1, endIndex)
-            const variableNumber = Number(variable)
-            if (isNaN(variableNumber)) {
-                throw new Error("Invalid proxy target domain: Invalid variable number: " + variable)
-            }
-            if (variableNumber < 0) {
-                base.hostVars.push(-variableNumber)
-            } else {
-                base.pathVars.push(variableNumber)
-            }
-            index = rawUrl.indexOf("{", endIndex)
-        }
-        const target = splitUrl(rawUrl)
+export function parseRule(requestSource: string, responseTarget: string): Rule {
+    const baseRule = getBaseRule(requestSource, responseTarget)
+    if (responseTarget.startsWith("PROXY:")) {
+        const targets = splitUrls(
+            baseRule,
+            responseTarget.substring(6)
+        ).map((t): ProxyTarget => [
+            t[0] == "https" || t[0] == "wss",
+            t[1],
+            t[2],
+        ])
         const rule: ProxyRule = {
-            ...base,
-            target: [
-                target[0] == "https" || target[0] == "wss",
-                target[1],
-                target[2],
-            ],
+            ...baseRule,
+            target: targets,
             type: "PROXY"
         }
         return rule
     } else if (responseTarget.startsWith("REDIRECT:")) {
-        const target = responseTarget.substring(9)
-        // rule.target is a url that can support every protocol
-        // check if redirect target is a valid url
-        let index = target.indexOf("://")
-        let protocol = target.substring(0, index)
-        if (protocol.length == 0) {
-            protocol = "https"
-        }
-        const restTarget = target.substring(index + 3)
-        let path: string
-        let host: string
-        index = restTarget.indexOf("/")
-        if (index == -1) {
-            host = restTarget
-            path = "/"
-        } else {
-            host = restTarget.substring(0, index)
-            path = restTarget.substring(index)
-        }
-        if (host.length == 0) {
-            throw new Error("Host in redirect target to short: " + responseTarget)
-        }
-        let domain: string
-        let port: number
-        index = host.lastIndexOf(":")
-        if (index == -1) {
-            domain = host
-            port = 443
-        } else {
-            domain = host.substring(0, index)
-            port = Number(host.substring(index + 1))
-            if (isNaN(port)) {
-                throw new Error("Port in redirect target is not a number: " + responseTarget)
-            }
-        }
-        if (domain.length == 0) {
-            throw new Error("Domain : " + responseTarget)
-        }
-        // throw error if domain is not a valid domain
-        domain.split(".").forEach((domainPart) => {
-            if (domainPart != "*" && !/^[a-zA-Z0-9-.]+$/.test(domainPart)) {
-                throw new Error("Invalid domain in redirect target: " + domain + "\nresponseTarget: " + responseTarget)
-            }
-        })
-
-        // get variables numbers from domain, and path
-        index = domain.indexOf("{")
-        let endIndex: number
-        while (index > -1) {
-            endIndex = domain.indexOf("}", index)
-            if (endIndex == -1) {
-                throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
-            }
-            const variable = target.substring(index + 1, endIndex)
-            const variableNumber = Number(variable)
-            if (isNaN(variableNumber)) {
-                throw new Error("Invalid proxy target domain: Invalid variable number: " + variable)
-            }
-            if (variableNumber < 0) {
-                base.hostVars.push(-variableNumber)
-            } else {
-                base.pathVars.push(variableNumber)
-            }
-            index = domain.indexOf("{", endIndex)
-        }
-        index = path.indexOf("{")
-        while (index > -1) {
-            endIndex = path.indexOf("}", index)
-            if (endIndex == -1) {
-                throw new Error("Invalid proxy target path: Unclosed variable: " + responseTarget)
-            }
-            const variable = path.substring(index + 1, endIndex)
-            const variableNumber = Number(variable)
-            if (isNaN(variableNumber)) {
-                throw new Error("Invalid proxy target path: Invalid variable number: " + variable)
-            }
-            if (variableNumber < 0) {
-                base.hostVars.push(-variableNumber)
-            } else {
-                base.pathVars.push(variableNumber)
-            }
-            index = path.indexOf("{", endIndex)
-        }
+        const targets = splitUrls(
+            baseRule,
+            responseTarget.substring(9)
+        )
 
         const rule: RedirectRule = {
-            ...base,
-            target: [protocol, domain, port, path],
+            ...baseRule,
+            target: targets,
             type: "REDIRECT"
         }
         return rule
     } else if (responseTarget.startsWith("STATIC:")) {
-        const target = fixPath(responseTarget.substring(7))
-        // get variables numbers from domain, and path
-        let index: number = target.indexOf("{")
-        let endIndex: number
-        while (index > -1) {
-            endIndex = target.indexOf("}", index)
-            if (endIndex == -1) {
-                throw new Error("Invalid proxy target domain: Unclosed variable: " + responseTarget)
-            }
-            const variable = target.substring(index + 1, endIndex)
-            const variableNumber = Number(variable)
-            if (isNaN(variableNumber)) {
-                throw new Error("Invalid proxy target domain: Invalid variable number: " + variable)
-            }
-            if (variableNumber < 0) {
-                base.hostVars.push(-variableNumber)
-            } else {
-                base.pathVars.push(variableNumber)
-            }
-            index = target.indexOf("{", endIndex)
-        }
+        const target = splitUrl(
+            baseRule,
+            "file://*" + fixPath(responseTarget.substring(7))
+        )
 
         const rule: StaticRule = {
-            ...base,
-            target: target,
+            ...baseRule,
+            target: target[3],
             type: "STATIC"
         }
         return rule

@@ -251,7 +251,9 @@ describe('parseRules()', () => {
                 raw: 'example.com=PROXY:example_nginx:18080',
                 hostVars: [],
                 pathVars: [],
-                target: [false, 'example_nginx', 18080],
+                target: [
+                    [true, 'example_nginx', 18080]
+                ],
                 type: 'PROXY'
             },
             {
@@ -263,7 +265,9 @@ describe('parseRules()', () => {
                 raw: 'majo.test.com=REDIRECT:github.com/majo418',
                 hostVars: [],
                 pathVars: [],
-                target: ['https', 'thub.com', 443, '/majo418'],
+                target: [
+                    ['https', 'github.com', 443, '/majo418']
+                ],
                 type: 'REDIRECT'
             },
             {
@@ -275,7 +279,9 @@ describe('parseRules()', () => {
                 raw: 'sysdev.test.com=REDIRECT:github.com/sysdev',
                 hostVars: [],
                 pathVars: [],
-                target: ['https', 'thub.com', 443, '/sysdev'],
+                target: [
+                    ['https', 'github.com', 443, '/sysdev']
+                ],
                 type: 'REDIRECT'
             },
             {
@@ -287,7 +293,9 @@ describe('parseRules()', () => {
                 raw: '*=PROXY:https://nginx_test:8080',
                 hostVars: [],
                 pathVars: [],
-                target: [true, 'nginx_test', 8080],
+                target: [
+                    [true, 'nginx_test', 8080]
+                ],
                 type: 'PROXY'
             },
             {
@@ -311,7 +319,9 @@ describe('parseRules()', () => {
                 raw: '*.redirect.com=REDIRECT:https://test.test.com',
                 hostVars: [],
                 pathVars: [],
-                target: ['https', 'test.test.com', 443, '/'],
+                target: [
+                    ['https', 'test.test.com', 443, '/']
+                ],
                 type: 'REDIRECT'
             },
             {

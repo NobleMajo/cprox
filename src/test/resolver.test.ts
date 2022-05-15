@@ -158,9 +158,11 @@ describe('findResolver()', () => {
                 "hostVars": [],
                 "pathVars": [],
                 "target": [
-                    true,
-                    "nginx_test",
-                    8080
+                    [
+                        true,
+                        "nginx_test",
+                        8080
+                    ]
                 ],
                 "type": "PROXY"
             },
@@ -185,9 +187,7 @@ describe('findResolver()', () => {
                 "hostVars": [],
                 "pathVars": [],
                 "target": [
-                    true,
-                    "nginx_test",
-                    8080
+                    [true, "nginx_test", 8080]
                 ],
                 "type": "PROXY"
             },
@@ -214,10 +214,12 @@ describe('findResolver()', () => {
                 "hostVars": [],
                 "pathVars": [],
                 "target": [
-                    "https",
-                    "test.test.com",
-                    443,
-                    "/"
+                    [
+                        "https",
+                        "test.test.com",
+                        443,
+                        "/"
+                    ]
                 ],
                 "type": "REDIRECT"
             },
