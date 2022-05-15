@@ -143,7 +143,7 @@ Options:
 Details:
 You can use CProX as webserver. It can proxy, redirect and service static content on requests.
 
-! Fleetform | by majo418 | supported by CoreUnit.NET !
+! CProX | by majo418 | supported by CoreUnit.NET !
 ```
 
 ## environment variables

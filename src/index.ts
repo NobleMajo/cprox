@@ -4,5 +4,5 @@ import root from "./cmd/root"
 parseCmd(root)
     .exe()
     .catch((err: Error | any) => console.error(
-        "# FleetForm Error #\n", err
+        "# CProX Error #\n", err
     ))

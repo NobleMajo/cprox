@@ -504,6 +504,6 @@ export default {
     globalFlags: [
         verbose,
     ],
-    globalHelpMsg: "! Fleetform | by majo418 | supported by CoreUnit.NET !",
+    globalHelpMsg: "! CProX | by majo418 | supported by CoreUnit.NET !",
 } as CmdParserOptions
 
