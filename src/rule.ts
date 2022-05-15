@@ -37,21 +37,16 @@ export type Rules = Rule[]
 
 // create function that loads raw settings from environment and process arguments
 export function loadRawRules(
-    processArgs: string[],
+    processArgs: string[] = [],
     environmentPrefix: string | null = "RULE_",
-    useProcessArguments: boolean = true,
     verbose: boolean = false
 ): RawRules {
     const rawSettings: RawRules = {}
 
-    if (!environmentPrefix && !useProcessArguments) {
-        throw new Error("No environment variable prefix and allowed to use process arguments")
-    }
-
     // check all environment variables that start with environmentPrefix
     let i = 1
-    verbose && console.log("Load environment vars with '" + environmentPrefix + "' as prefix:")
     if (environmentPrefix) {
+        verbose && console.log("Load environment vars with '" + environmentPrefix + "' as prefix:")
         while (true) {
             const rawRule = process.env[environmentPrefix + i]
             verbose && console.log(" - '" + environmentPrefix + i + "': ", rawRule)
@@ -64,9 +59,11 @@ export function loadRawRules(
             rawSettings[key] = value
             i++
         }
+    } else {
+        verbose && console.log("Environment var prefix not defined")
     }
-    verbose && console.log("Load process arguments:")
-    if (useProcessArguments) {
+    if (processArgs.length > 0) {
+        verbose && console.log(processArgs.length + " process arguments found")
         i = 0
         while (i < processArgs.length) {
             const arg = processArgs[i]
@@ -79,6 +76,8 @@ export function loadRawRules(
             }
             i++
         }
+    } else {
+        verbose && console.log("No process arguments defined")
     }
     return rawSettings
 }

@@ -1,27 +1,15 @@
-import chai from "chai";
 import 'mocha';
 import * as rule from "../rule";
 import * as resolver from "../resolver";
-import { exampleRules } from './rules.test';
 import { expect } from 'chai';
 import { findResolver } from '../resolver';
 import { parseRequestUrl } from '../reqdata';
-
-function clearEnvironment(prefix: string): void {
-    for (let index = 1; true; index++) {
-        const value = process.env[prefix + index]
-        if (!value) {
-            break;
-        }
-        delete process.env[prefix + index]
-    }
-}
-
-function setEnvironment(prefix: string, values: string[]): void {
-    values.forEach((value, i) => {
-        process.env[prefix + (i + 1)] = value
-    })
-}
+import {
+    clearEnvironment,
+    setEnvironment,
+    exampleRules,
+    uniqueStringify
+} from './assets';
 
 describe('loadRawRules()', () => {
     it('Single environment rule', async () => {
@@ -33,7 +21,7 @@ describe('loadRawRules()', () => {
             ]
         )
 
-        const rawRules = rule.loadRawRules([], "RULE_", false, false)
+        const rawRules = rule.loadRawRules()
         const rules = rule.parseRules(rawRules)
         const resolver2 = resolver.createResolvers(rules)
 
@@ -47,7 +35,7 @@ describe('loadRawRules()', () => {
             exampleRules
         )
 
-        const rawRules = rule.loadRawRules([], "RULE_", false, false)
+        const rawRules = rule.loadRawRules()
         const rules = rule.parseRules(rawRules)
         const resolver2 = resolver.createResolvers(rules)
 
@@ -65,15 +53,15 @@ describe('findResolver()', () => {
             ]
         )
 
-        const rawRules = rule.loadRawRules([], "RULE_", false, false)
+        const rawRules = rule.loadRawRules()
         const rules = rule.parseRules(rawRules)
         const resolver2 = resolver.createResolvers(rules)
 
 
-        expect(JSON.stringify(findResolver(
+        expect(uniqueStringify(findResolver(
             parseRequestUrl("test.com", "/"),
             resolver2
-        )?.rule, null, 4)).is.equals(JSON.stringify(
+        )?.rule)).is.equals(uniqueStringify(
             {
                 "host": "test.com",
                 "path": "/",
@@ -84,8 +72,7 @@ describe('findResolver()', () => {
                 "hostVars": [], "pathVars": [],
                 "target": "/var/www/test",
                 "type": "STATIC"
-            },
-            null, 4
+            }
         ))
     })
 
@@ -96,22 +83,21 @@ describe('findResolver()', () => {
             exampleRules
         )
 
-        const rawRules = rule.loadRawRules([], "RULE_", false, false)
+        const rawRules = rule.loadRawRules()
         const rules = rule.parseRules(rawRules)
         const sortedRules = rule.sortRules(rules)
         const resolver2 = resolver.createResolvers(sortedRules)
 
         expect(sortedRules.length).is.equals(rules.length)
-        expect(JSON.stringify(
+        expect(uniqueStringify(
             sortedRules
-        )).is.not.equals(JSON.stringify(
+        )).is.not.equals(uniqueStringify(
             rules
         ))
 
-        expect(JSON.stringify(
-            sortedRules.map((d) => d.host + d.path),
-            null, 4
-        )).is.equals(JSON.stringify([
+        expect(uniqueStringify(
+            sortedRules.map((d) => d.host + d.path)
+        )).is.equals(uniqueStringify([
             "sysdev.test.com/",
             "majo.test.com/",
             "*.redirect.com/",
@@ -120,12 +106,12 @@ describe('findResolver()', () => {
             "example.com/",
             "test.com/",
             "*/"
-        ], null, 4))
+        ]))
 
-        expect(JSON.stringify(findResolver(
+        expect(uniqueStringify(findResolver(
             parseRequestUrl("test.com", "/"),
             resolver2
-        )?.rule, null, 4)).is.equals(JSON.stringify(
+        )?.rule)).is.equals(uniqueStringify(
             {
                 "host": "test.com",
                 "path": "/",
@@ -136,14 +122,13 @@ describe('findResolver()', () => {
                 "hostVars": [], "pathVars": [],
                 "target": "/var/www/test",
                 "type": "STATIC"
-            },
-            null, 4
+            }
         ))
 
-        expect(JSON.stringify(findResolver(
+        expect(uniqueStringify(findResolver(
             parseRequestUrl("hello.net", "/test/wow"),
             resolver2
-        )?.rule, null, 4)).is.equals(JSON.stringify(
+        )?.rule)).is.equals(uniqueStringify(
             {
                 "host": "*",
                 "path": "/",
@@ -165,14 +150,13 @@ describe('findResolver()', () => {
                     ]
                 ],
                 "type": "PROXY"
-            },
-            null, 4
+            }
         ))
 
-        expect(JSON.stringify(findResolver(
+        expect(uniqueStringify(findResolver(
             parseRequestUrl("somedomain.de", "/"),
             resolver2
-        )?.rule, null, 4)).is.equals(JSON.stringify(
+        )?.rule)).is.equals(uniqueStringify(
             {
                 "host": "*",
                 "path": "/",
@@ -190,14 +174,13 @@ describe('findResolver()', () => {
                     [true, "nginx_test", 8080]
                 ],
                 "type": "PROXY"
-            },
-            null, 4
+            }
         ))
 
-        expect(JSON.stringify(findResolver(
+        expect(uniqueStringify(findResolver(
             parseRequestUrl("some.redirect.com", "/test"),
             resolver2
-        )?.rule, null, 4)).is.equals(JSON.stringify(
+        )?.rule)).is.equals(uniqueStringify(
             {
                 "host": "*.redirect.com",
                 "path": "/",
@@ -222,8 +205,7 @@ describe('findResolver()', () => {
                     ]
                 ],
                 "type": "REDIRECT"
-            },
-            null, 4
+            }
         ))
     })
 

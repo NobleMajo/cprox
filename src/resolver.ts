@@ -212,11 +212,11 @@ export interface ProxyTargetMapper {
 export function createResolver(
     rule: Rule,
     cache: CacheHolder,
-    options?: CreateResolverOptions
+    options?: CreateResolverOptions,
 ): Resolver {
     const settings: CreateResolverSettings = {
         ...defaultCreateResolverSettings,
-        ...options
+        ...options,
     }
     if (rule.type == "PROXY") {
         let proxyConnections: ProxyConnectionCounter
@@ -224,6 +224,7 @@ export function createResolver(
         let proxyTargetIds: string[]
         if (rule.target.length > 1) {
             proxyConnections = {}
+            proxyTargetIdMap = {}
             proxyTargetIds = rule.target.map((proxyTarget) => {
                 const targetId = proxyTarget.join("/")
                 proxyTargetIdMap[targetId] = proxyTarget

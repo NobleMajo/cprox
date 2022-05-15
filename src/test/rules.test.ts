@@ -1,35 +1,13 @@
-import chai from "chai";
 import 'mocha';
 import * as rule from "../rule";
 import { RawRules } from '../rule';
 import { expect } from 'chai';
-
-export const exampleRules = [
-    "test.com=STATIC:/var/www/test",
-    "example.com=PROXY:example_nginx:18080",
-    "majo.test.com=REDIRECT:github.com/majo418",
-    "sysdev.test.com=REDIRECT:github.com/sysdev",
-    "*=PROXY:https://nginx_test:8080",
-    "*.example.com=STATIC:/var/www/html",
-    "*.redirect.com=REDIRECT:https://test.test.com",
-    "*.test.com=STATIC:/var/www/test",
-]
-
-function clearEnvironment(prefix: string): void {
-    for (let index = 1; true; index++) {
-        const value = process.env[prefix + index]
-        if (!value) {
-            break;
-        }
-        delete process.env[prefix + index]
-    }
-}
-
-function setEnvironment(prefix: string, values: string[]): void {
-    values.forEach((value, i) => {
-        process.env[prefix + (i + 1)] = value
-    })
-}
+import {
+    clearEnvironment,
+    setEnvironment,
+    exampleRules,
+    uniqueStringify
+} from './assets';
 
 describe('loadRawRules()', () => {
     it('Single environment rule', async () => {
@@ -41,10 +19,10 @@ describe('loadRawRules()', () => {
             ]
         )
 
-        const rules = rule.loadRawRules([], "RULE_", false, false)
+        const rules = rule.loadRawRules()
         const ruleKeys = Object.keys(rules)
 
-        chai.expect(Object.keys(rules).length).is.equals(1)
+        expect(Object.keys(rules).length).is.equals(1)
         ruleKeys[0] = 'test.com'
         rules[0] == 'STATIC:/var/www/test'
     })
@@ -56,7 +34,7 @@ describe('loadRawRules()', () => {
             exampleRules
         )
 
-        const rules = rule.loadRawRules([], "RULE_", false, false)
+        const rules = rule.loadRawRules()
         const expectRules: any = {
             'test.com': 'STATIC:/var/www/test',
             'example.com': 'PROXY:example_nginx:18080',
@@ -68,9 +46,9 @@ describe('loadRawRules()', () => {
             '*.test.com': 'STATIC:/var/www/test'
         }
 
-        const ruleString = JSON.stringify(rules, null, 4)
-        const expectRuleString = JSON.stringify(expectRules, null, 4)
-        chai.expect(ruleString).is.equals(expectRuleString)
+        const ruleString = uniqueStringify(rules)
+        const expectRuleString = uniqueStringify(expectRules)
+        expect(ruleString).is.equals(expectRuleString)
     })
 })
 
@@ -90,10 +68,9 @@ describe('sortRules()', () => {
         }
         const rules = rule.parseRules(rawRules)
         const sortRules = rule.sortRules(rules)
-        expect(JSON.stringify(
-            sortRules.map((r) => r.host),
-            null, 4
-        )).is.equals(JSON.stringify(
+        expect(uniqueStringify(
+            sortRules.map((r) => r.host)
+        )).is.equals(uniqueStringify(
             [
                 "test.supertest.example.com",
                 "*.supertest.example.com",
@@ -104,8 +81,7 @@ describe('sortRules()', () => {
                 "wow.com",
                 "*.net",
                 "*",
-            ],
-            null, 4
+            ]
         ))
     })
 
@@ -125,10 +101,9 @@ describe('sortRules()', () => {
         }
         const rules = rule.parseRules(rawRules)
         const sortRules = rule.sortRules(rules)
-        expect(JSON.stringify(
-            sortRules.map((r) => r.path),
-            null, 4
-        )).is.equals(JSON.stringify(
+        expect(uniqueStringify(
+            sortRules.map((r) => r.path)
+        )).is.equals(uniqueStringify(
             [
                 "/qwer/*/test/",
                 "/qwer/*/test",
@@ -141,8 +116,7 @@ describe('sortRules()', () => {
                 "/test",
                 "/",
                 "/",
-            ],
-            null, 4
+            ]
         ))
     })
 
@@ -164,10 +138,9 @@ describe('sortRules()', () => {
         }
         const rules = rule.parseRules(rawRules)
         const sortRules = rule.sortRules(rules)
-        expect(JSON.stringify(
-            sortRules.map((r) => r.host + r.path),
-            null, 4
-        )).is.equals(JSON.stringify(
+        expect(uniqueStringify(
+            sortRules.map((r) => r.host + r.path)
+        )).is.equals(uniqueStringify(
             [
                 "coreunit.net/qwer/*/test",
                 "coreunit.net/*/*/test",
@@ -181,8 +154,7 @@ describe('sortRules()', () => {
                 "test.com/*/*/test",
                 "test.com/qwer/wow",
                 "test.com/"
-            ],
-            null, 4
+            ]
         ))
     })
 })
@@ -197,7 +169,7 @@ describe('parseRules()', () => {
             ]
         )
 
-        const rawRule = rule.loadRawRules([], "RULE_", false, false)
+        const rawRule = rule.loadRawRules()
         const rule2 = rule.parseRules(rawRule)
 
         const expectRule = [
@@ -215,9 +187,9 @@ describe('parseRules()', () => {
             }
         ]
 
-        const ruleStirng = JSON.stringify(rule2, null, 4)
-        const expectRuleString = JSON.stringify(expectRule, null, 4)
-        chai.expect(ruleStirng).is.equals(expectRuleString)
+        const ruleStirng = uniqueStringify(rule2)
+        const expectRuleString = uniqueStringify(expectRule)
+        expect(ruleStirng).is.equals(expectRuleString)
     })
 
     it('Multiple environment rule', async () => {
@@ -227,7 +199,7 @@ describe('parseRules()', () => {
             exampleRules
         )
 
-        const rawRules = rule.loadRawRules([], "RULE_", false, false)
+        const rawRules = rule.loadRawRules()
         const rules = rule.parseRules(rawRules)
         const expectRules = [
             {
@@ -338,8 +310,8 @@ describe('parseRules()', () => {
             }
         ]
 
-        const rulesString = JSON.stringify(rules, null, 4)
-        const expectRulesString = JSON.stringify(expectRules, null, 4)
-        chai.expect(rulesString).is.equals(expectRulesString)
+        const rulesString = uniqueStringify(rules)
+        const expectRulesString = uniqueStringify(expectRules)
+        expect(rulesString).is.equals(expectRulesString)
     })
 })

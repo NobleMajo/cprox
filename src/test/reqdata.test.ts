@@ -1,7 +1,12 @@
-import chai from "chai";
 import 'mocha';
 import { expect } from 'chai';
 import { parseRequestUrl } from "../reqdata";
+import {
+    clearEnvironment,
+    setEnvironment,
+    exampleRules,
+    uniqueStringify
+} from './assets';
 
 describe('parseRequestUrl()', () => {
     it('Single request data', async () => {
@@ -9,8 +14,12 @@ describe('parseRequestUrl()', () => {
 
         expect(data.host).is.equals("test.com")
         expect(data.path).is.equals("/home/data")
-        expect(JSON.stringify(data.hostParts)).is.equals('["com","test"]')
-        expect(JSON.stringify(data.pathParts)).is.equals('["home","data"]')
+        expect(data.hostParts.join(", ")).is.equals(
+            'com, test'
+        )
+        expect(data.pathParts.join(", ")).is.equals(
+            'home, data'
+        )
     })
 
     it('No host request data', async () => {
@@ -18,8 +27,12 @@ describe('parseRequestUrl()', () => {
 
         expect(data.host).is.equals("")
         expect(data.path).is.equals("/home/data")
-        expect(JSON.stringify(data.hostParts)).is.equals('[]')
-        expect(JSON.stringify(data.pathParts)).is.equals('["home","data"]')
+        expect(data.hostParts.join(", ")).is.equals(
+            ''
+        )
+        expect(data.pathParts.join(", ")).is.equals(
+            'home, data'
+        )
     })
 
     it('No path request data', async () => {
@@ -27,8 +40,8 @@ describe('parseRequestUrl()', () => {
 
         expect(data.host).is.equals("wow.de")
         expect(data.path).is.equals("")
-        expect(JSON.stringify(data.hostParts)).is.equals('["de","wow"]')
-        expect(JSON.stringify(data.pathParts)).is.equals('[]')
+        expect(data.hostParts.join(", ")).is.equals('de, wow')
+        expect(uniqueStringify(data.pathParts)).is.equals('[]')
     })
 
     it('Large host request data', async () => {
@@ -41,10 +54,12 @@ describe('parseRequestUrl()', () => {
             "test.test.majo.sysdev.test.test.test.com.test.net"
         )
         expect(data.path).is.equals("/home/data")
-        expect(JSON.stringify(data.hostParts)).is.equals(
-            '["net","test","com","test","test","test","sysdev","majo","test","test"]'
+        expect(data.hostParts.join(", ")).is.equals(
+            'net, test, com, test, test, test, sysdev, majo, test, test'
         )
-        expect(JSON.stringify(data.pathParts)).is.equals('["home","data"]')
+        expect(data.pathParts.join(", ")).is.equals(
+            'home, data'
+        )
     })
 
     it('Large path request data', async () => {
@@ -57,9 +72,11 @@ describe('parseRequestUrl()', () => {
         expect(data.path).is.equals(
             "/home/data/data/sysdev/majo/var/var/var"
         )
-        expect(JSON.stringify(data.hostParts)).is.equals('["com","example"]')
-        expect(JSON.stringify(data.pathParts)).is.equals(
-            '["home","data","data","sysdev","majo","var","var","var"]'
+        expect(data.hostParts.join(", ")).is.equals(
+            'com, example'
+        )
+        expect(data.pathParts.join(", ")).is.equals(
+            'home, data, data, sysdev, majo, var, var, var'
         )
     })
 })
