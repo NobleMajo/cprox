@@ -47,6 +47,12 @@
 CProX is easy customizable static, redirct and proxy server.
 ```sh
 docker pull majo418/cprox:latest
+docker run -it --rm majo418/cprox --help
+```
+or
+```sh
+npm i -g cprox
+cprox --help
 ```
 
 # gettings started
