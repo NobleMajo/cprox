@@ -37,15 +37,17 @@
   },
   "devDependencies": {
     "@types/chai": "^4",
+    "@types/http-proxy": "^1",
     "@types/mocha": "^9",
     "@types/node": "^16",
+    "@types/node-fetch": "^2.6.1",
+    "@types/serve-static": "^1",
     "chai": "^4",
     "mocha": "^9",
+    "node-fetch": "^2.6.7",
     "nodemon": "^2",
     "ts-node": "^10",
-    "typescript": "^4",
-    "@types/http-proxy": "^1",
-    "@types/serve-static": "^1"
+    "typescript": "^4"
   },
   "dependencies": {
     "cmdy": "^1",

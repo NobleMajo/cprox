@@ -300,9 +300,9 @@ export function createResolver(
 
                 settings.verbose && console.log(
                     "REDIRECT:",
-                    rule.target[0] + "://" +
+                    target[0] + "://" +
                     targetHost + ":" +
-                    rule.target[2] + targetPath,
+                    target[2] + targetPath,
                     "\non Host:",
                     reqData.hostParts,
                     "\non Path:",
@@ -311,9 +311,9 @@ export function createResolver(
                 res.statusCode = 301
                 res.setHeader(
                     "Location",
-                    rule.target[0] + "://" +
+                    target[0] + "://" +
                     targetHost + ":" +
-                    rule.target[2] +
+                    target[2] +
                     targetPath
                 )
                 res.end()

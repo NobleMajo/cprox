@@ -315,7 +315,6 @@ const root: CmdDefinition = {
                 ...cmd.args
             ],
             "RULE_",
-            true,
             env.VERBOSE
         )
 
