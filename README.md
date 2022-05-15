@@ -26,7 +26,7 @@
 |
 [GitHub](https://github.com/majo418/cprox)
 |  
-CProX is an easy configure static serve, redirct, proxy and load balancing web server.
+CProX is an easy to configure static serve, redirect, proxy and load balancing web server.
 
 # configuration
 Please checkout the [configuration guide](https://github.com/majo418/cprox/blob/main/docs/config.md).
