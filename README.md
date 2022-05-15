@@ -44,16 +44,7 @@
 |
 [GitHub](https://github.com/majo418/cprox)
 |  
-CProX is easy customizable static, redirct and proxy server.
-```sh
-docker pull majo418/cprox:latest
-docker run -it --rm majo418/cprox --help
-```
-or
-```sh
-npm i -g cprox
-cprox --help
-```
+CProX is an easy configure static serve, redirct, proxy and load balancing web server.
 
 # gettings started
 Checkout the `test.sh` and the `start.sh` scripts to understand what you need to think about and how to start the server.
@@ -90,11 +81,21 @@ cprox -h
 
 ### requirements
  - docker cli
- - Linus distrubotion
+ - Linus distribution
+
+### pull
+```sh
+docker pull majo418/cprox:latest
+```
 
 ### run
 ```sh
-docker run -it --rm -p 80:80 -p 443:443 majo418/cprox *=REDIRECT:https://start.duckduckgo.com
+docker run -it --rm \
+  -p 80:80 \
+  -p 443:443 \
+  -v $(pwd)/certs:/app/certs \
+  majo418/cprox \
+    *=REDIRECT:https://start.duckduckgo.com
 ```
 Help:
 ```sh
