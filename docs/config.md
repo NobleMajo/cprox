@@ -1,8 +1,42 @@
-# Configuration
+# table of contents
+- [table of contents](#table-of-contents)
+- [configuration](#configuration)
+- [references](#references)
+- [cli](#cli)
+- [environment variables](#environment-variables)
+- [rules](#rules)
+- [rule order](#rule-order)
+  - [set rules in docker](#set-rules-in-docker)
+  - [set rules for cli tool](#set-rules-for-cli-tool)
+- [rule types](#rule-types)
+  - [redirect](#redirect)
+  - [static](#static)
+  - [proxy](#proxy)
+  - [other examples](#other-examples)
+- [rule variables](#rule-variables)
+  - [variable mapping](#variable-mapping)
+  - [wildcards in variables](#wildcards-in-variables)
+  - [use variables](#use-variables)
+  - [examples](#examples)
+- [Load balancing](#load-balancing)
+  - [Define targets](#define-targets)
+  - [Redirect](#redirect-1)
+  - [Proxy](#proxy-1)
+- [examples](#examples-1)
+  - [static example](#static-example)
+  - [big example](#big-example)
+- [references](#references-1)
+
+# configuration
 You configure the server with variables and rules.
 That config is adjustable via environment variables or the cli.
 
 Back to [getting started](https://github.com/majo418/cprox/blob/main/README.md#gettings-started) guide.
+
+# references
+ - [getting started](https://github.com/majo418/cprox/blob/main/README.md#gettings-started)
+ - [npm scripts](https://github.com/majo418/cprox/blob/main/docs/npm.md).
+ 
 
 # cli
 This is the output of the `cprox -h` cli command.
@@ -260,3 +294,8 @@ docker run -it --rm \
     -p 80:80 \
     majo418/cprox
 ```
+
+# references
+ - [getting started](https://github.com/majo418/cprox/blob/main/README.md#gettings-started)
+ - [npm scripts](https://github.com/majo418/cprox/blob/main/docs/npm.md).
+ 

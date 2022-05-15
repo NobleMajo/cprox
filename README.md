@@ -13,14 +13,11 @@
 - [CProX](#cprox)
 - [table of contents](#table-of-contents)
 - [about](#about)
+- [configuration](#configuration)
 - [gettings started](#gettings-started)
   - [NodeJS](#nodejs)
   - [Docker](#docker)
-- [configuration](#configuration)
-- [npm scripts](#npm-scripts)
-  - [use](#use)
-  - [base scripts](#base-scripts)
-  - [watch mode](#watch-mode)
+- [references](#references)
 - [contribution](#contribution)
 
 # about
@@ -30,6 +27,9 @@
 [GitHub](https://github.com/majo418/cprox)
 |  
 CProX is an easy configure static serve, redirct, proxy and load balancing web server.
+
+# configuration
+Please checkout the [configuration guide](https://github.com/majo418/cprox/blob/main/docs/config.md).
 
 # gettings started
 Checkout the `test.sh` and the `start.sh` scripts to understand what you need to think about and how to start the server.
@@ -87,34 +87,9 @@ Help:
 docker run -it --rm majo418/cprox -h
 ```
 
-# configuration
-Please checkout the [configuration guide](https://github.com/majo418/cprox/blob/main/CONFIGURATION.md).
-
-# npm scripts
-The npm scripts are made for linux but can also work on mac and windows.
-## use
-You can run npm scripts in the project folder like this:
-```sh
-npm run <scriptname>
-```
-Here is an example:
-```sh
-npm run test
-```
-
-## base scripts
-You can find all npm scripts in the `package.json` file.
-This is a list of the most important npm scripts:
- - test // test the app
- - build // build the app
- - exec // run the app
- - start // build and run the app
-
-## watch mode
-Like this example you can run all npm scripts in watch mode:
-```sh
-npm run start:watch
-```
+# references
+ - [configuration](https://github.com/majo418/cprox/blob/main/docs/config.md).
+ - [npm scripts](https://github.com/majo418/cprox/blob/main/docs/npm.md).
 
 # contribution
  - 1. fork the project
