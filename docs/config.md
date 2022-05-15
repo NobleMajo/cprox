@@ -1,6 +1,10 @@
+# configuration
+You configure the server with variables and rules.
+That config is adjustable via environment variables or the cli.
+
 # table of contents
-- [table of contents](#table-of-contents)
 - [configuration](#configuration)
+- [table of contents](#table-of-contents)
 - [references](#references)
 - [cli](#cli)
 - [environment variables](#environment-variables)
@@ -26,12 +30,6 @@
   - [static example](#static-example)
   - [big example](#big-example)
 - [references](#references-1)
-
-# configuration
-You configure the server with variables and rules.
-That config is adjustable via environment variables or the cli.
-
-Back to [getting started](https://github.com/majo418/cprox/blob/main/README.md#gettings-started) guide.
 
 # references
  - [getting started](https://github.com/majo418/cprox/blob/main/README.md#gettings-started)

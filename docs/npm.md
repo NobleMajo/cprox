@@ -1,14 +1,14 @@
+# npm scripts
+The npm scripts are made for linux but can also work on mac and windows.
+
 # table of contents
-- [table of contents](#table-of-contents)
 - [npm scripts](#npm-scripts)
+- [table of contents](#table-of-contents)
 - [references](#references)
 - [use](#use)
 - [base scripts](#base-scripts)
 - [watch mode](#watch-mode)
 - [references](#references-1)
-
-# npm scripts
-The npm scripts are made for linux but can also work on mac and windows.
 
 # references
  - [getting started](https://github.com/majo418/cprox/blob/main/README.md#gettings-started)
