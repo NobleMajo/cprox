@@ -1,9 +1,9 @@
 import { parseEnv } from "typenvy"
-import { defaultEnv, variablesTypes } from "./env"
+import { envTypes, envDefaults } from "./env"
 
 const env = parseEnv(
-    defaultEnv,
-    variablesTypes
+    envDefaults,
+    envTypes,
 )
     .setProcessEnv()
     .errExit()

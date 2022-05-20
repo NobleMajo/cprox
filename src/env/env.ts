@@ -1,5 +1,5 @@
 import * as typenvy from "typenvy"
-export const defaultEnv = {
+export const envDefaults = {
     PRODUCTION: (process.env.NODE_ENV === "production") as boolean,
     VERBOSE: false as boolean,
     TRUST_ALL_CERTS: true as boolean,
@@ -34,7 +34,7 @@ export const defaultEnv = {
     PROXY_FOLLOW_REDIRECTS: false as boolean,
 }
 
-export const variablesTypes: typenvy.VariablesTypes = {
+export const envTypes: typenvy.VariablesTypes = {
     PRODUCTION: [typenvy.TC_BOOLEAN],
     VERBOSE: [typenvy.TC_BOOLEAN],
     TRUST_ALL_CERTS: [typenvy.TC_BOOLEAN],

@@ -45,31 +45,31 @@ The none flag arugments are the cprox rules.
 
 Usage: cprox [OPTIONS] [ARGUMENTS]
 
-CProX is a easy to configure redirect, proxy and static webserver.
+CProX is a easy to configure redirect, proxy and static webserver
 
 Options:
-  -v, --verbose                                  Show basic flag adn target informations.
-  -p, --http-port [number]                       Set the http port (default: 80 but disabled if any port is set)
-  -s, --https-port [number]                      Set the https port (default: 443 but disabled if any port is set)
-  -t, --trust-all-certs                          Trust all certificates on proxy.
-  -b, --bind-host-address [string]               Set the host where the server pind the ports.
-      --disable-self-singed                      Disable generating self singed certificates if not exist.
-  -d, --self-singed-domain [string]              Set the domain name for self singed certificates.
-      --dns-server-address [string]              Add a dns address to the existing dns addresses.
-      --cert-path [string]                       Define the path for the certificates.
-      --cert-name [string]                       Define the name for the certificates cert file.
-      --key-name [string]                        Define the name for the certificates key file.
-      --ca-name [string]                         Define the name for the certificate ca file.
+  -v, --verbose                                  Show basic flag adn target informations (default: 'false', ENV: 'VERBOSE')
+  -p, --http-port [number]                       Set the http port (default: 80 but disabled if any port is set) (default: '80', ENV: 'HTTP_PORT')
+  -s, --https-port [number]                      Set the https port (default: 443 but disabled if any port is set) (default: '443', ENV: 'HTTPS_PORT')
+  -t, --trust-all-certs                          Trust all certificates on proxy (default: 'true', ENV: 'TRUST_ALL_CERTS')
+  -b, --bind-host-address [string]               Set the host where the server pind the ports (default: '0.0.0.0', ENV: 'BIND_ADDRESS')
+      --disable-self-singed                      Disable generating self singed certificates if not exist (default: 'false', ENV: 'DISABLE_SELF_SINGED')
+  -d, --self-singed-domain [string]              Set the domain name for self singed certificates (default: 'example.com', ENV: 'SELF_SINGED_DOMAIN')
+      --dns-server-address [string]              Add a dns address to the existing dns addresses (default: '127.0.0.11,1.0.0.1,8.8.4.4,1.1.1.1,8.8.8.8', ENV: 'DNS_SERVER_ADDRESSES')
+      --cert-path [string]                       Define the path for the certificates (default: './certs', ENV: 'CERT_PATH')
+      --cert-name [string]                       Define the name for the certificates cert file (default: 'cert.pem', ENV: 'CERT_NAME')
+      --key-name [string]                        Define the name for the certificates key file (default: 'privkey.pem', ENV: 'KEY_NAME')
+      --ca-name [string]                         Define the name for the certificate ca file (default: 'chain.pem', ENV: 'CA_NAME')
   -r, --rule [string]                            CProX rules
-      --request-timeout [number | string]        Define the maximum time in miliseconds (or as millisecond calucaltion) for the request content.
-      --connection-timeout [number | string]     Define the maximum time in miliseconds (or as millisecond calucaltion) for a open conneciton.
-      --proxy-reaction-timeout [number | string] Define the maximum time in miliseconds (or as millisecond calucaltion) that the proxy target has to respond.
-      --proxy-verify-certificate                 Proxy verify target certificates
-      --proxy-follow-redirects                   Proxy follow redirects
+      --max-header-size [number | string]        Define the maximum request header size (default: 1024 * 4) (default: '4096', ENV: 'MAX_HEADER_SIZE')
+      --connection-timeout [number | string]     Define the maximum time in miliseconds (or as millisecond calucaltion) for a open conneciton (default: '15000', ENV: 'CONNECTION_TIMEOUT')
+      --proxy-reaction-timeout [number | string] Define the maximum time in miliseconds (or as millisecond calucaltion) that the proxy target has to respond (default: '3000', ENV: 'PROXY_REACTION_TIMEOUT')
+      --proxy-verify-certificate                 Proxy verify target certificates (default: 'false', ENV: 'PROXY_VERIFY_CERTIFICATE')
+      --proxy-follow-redirects                   Proxy follow redirects (default: 'false', ENV: 'PROXY_FOLLOW_REDIRECTS')
   -h, --help                                     Shows this help output
 
 Details:
-You can use CProX as webserver. It can proxy, redirect and service static content on requests.
+You can use CProX as webserver. It can proxy, redirect and service static content on requests
 
 ! CProX | by majo418 | supported by CoreUnit.NET !
 ```

@@ -13,6 +13,7 @@
 - [CProX](#cprox)
 - [table of contents](#table-of-contents)
 - [about](#about)
+  - [details](#details)
 - [configuration](#configuration)
 - [gettings started](#gettings-started)
   - [NodeJS](#nodejs)
@@ -26,14 +27,14 @@
 |
 [GitHub](https://github.com/majo418/cprox)
 |  
-CProX is an easy to configure `static serve`, `redirect`, `reverse proxy` and `load balancing` web server.  
+CProX is an easy to configure `static serve`, `redirect`, `reverse proxy` and `load balancing` web server.
 
-Support for `http`, `https`, `ws`, `wss` and any subprotocol.  
-Its a `free` `open source` project.  
-Available on `github.com`, `npmjs.com` and `hub.docker.com`.
-
-Automatically `self-signed certificate` if required and not disabled!  
-Simple `cli tool` and easy `envtionment variables`.
+## details
+ - Support for `http`, `https`, `ws`, `wss` and any subprotocol.  
+ - Its a `free` `open source` project.
+ - Available on `github.com`, `npmjs.com` and `hub.docker.com`.
+ - Simple `cli tool` and easy `envtionment variables`.
+ - Automatically `self-signed certificate` if required and not disabled!
 
 # configuration
 Please checkout the [configuration guide](https://github.com/majo418/cprox/blob/main/docs/config.md).
