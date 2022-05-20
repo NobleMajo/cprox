@@ -1,8 +1,13 @@
 import { parseEnv } from "typenvy"
 import { defaultEnv, variablesTypes } from "./env"
 
-const env = parseEnv(defaultEnv, variablesTypes)
-.setProcessEnv().errExit().env
+const env = parseEnv(
+    defaultEnv,
+    variablesTypes
+)
+    .setProcessEnv()
+    .errExit()
+    .env
 export default env
 
 if (!env.PRODUCTION) {

@@ -25,9 +25,10 @@ export const defaultEnv = {
     DISABLE_SELF_SINGED: false as boolean,
     SELF_SINGED_DOMAIN: "example.com" as string,
 
-    REQUEST_TIMEOUT: 1000 * 3 as number,
-    CONNECTION_TIMEOUT: 1000 * 60 * 2 as number,
+    MAX_HEADER_SIZE: 1024 * 4 as number,
+    CONNECTION_TIMEOUT: 1000 * 15 as number,
 
+    PROXY_CONNECTION_TIMEOUT: 1000 * 60 * 2 as number,
     PROXY_REACTION_TIMEOUT: 1000 * 3 as number,
     PROXY_VERIFY_CERTIFICATE: false as boolean,
     PROXY_FOLLOW_REDIRECTS: false as boolean,

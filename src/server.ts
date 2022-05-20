@@ -3,38 +3,32 @@ import https, { Server as HttpsServer } from "https"
 import { Duplex } from "stream"
 import { Certs } from "./certs"
 
-export type UpgradeListener = (req: http.IncomingMessage, socket: Duplex, head: Buffer) => void
+export type UpgradeListener = (
+    req: http.IncomingMessage,
+    socket: Duplex,
+    head: Buffer
+) => void
 
 export function createHttpsServer(
     port: number,
     bindAddress: string,
     requestListener: RequestListener,
     upgradeListener: UpgradeListener,
-    oldServer: HttpsServer | undefined,
     certs: Certs,
+    connectionTimeout: number,
+    maxHeaderSize: number,
 ): Promise<HttpsServer> {
     return new Promise(async (res, rej) => {
         try {
-            if (oldServer) {
-                await new Promise<void>(
-                    (res, rej) =>
-                        oldServer ?
-                            oldServer.close(
-                                (err) =>
-                                    err ? rej(err) : res()
-                            ) :
-                            res()
-                )
-            }
-
             const server: HttpsServer = https.createServer(
                 {
+                    maxHeaderSize: maxHeaderSize,
                     ...certs,
                 },
                 requestListener
             )
+            server.setTimeout(connectionTimeout)
             server.on('upgrade', upgradeListener)
-
             server.listen(
                 port,
                 bindAddress,
@@ -46,33 +40,43 @@ export function createHttpsServer(
     })
 }
 
+export async function closeServer(
+    server: HttpsServer | HttpServer | undefined,
+) {
+    if (server) {
+        await new Promise<void>(
+            (res, rej) =>
+                server ?
+                    server.close(
+                        (err) =>
+                            err ? rej(err) : res()
+                    ) :
+                    res()
+        )
+    }
+}
+
 export function createHttpServer(
     port: number,
     bindAddress: string,
     requestListener: RequestListener,
     upgradeListener: UpgradeListener,
-    oldServer: HttpServer | undefined,
+    connectionTimeout: number,
+    maxHeaderSize: number,
 ): Promise<HttpServer> {
     return new Promise(async (res, rej) => {
         try {
-            if (oldServer) {
-                await new Promise<void>(
-                    (res, rej) =>
-                        oldServer ?
-                            oldServer.close(
-                                (err) =>
-                                    err ? rej(err) : res()
-                            ) :
-                            res()
-                )
-            }
-
             const server: HttpServer = http.createServer(
-                {},
+                {
+                    maxHeaderSize: maxHeaderSize
+                },
                 requestListener
             )
-            server.on('upgrade', upgradeListener)
-
+            server.setTimeout(connectionTimeout)
+            server.on(
+                'upgrade',
+                upgradeListener
+            )
             server.listen(
                 port,
                 bindAddress,

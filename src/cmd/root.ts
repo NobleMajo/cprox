@@ -6,7 +6,7 @@ import { Server as HttpsServer } from "https"
 import { createCertWatcher, fixPath, loadCerts, Certs, generateSelfSigned, CertPaths } from '../certs';
 import { loadRawRules, parseRules, sortRules } from "../rule"
 import { createResolvers, findResolver, Resolver } from "../resolver"
-import { createHttpServer, createHttpsServer, UpgradeListener } from "../server"
+import { closeServer, createHttpServer, createHttpsServer, UpgradeListener } from "../server"
 import { CacheHolder, MemoryCache } from "../cache"
 import { parseRequestUrl } from "../reqdata"
 import { promises as fs } from "fs"
@@ -443,6 +443,7 @@ export class CProX {
         console.log("------------------------------------------------------")
         console.log("CProX| Starting...")
         if (typeof env.HTTPS_PORT == "number") {
+            await closeServer(this.httpsServer)
             console.log("Start server on port '" + env.HTTPS_PORT + "'...")
             const certs: Certs = await loadCerts(this.certPaths)
             this.httpsServerPromise = createHttpsServer(
@@ -450,18 +451,21 @@ export class CProX {
                 env.BIND_ADDRESS,
                 this.requestListener,
                 this.upgradeListener,
-                this.httpsServer,
                 certs,
+                env.CONNECTION_TIMEOUT,
+                env.MAX_HEADER_SIZE,
             )
         }
         if (typeof env.HTTP_PORT == "number") {
+            await closeServer(this.httpServer)
             console.log("Start server on port '" + env.HTTP_PORT + "'...")
             this.httpServerPromise = createHttpServer(
                 env.HTTP_PORT,
                 env.BIND_ADDRESS,
                 this.requestListener,
                 this.upgradeListener,
-                this.httpServer,
+                env.CONNECTION_TIMEOUT,
+                env.MAX_HEADER_SIZE,
             )
         }
         const [httpServer2, httpsServer2] = await Promise.all([
