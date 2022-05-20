@@ -53,7 +53,7 @@ export const variablesTypes: typenvy.VariablesTypes = {
     DISABLE_SELF_SINGED: [typenvy.TC_BOOLEAN],
     SELF_SINGED_DOMAIN: [typenvy.TC_STRING],
 
-    REQUEST_TIMEOUT: [typenvy.TC_CALCULATION, typenvy.TC_NUMBER],
+    MAX_HEADER_SIZE: [typenvy.TC_CALCULATION, typenvy.TC_NUMBER],
     CONNECTION_TIMEOUT: [typenvy.TC_CALCULATION, typenvy.TC_NUMBER],
 
     PROXY_REACTION_TIMEOUT: [typenvy.TC_CALCULATION, typenvy.TC_NUMBER],

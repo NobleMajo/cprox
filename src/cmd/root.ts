@@ -169,14 +169,14 @@ export const caName: ValueFlag = cmdFlag(
     env
 )
 
-export const requestTimeout: ValueFlag = cmdFlag(
+export const maxHeaderSize: ValueFlag = cmdFlag(
     {
-        name: "request-timeout",
-        alias: ["requesttimeout", "requestt", "rtimeout"],
+        name: "max-header-size",
+        alias: ["headersize", "maxheader", "max-header", "maxheadersize", "header-size"],
         types: ["number", "string"],
-        description: "Define the maximum time in miliseconds (or as millisecond calucaltion) for the request content.",
+        description: "Define the maximum request header size (default: 1024 * 4).",
     },
-    "REQUEST_TIMEOUT",
+    "MAX_HEADER_SIZE",
     variablesTypes,
     env
 )
@@ -253,7 +253,7 @@ const root: CmdDefinition = {
         keyName,
         caName,
         rules,
-        requestTimeout,
+        maxHeaderSize,
         connectionTimeout,
         proxyReactionTimeout,
         proxyVerifyCertificate,
