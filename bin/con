@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if ! [[ "$1" =~ ^[0-9]+$ ]] || [ "$1" -lt "1" ] || [ "$1" -gt "65535" ]; then
+    echo "Error: $1 is not a valid port number."
+    exit 1
+fi
+
+CURRENT_WORK_DIR=$(pwd)
+CURRENT_SCRIPT=$(realpath $0)
+CURRENT_SCRIPT_DIR=$(dirname $CURRENT_SCRIPT)
+PROJECT_DIR="$CURRENT_SCRIPT_DIR/.."
+
+cd $PROJECT_DIR
+docker build -t cprox .
+
+cd $CURRENT_WORK_DIR
+docker run --rm -it \
+    -p 0.0.0.0:$1:443 \
+    -v $CURRENT_WORK_DIR:/mountpoint \
+    --name cprox \
+    cprox \
+        -s $@

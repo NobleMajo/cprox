@@ -167,7 +167,6 @@ describe('Live webserver', () => {
             while (!resolved) {
                 await new Promise<void>((res, rej) => setTimeout(() => res(), 300))
                 if (result.sysOut.includes("CProX| Server started!")) {
-                    console.log("found!")
                     resolved = true
                     break
                 }

@@ -197,7 +197,7 @@ export function createProxy(
         proxy.on("error", decrease)
     }
     proxy.on("error", settings.proxyErrorHandler)
-    settings.verbose && console.log("PROXY:", targetHost, "\non Host:", reqData.hostParts, "\non Path:", reqData.pathParts)
+    settings.verbose && console.debug("PROXY:", targetHost, "\non Host:", reqData.hostParts, "\non Path:", reqData.pathParts)
     return proxy
 }
 
@@ -231,7 +231,7 @@ export function createResolver(
                 proxyConnections[targetId] = 0
                 return targetId
             })
-            settings.verbose && console.log(
+            settings.verbose && console.debug(
                 "PROXY:",
                 rule.host,
                 rule.path,
@@ -298,7 +298,7 @@ export function createResolver(
                     target[3]
                 )
 
-                settings.verbose && console.log(
+                settings.verbose && console.debug(
                     "REDIRECT:",
                     target[0] + "://" +
                     targetHost + ":" +
@@ -349,12 +349,12 @@ export function createResolver(
                     )
                 }
 
-                settings.verbose && console.log("STATIC:", rule.target)
+                settings.verbose && console.debug("STATIC:", rule.target)
                 staticServer(
                     req,
                     res,
                     () => {
-                        settings.verbose && console.log("STATIC_NEXT:", rule.target)
+                        settings.verbose && console.debug("STATIC_NEXT:", rule.target)
                         res.statusCode = 404
                         res.end()
                     }
@@ -393,23 +393,23 @@ export function findResolver(
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index]
         if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts)) {
-            verbose && console.log("mismatch host:", resolver.rule.hostParts, data.hostParts)
+            verbose && console.debug("mismatch host:", resolver.rule.hostParts, data.hostParts)
             continue
         }
         if (!data.path.startsWith(resolver.rule.path)) {
-            verbose && console.log("mismatch path:", data.path, resolver.rule.path)
+            verbose && console.debug("mismatch path:", data.path, resolver.rule.path)
             continue
         }
         if (cache) {
             cache?.set(data.host + "$" + data.path, resolver, cacheMillis)
         }
-        verbose && console.log("found resolver:", resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
+        verbose && console.debug("found resolver:", resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
         return {
             ...resolver,
             req: data
         }
     }
-    verbose && console.log("no resolver found for:", data.host + data.path)
+    verbose && console.debug("no resolver found for:", data.host + data.path)
     return undefined
 }
 

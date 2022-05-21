@@ -124,7 +124,6 @@ export async function loadCerts(
                 ca = await caPromise
             }
             if (!cert || cert.length == 0) {
-                console.log("error test")
                 rej(new Error("Can't load public cert file!"))
                 return
             }

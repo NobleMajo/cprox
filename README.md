@@ -15,9 +15,12 @@
 - [about](#about)
   - [details](#details)
 - [configuration](#configuration)
+  - [example](#example)
+  - [guide](#guide)
 - [gettings started](#gettings-started)
   - [NodeJS](#nodejs)
   - [Docker](#docker)
+- [usage recommendation](#usage-recommendation)
 - [references](#references)
 - [contribution](#contribution)
 
@@ -37,15 +40,23 @@ CProX is an easy to configure `static serve`, `redirect`, `reverse proxy` and `l
  - Automatically `self-signed certificate` if required and not disabled!
 
 # configuration
+## example
+```sh
+cprox \
+    *=STATIC:/var/www/html \
+    */test=STATIC:/var/www/test \
+    example.com=REDIRECT:https://www.example.com \
+    www.example.com=STATIC:/var/www/example \
+    www.example.com/proxy=PROXY:http://127.0.0.1:58080
+```
+
+## guide
 Please checkout the [configuration guide](https://github.com/majo418/cprox/blob/main/docs/config.md).
 
 # gettings started
 Checkout the `test.sh` and the `start.sh` scripts to understand what you need to think about and how to start the server.
 
 ## NodeJS
-### requirements
- - node v16
- - Linus distrubotion
 
 ### install
 ```sh
@@ -94,6 +105,13 @@ Help:
 ```sh
 docker run -it --rm majo418/cprox -h
 ```
+
+# usage recommendation
+Running the program under different conditions might work, have unpredictable effects, or might work only partially or not at all.  
+The program was tested under the following conditions:
+ - node.js v16
+ - npm v8
+ - ubuntu 20.04
 
 # references
  - [configuration](https://github.com/majo418/cprox/blob/main/docs/config.md).

@@ -46,10 +46,10 @@ export function loadRawRules(
     // check all environment variables that start with environmentPrefix
     let i = 1
     if (environmentPrefix) {
-        verbose && console.log("Load environment vars with '" + environmentPrefix + "' as prefix:")
+        verbose && console.debug("Load environment vars with '" + environmentPrefix + "' as prefix:")
         while (true) {
             const rawRule = process.env[environmentPrefix + i]
-            verbose && console.log(" - '" + environmentPrefix + i + "': ", rawRule)
+            verbose && console.debug(" - '" + environmentPrefix + i + "': ", rawRule)
             if (!rawRule) {
                 break
             }
@@ -60,14 +60,14 @@ export function loadRawRules(
             i++
         }
     } else {
-        verbose && console.log("Environment var prefix not defined")
+        verbose && console.debug("Environment var prefix not defined")
     }
     if (processArgs.length > 0) {
-        verbose && console.log(processArgs.length + " process arguments found")
+        verbose && console.debug(processArgs.length + " process arguments found")
         i = 0
         while (i < processArgs.length) {
             const arg = processArgs[i]
-            verbose && console.log(" - " + i + ": ", arg)
+            verbose && console.debug(" - " + i + ": ", arg)
             const index = arg.indexOf("=")
             if (index != -1) {
                 const key = arg.substring(0, index)
@@ -77,7 +77,7 @@ export function loadRawRules(
             i++
         }
     } else {
-        verbose && console.log("No process arguments defined")
+        verbose && console.debug("No process arguments defined")
     }
     return rawSettings
 }

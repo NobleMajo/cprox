@@ -270,7 +270,7 @@ const root: CmdDefinition = {
     allowUnknownArgs: true,
     cmds: [],
     exe: async (cmd) => {
-        console.debug("ENV: ", env)
+        env.VERBOSE && console.debug("ENV: ", env)
 
         let httpsPort = Number(cmd.valueFlags["https-port"])
         let httpPort = Number(cmd.valueFlags["http-port"])
@@ -296,26 +296,26 @@ const root: CmdDefinition = {
             }
         }
 
-        console.log("CProX| Init...")
+        console.info("CProX| Init...")
 
-        env.VERBOSE && console.log("CProX| Set dns server addresses...")
+        env.VERBOSE && console.debug("CProX| Set dns server addresses...")
         dns.setServers(env.DNS_SERVER_ADDRESSES)
 
-        env.VERBOSE && console.log("CProX| Set cert paths...")
+        env.VERBOSE && console.debug("CProX| Set cert paths...")
         const certPaths = {
             cert: fixPath(env.CERT_PATH + "/" + env.CERT_NAME),
             key: fixPath(env.CERT_PATH + "/" + env.KEY_NAME),
             ca: fixPath(env.CERT_PATH + "/" + env.CA_NAME),
         }
 
-        env.VERBOSE && console.log("CProX| Setup cache...")
+        env.VERBOSE && console.debug("CProX| Setup cache...")
         const cache = new MemoryCache()
         cache.startCheckInterval(1000 * 20, async (p) => {
             await p
-            env.VERBOSE && console.log("CProX| Cache: cleared!")
+            env.VERBOSE && console.debug("CProX| Cache: cleared!")
         })
 
-        env.VERBOSE && console.log("CProX| Load rules...")
+        env.VERBOSE && console.debug("CProX| Load rules...")
 
         const rawRules = loadRawRules(
             [
@@ -326,10 +326,10 @@ const root: CmdDefinition = {
             env.VERBOSE
         )
 
-        env.VERBOSE && console.log("CProX| RawRules:\n", Object.keys(rawRules))
+        env.VERBOSE && console.debug("CProX| RawRules:\n", Object.keys(rawRules))
         const parsedRules = parseRules(rawRules)
 
-        env.VERBOSE && console.log("CProX| ParsedRules:\n", parsedRules.length)
+        env.VERBOSE && console.debug("CProX| ParsedRules:\n", parsedRules.length)
         const rules = sortRules(parsedRules)
         if (rules.length == 0) {
             console.error("No rules found!")
@@ -337,9 +337,9 @@ const root: CmdDefinition = {
             process.exit(1)
         }
 
-        env.VERBOSE && console.log("CProX| SortedRules:\n", rules.length)
-        console.log("CProX| " + rules.length + " rules found!")
-        console.log("CProX| Create resolver...")
+        env.VERBOSE && console.debug("CProX| SortedRules:\n", rules.length)
+        console.info("CProX| " + rules.length + " rules found!")
+        console.info("CProX| Create resolver...")
         const resolvers = createResolvers(
             rules,
             cache,
@@ -348,9 +348,9 @@ const root: CmdDefinition = {
                 verbose: env.VERBOSE,
             }
         )
-        env.VERBOSE && console.log("CProX| Resolvers:\n", resolvers.length)
+        env.VERBOSE && console.debug("CProX| Resolvers:\n", resolvers.length)
 
-        env.VERBOSE && console.log("CProX| Create CProX instance...")
+        env.VERBOSE && console.debug("CProX| Create CProX instance...")
 
         await new CProX(
             resolvers,
@@ -448,11 +448,11 @@ export class CProX {
     }
 
     async start(): Promise<void> {
-        console.log("------------------------------------------------------")
-        console.log("CProX| Starting...")
+        console.info("------------------------------------------------------")
+        console.info("CProX| Starting...")
         if (typeof env.HTTPS_PORT == "number") {
             await closeServer(this.httpsServer)
-            console.log("Start server on port '" + env.HTTPS_PORT + "'...")
+            console.info("Start server on port '" + env.HTTPS_PORT + "'...")
             const certs: Certs = await loadCerts(this.certPaths)
             this.httpsServerPromise = createHttpsServer(
                 env.HTTPS_PORT,
@@ -466,7 +466,7 @@ export class CProX {
         }
         if (typeof env.HTTP_PORT == "number") {
             await closeServer(this.httpServer)
-            console.log("Start server on port '" + env.HTTP_PORT + "'...")
+            console.info("Start server on port '" + env.HTTP_PORT + "'...")
             this.httpServerPromise = createHttpServer(
                 env.HTTP_PORT,
                 env.BIND_ADDRESS,
@@ -482,7 +482,7 @@ export class CProX {
         ])
         this.httpServer = httpServer2
         this.httpsServer = httpsServer2
-        console.log("CProX| Server started!")
+        console.info("CProX| Server started!")
     }
 
     async init() {
