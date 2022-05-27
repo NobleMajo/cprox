@@ -6,8 +6,8 @@ import {
     clearEnvironment,
     setEnvironment,
     exampleRules,
-    uniqueStringify
 } from './assets';
+import { uniqueStringify } from '../json';
 
 describe('loadRawRules()', () => {
     it('Single environment rule', async () => {

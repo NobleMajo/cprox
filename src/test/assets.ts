@@ -24,7 +24,3 @@ export function setEnvironment(prefix: string, values: string[]): void {
         process.env[prefix + (i + 1)] = value
     })
 }
-
-export function uniqueStringify(value: any): string {
-    return JSON.stringify(value, null, 4)
-}

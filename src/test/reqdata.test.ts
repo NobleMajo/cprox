@@ -1,12 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import { parseRequestUrl } from "../reqdata";
-import {
-    clearEnvironment,
-    setEnvironment,
-    exampleRules,
-    uniqueStringify
-} from './assets';
+import { uniqueStringify } from '../json';
 
 describe('parseRequestUrl()', () => {
     it('Single request data', async () => {

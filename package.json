@@ -1,7 +1,7 @@
 {
   "name": "cprox",
   "description": "A easy to configure redirect, static serve, proxy and load balancer web server.",
-  "version": "1.7.8",
+  "version": "1.7.10",
   "main": "dist/index.js",
   "author": "majo418",
   "license": "MIT",
@@ -28,7 +28,7 @@
     "tsc": "tsc -p tsconfig.json",
     "start": "ts-node src/index.ts",
     "exec": "node dist/index.js",
-    "test": "mocha --require ts-node/register src/test/**/*.test.ts",
+    "test": "mocha --parallel --require ts-node/register src/test/**/*.test.ts",
     "build": "npm run tsc",
     "start:watch": "nodemon -w ./src -x \"npm run start\" --ext *.ts",
     "build:watch": "nodemon -w ./src -x \"npm run build\" --ext *.ts",

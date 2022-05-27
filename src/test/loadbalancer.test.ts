@@ -4,12 +4,7 @@ import * as resolver from "../resolver";
 import { expect } from 'chai';
 import { findResolver } from '../resolver';
 import { parseRequestUrl } from '../reqdata';
-import {
-    clearEnvironment,
-    setEnvironment,
-    exampleRules,
-    uniqueStringify
-} from './assets';
+import { uniqueStringify } from '../json';
 
 describe('Load balancer', () => {
     it('Check local proxy load balancer with 2 targets', async () => {
