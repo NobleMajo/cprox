@@ -21,7 +21,7 @@ export const verbose: BoolFlag = cmdFlag(
     },
     "VERBOSE",
     envTypes,
-     envDefaults,
+    envDefaults,
     env
 )
 
@@ -44,7 +44,7 @@ export const httpPort: ValueFlag = cmdFlag(
     }
     ,
     "HTTP_PORT",
-    envTypes, 
+    envTypes,
     envDefaults,
     env
 )
@@ -58,7 +58,7 @@ export const httpsPort: ValueFlag = cmdFlag(
         description: "Set the https port (default: 443 but disabled if any port is set)",
     },
     "HTTPS_PORT",
-    envTypes, 
+    envTypes,
     envDefaults,
     env
 )
@@ -72,7 +72,7 @@ export const trustAllCerts: BoolFlag = cmdFlag(
     },
     "TRUST_ALL_CERTS",
     envTypes,
-     envDefaults,
+    envDefaults,
     env
 )
 
@@ -84,7 +84,7 @@ export const disableSelfSinged: BoolFlag = cmdFlag(
     },
     "DISABLE_SELF_SINGED",
     envTypes,
-     envDefaults,
+    envDefaults,
     env
 )
 
@@ -98,7 +98,7 @@ export const bindHostAddress: ValueFlag = cmdFlag(
     },
     "BIND_ADDRESS",
     envTypes,
-     envDefaults,
+    envDefaults,
     env
 )
 
@@ -112,7 +112,7 @@ export const dnsServerAddress: ValueFlag = cmdFlag(
     },
     "DNS_SERVER_ADDRESSES",
     envTypes,
-     envDefaults,
+    envDefaults,
     env
 )
 
@@ -126,7 +126,7 @@ export const selfSingedDomain: ValueFlag = cmdFlag(
     },
     "SELF_SINGED_DOMAIN",
     envTypes,
-     envDefaults,
+    envDefaults,
     env
 )
 
@@ -139,7 +139,7 @@ export const certPath: ValueFlag = cmdFlag(
     },
     "CERT_PATH",
     envTypes,
-     envDefaults,
+    envDefaults,
     env
 )
 
@@ -151,7 +151,7 @@ export const certName: ValueFlag = cmdFlag(
         description: "Define the name for the certificates cert file",
     },
     "CERT_NAME",
-    envTypes, 
+    envTypes,
     envDefaults,
     env
 )
@@ -164,7 +164,7 @@ export const keyName: ValueFlag = cmdFlag(
         description: "Define the name for the certificates key file",
     },
     "KEY_NAME",
-    envTypes, 
+    envTypes,
     envDefaults,
     env
 )
@@ -176,7 +176,7 @@ export const caName: ValueFlag = cmdFlag(
         description: "Define the name for the certificate ca file",
     },
     "CA_NAME",
-    envTypes, 
+    envTypes,
     envDefaults,
     env
 )
@@ -189,7 +189,7 @@ export const maxHeaderSize: ValueFlag = cmdFlag(
         description: "Define the maximum request header size (default: 1024 * 4)",
     },
     "MAX_HEADER_SIZE",
-    envTypes, 
+    envTypes,
     envDefaults,
     env
 )
@@ -202,7 +202,7 @@ export const connectionTimeout: ValueFlag = cmdFlag(
         description: "Define the maximum time in miliseconds (or as millisecond calucaltion) for a open conneciton",
     },
     "CONNECTION_TIMEOUT",
-    envTypes, 
+    envTypes,
     envDefaults,
     env
 )
@@ -216,7 +216,7 @@ export const proxyReactionTimeout: ValueFlag = cmdFlag(
     },
     "PROXY_REACTION_TIMEOUT",
     envTypes,
-     envDefaults,
+    envDefaults,
     env
 )
 
@@ -228,7 +228,7 @@ export const proxyVerifyCertificate: BoolFlag = cmdFlag(
     },
     "PROXY_VERIFY_CERTIFICATE",
     envTypes,
-     envDefaults,
+    envDefaults,
     env
 )
 
@@ -239,7 +239,7 @@ export const proxyFollowRedirects: BoolFlag = cmdFlag(
         description: "Proxy follow redirects",
     },
     "PROXY_FOLLOW_REDIRECTS",
-    envTypes, 
+    envTypes,
     envDefaults,
     env
 )
@@ -270,6 +270,7 @@ const root: CmdDefinition = {
     allowUnknownArgs: true,
     cmds: [],
     exe: async (cmd) => {
+        env.VERBOSE && console.debug("VERBOSE MODE ENABLED!")
         env.VERBOSE && console.debug("ENV: ", env)
 
         let httpsPort = Number(cmd.valueFlags["https-port"])

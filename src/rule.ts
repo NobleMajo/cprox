@@ -1,5 +1,6 @@
 import { fixPath } from "./certs"
 import { parseRequestUrl } from './reqdata';
+import { uniqueStringify } from './json';
 
 export interface RawRules {
     [key: string]: string
@@ -232,12 +233,17 @@ export function splitUrl(
 
     host.split(".").forEach((hostPart) => {
         if (hostPart.length < 1 && hostPart != "*" && !/^[a-zA-Z0-9-.]+$/.test(hostPart)) {
-            throw new Error("Invalid Host: " + hostPart + " \nresponseTarget: " + target + "\nResult: " + JSON.stringify([
-                protocol,
-                host,
-                port,
-                path
-            ], null, 4))
+            throw new Error(
+                "Invalid Host: " +
+                hostPart + " \nresponseTarget: " +
+                target + "\nResult: " +
+                uniqueStringify([
+                    protocol,
+                    host,
+                    port,
+                    path
+                ])
+            )
         }
     })
 

@@ -393,23 +393,23 @@ export function findResolver(
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index]
         if (!hostPartsMatch(resolver.rule.hostParts, data.hostParts)) {
-            verbose && console.debug("mismatch host:", resolver.rule.hostParts, data.hostParts)
+            verbose && console.debug("CPROX-RESOLVER: mismatch host:", resolver.rule.hostParts, data.hostParts)
             continue
         }
         if (!data.path.startsWith(resolver.rule.path)) {
-            verbose && console.debug("mismatch path:", data.path, resolver.rule.path)
+            verbose && console.debug("CPROX-RESOLVER: mismatch path:", data.path, resolver.rule.path)
             continue
         }
         if (cache) {
             cache?.set(data.host + "$" + data.path, resolver, cacheMillis)
         }
-        verbose && console.debug("found resolver:", resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
+        verbose && console.debug("CPROX-RESOLVER: found resolver:", resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
         return {
             ...resolver,
             req: data
         }
     }
-    verbose && console.debug("no resolver found for:", data.host + data.path)
+    verbose && console.debug("CPROX-RESOLVER: no resolver found for:", data.host + data.path)
     return undefined
 }
 
