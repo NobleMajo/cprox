@@ -1,45 +1,68 @@
 import { IncomingMessage, ServerResponse } from "http"
 import { Duplex } from "stream"
-import { Rule, ProxyRule, StaticRule, RedirectRule, ProxyTarget, SplitedURL } from './rule';
+import { Rule, ProxyRule, StaticRule, RedirectRule, ProxyTarget, SplitedURL, RuleType, Rules } from './rule';
 import HttpProxy from "http-proxy"
 import serveStatic, { RequestHandler } from "serve-static"
-import { CacheHolder, NoCache } from "./cache"
 import { RequestData } from './reqdata';
 import env from "./env/envParser"
 import { Settings } from "http2";
+import { Awaitable } from "majotools/dist/httpMiddleware";
+
+export type ProxyTargetOrder = "SEQUENTIAL" | "BALANCED" | "RANDOM"
+export type ProxyTargetFixing = "SAME" | "NEW" | "NONE"
+
+export type ResolverHttpMiddleware = (
+    data: RequestData,
+    req: IncomingMessage,
+    res: ServerResponse,
+) => Awaitable<void>
+
+export type ResolverWsMiddleware = (
+    data: RequestData,
+    req: IncomingMessage,
+    socket: Duplex,
+    head: Buffer,
+) => Awaitable<void>
 
 export interface BaseResolver {
-    type: "PROXY" | "STATIC" | "REDIRECT",
+    type: RuleType,
     rule: Rule,
-    http: (
-        data: RequestData,
-        req: IncomingMessage,
-        res: ServerResponse,
-    ) => Promise<void> | void,
-    ws: (
-        data: RequestData,
-        req: IncomingMessage,
-        socket: Duplex,
-        head: Buffer,
-    ) => Promise<void> | void,
+    http: ResolverHttpMiddleware,
+    ws: ResolverWsMiddleware,
 }
 
-export interface ProxyResolver extends BaseResolver {
-    type: "PROXY",
-    rule: ProxyRule,
+export class ProxyResolver implements BaseResolver {
+    public type: "PROXY" = "PROXY"
+
+    constructor(
+        public rule: ProxyRule,
+        public http: ResolverHttpMiddleware,
+        public ws: ResolverWsMiddleware,
+    ) { }
 }
 
-export interface StaticResolver extends BaseResolver {
-    type: "STATIC",
-    rule: StaticRule,
+export class StaticResolver implements BaseResolver {
+    public type: "STATIC" = "STATIC"
+
+    constructor(
+        public rule: StaticRule,
+        public http: ResolverHttpMiddleware,
+        public ws: ResolverWsMiddleware,
+    ) { }
 }
 
-export interface RedirectResolver extends BaseResolver {
-    type: "REDIRECT",
-    rule: RedirectRule
+export class RedirectResolver implements BaseResolver {
+    public type: "REDIRECT" = "REDIRECT"
+
+    constructor(
+        public rule: RedirectRule,
+        public http: ResolverHttpMiddleware,
+        public ws: ResolverWsMiddleware,
+    ) { }
 }
 
 export type Resolver = ProxyResolver | StaticResolver | RedirectResolver
+export type Resolvers = Resolver[]
 
 export function hostPartsMatch(
     searchFor: string[],
@@ -211,7 +234,6 @@ export interface ProxyTargetMapper {
 
 export function createResolver(
     rule: Rule,
-    cache: CacheHolder,
     options?: CreateResolverOptions,
 ): Resolver {
     const settings: CreateResolverSettings = {
@@ -240,10 +262,9 @@ export function createResolver(
                 " targets!"
             )
         }
-        return {
-            type: "PROXY",
+        return new ProxyResolver(
             rule,
-            http: (reqData, req, res) => {
+            (reqData, req, res) => {
                 const proxy = createProxy(
                     settings,
                     rule,
@@ -255,7 +276,7 @@ export function createResolver(
                 )
                 proxy.web(req, res)
             },
-            ws: (reqData, req, socket, head) => {
+            (reqData, req, socket, head) => {
                 const proxy = createProxy(
                     settings,
                     rule,
@@ -267,16 +288,15 @@ export function createResolver(
                 )
                 proxy.ws(req, socket, head)
             },
-        }
+        )
     } else if (rule.type == "REDIRECT") {
         let lastId: number
         if (rule.target.length > 1) {
             lastId = 0
         }
-        return {
-            type: "REDIRECT",
+        return new RedirectResolver(
             rule,
-            http: (reqData, req, res) => {
+            (reqData, req, res) => {
                 let target: SplitedURL
                 if (rule.target.length > 1) {
                     if (lastId >= rule.target.length) {
@@ -318,15 +338,14 @@ export function createResolver(
                 )
                 res.end()
             },
-            ws: (reqData, req, socket, head) => {
+            (reqData, req, socket, head) => {
                 socket.destroy()
-            }
-        }
+            },
+        )
     } else if (rule.type == "STATIC") {
-        return {
-            type: "STATIC",
+        return new StaticResolver(
             rule,
-            http: (reqData, req, res) => {
+            (reqData, req, res) => {
                 overwriteRequestUrl(
                     reqData,
                     rule,
@@ -334,20 +353,12 @@ export function createResolver(
                 )
 
                 const uuid = "S$" + rule.target
-                let staticServer: RequestHandler<any> | undefined = cache.get(uuid)
-                if (!staticServer) {
-                    staticServer = serveStatic(
-                        rule.target,
-                        {
-                            index: settings.staticIndexFiles,
-                        }
-                    )
-                    cache.set(
-                        uuid,
-                        staticServer,
-                        settings.cacheMillis
-                    )
-                }
+                let staticServer: RequestHandler<any> = serveStatic(
+                    rule.target,
+                    {
+                        index: settings.staticIndexFiles,
+                    }
+                )
 
                 settings.verbose && console.debug("STATIC:", rule.target)
                 staticServer(
@@ -360,35 +371,39 @@ export function createResolver(
                     }
                 )
             },
-            ws: (data, req, socket, head) => {
+            (data, req, socket, head) => {
                 socket.destroy()
-            }
-        }
+            },
+        )
     } else {
         throw new Error("rule type: " + (rule as any).type)
     }
 }
 
-export const noCache = new NoCache()
 export function createResolvers(
-    rules: Rule[],
-    cache: CacheHolder = noCache,
+    rules: Rules,
     options?: CreateResolverOptions,
-): Resolver[] {
-    return rules.map(rule => createResolver(rule, cache, options))
+): Resolvers {
+    return rules.map(rule => createResolver(rule, options))
 }
 
 export type FoundResolver = Resolver & { req: RequestData }
 
 export function findResolver(
     data: RequestData,
-    resolvers: Resolver[],
-    cache: CacheHolder = noCache,
-    cacheMillis: number = 1000 * 20,
-    verbose: boolean = false
+    resolvers: Resolvers,
+    cache?: {
+        get: (id: string) => Resolver | undefined,
+        set: (id: string, value: Resolver) => void,
+    },
+    verbose: boolean = false,
 ): FoundResolver | undefined {
-    if (cache && cache.has(data.host + "$" + data.path)) {
-        return cache.get(data.host + "$" + data.path)
+    if (cache) {
+        const resolver: FoundResolver = cache.get(data.host + "$" + data.path) as any
+        if (resolver) {
+            resolver.req = data
+            return resolver
+        }
     }
     for (let index = 0; index < resolvers.length; index++) {
         const resolver = resolvers[index]
@@ -401,7 +416,7 @@ export function findResolver(
             continue
         }
         if (cache) {
-            cache?.set(data.host + "$" + data.path, resolver, cacheMillis)
+            cache.set(data.host + "$" + data.path, resolver)
         }
         verbose && console.debug("CPROX-RESOLVER: found resolver:", resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
         return {

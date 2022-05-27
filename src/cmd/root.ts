@@ -1,13 +1,12 @@
-import { CmdDefinition, CmdParserOptions, BoolFlag, ValueFlag } from "cmdy"
+import { CmdDefinition, CmdParserOptions, BoolFlag, ValueFlag, Awaitable } from "cmdy"
 import env from "../env/envParser"
 import dns from "dns"
 import { RequestListener, Server as HttpServer } from "http"
 import { Server as HttpsServer } from "https"
 import { createCertWatcher, fixPath, loadCerts, Certs, generateSelfSigned, CertPaths } from '../certs';
 import { loadRawRules, parseRules, sortRules } from "../rule"
-import { createResolvers, findResolver, Resolver } from "../resolver"
+import { createResolvers, findResolver, Resolver, Resolvers } from "../resolver"
 import { closeServer, createHttpServer, createHttpsServer, UpgradeListener } from "../server"
-import { CacheHolder, MemoryCache } from "../cache"
 import { parseRequestUrl } from "../reqdata"
 import { promises as fs } from "fs"
 import { cmdFlag } from "typenvy"
@@ -309,13 +308,6 @@ const root: CmdDefinition = {
             ca: fixPath(env.CERT_PATH + "/" + env.CA_NAME),
         }
 
-        env.VERBOSE && console.debug("CProX| Setup cache...")
-        const cache = new MemoryCache()
-        cache.startCheckInterval(1000 * 20, async (p) => {
-            await p
-            env.VERBOSE && console.debug("CProX| Cache: cleared!")
-        })
-
         env.VERBOSE && console.debug("CProX| Load rules...")
 
         const rawRules = loadRawRules(
@@ -343,7 +335,6 @@ const root: CmdDefinition = {
         console.info("CProX| Create resolver...")
         const resolvers = createResolvers(
             rules,
-            cache,
             {
                 cacheMillis: 1000 * 60 * 2,
                 verbose: env.VERBOSE,
@@ -355,7 +346,6 @@ const root: CmdDefinition = {
 
         await new CProX(
             resolvers,
-            cache,
             certPaths
         ).init()
     }
@@ -369,8 +359,7 @@ export class CProX {
     restartPromise: Promise<void> | undefined = undefined
 
     constructor(
-        public resolvers: Resolver[],
-        public cache: CacheHolder,
+        public resolvers: Resolvers,
         public certPaths: CertPaths,
     ) { }
 
@@ -391,8 +380,7 @@ export class CProX {
             const resolve = findResolver(
                 data,
                 this.resolvers,
-                this.cache,
-                1000 * 30,
+                undefined,
                 env.VERBOSE
             )
             if (!resolve) {
@@ -421,8 +409,7 @@ export class CProX {
             const resolve = findResolver(
                 data,
                 this.resolvers,
-                this.cache,
-                1000 * 30,
+                undefined,
                 env.VERBOSE
             )
             if (!resolve) {

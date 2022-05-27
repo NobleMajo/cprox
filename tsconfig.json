@@ -17,11 +17,11 @@
     "noImplicitAny": true,
   },
   "include": [
-    "src/**/*.ts",
+    "src",
   ],
   "exclude": [
-    "test/**/*",
-    "dist/**/*",
-    "node_modules/**/*"
+    "src/test",
+    "dist",
+    "node_modules"
   ]
 }

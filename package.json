@@ -53,6 +53,7 @@
   "dependencies": {
     "cmdy": "^1",
     "http-proxy": "^1",
+    "majotools": "^1.3.0",
     "selfsigned": "^2",
     "serve-static": "^1",
     "typenvy": "^1"

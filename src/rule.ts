@@ -6,6 +6,8 @@ export interface RawRules {
     [key: string]: string
 }
 
+export type RuleType = "STATIC" | "PROXY" | "REDIRECT"
+
 export interface BaseRule {
     host: string,
     path: string,
@@ -33,7 +35,6 @@ export interface RedirectRule extends BaseRule {
 }
 
 export type Rule = RedirectRule | ProxyRule | StaticRule
-
 export type Rules = Rule[]
 
 // create function that loads raw settings from environment and process arguments
