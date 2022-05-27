@@ -1,7 +1,12 @@
 # CProX
 ![Docker](https://img.shields.io/docker/image-size/majo418/cprox)
 ![CI/CD](https://github.com/majo418/cprox/workflows/Image/badge.svg)
+![CI/CD](https://github.com/majo418/cprox/workflows/Publish/badge.svg)
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+
+![typescript](https://img.shields.io/badge/dynamic/json?style=plastic&color=blue&label=Typescript&prefix=v&query=devDependencies.typescript&url=https%3A%2F%2Fraw.githubusercontent.com%2Fmajo418%2Fcprox%2Fmain%2Fpackage.json)
+![npm](https://img.shields.io/npm/v/cprox.svg?style=plastic&logo=npm&color=red)
+![github](https://img.shields.io/badge/dynamic/json?style=plastic&color=darkviolet&label=GitHub&prefix=v&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fmajo418%2Fcprox%2Fmain%2Fpackage.json)
 
 ![](https://img.shields.io/badge/dynamic/json?color=green&label=watchers&query=watchers&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
 ![](https://img.shields.io/badge/dynamic/json?color=yellow&label=stars&query=stargazers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
