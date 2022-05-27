@@ -9,14 +9,18 @@ CURRENT_WORK_DIR=$(pwd)
 CURRENT_SCRIPT=$(realpath $0)
 CURRENT_SCRIPT_DIR=$(dirname $CURRENT_SCRIPT)
 PROJECT_DIR="$CURRENT_SCRIPT_DIR/.."
+PROJECT_NAME=$(node -e "console.log(require('$PROJECT_DIR/package.json').name)")
 
 cd $PROJECT_DIR
-docker build -t cprox .
+docker build -t $PROJECT_NAME .
+
+docker rm -f $PROJECT_NAME > /dev/null 2>&1
 
 cd $CURRENT_WORK_DIR
 docker run --rm -it \
     -p 0.0.0.0:$1:443 \
-    -v $CURRENT_WORK_DIR:/mountpoint \
-    --name cprox \
-    cprox \
-        -s $@
+    -v $PROJECT_DIR/certs:/app/certs \
+    -v $CURRENT_WORK_DIR:/mount \
+    --name $PROJECT_NAME \
+    $PROJECT_NAME \
+        -s 443 ${@:2}
