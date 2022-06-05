@@ -5,11 +5,7 @@ import HttpProxy from "http-proxy"
 import serveStatic, { RequestHandler } from "serve-static"
 import { RequestData } from './reqdata';
 import env from "./env/envParser"
-import { Settings } from "http2";
 import { Awaitable } from "majotools/dist/httpMiddleware";
-
-export type ProxyTargetOrder = "SEQUENTIAL" | "BALANCED" | "RANDOM"
-export type ProxyTargetFixing = "SAME" | "NEW" | "NONE"
 
 export type ResolverHttpMiddleware = (
     data: RequestData,
