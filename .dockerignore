@@ -4,5 +4,4 @@
 !tsconfig.json
 !src
 !bin
-!entrypoint.sh
 src/test

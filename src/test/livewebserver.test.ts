@@ -248,6 +248,32 @@ export const defaultAfterTimeout: number = 1000 * 16
 export const defaultCliTimeout: number = 1000 * 32
 export const defaultRequestTimeout: number = 1000 * 4
 
+describe('Live cli', function () {
+    this.timeout(defaultE2ETimeout)
+
+    it('Cli help test', async function () {
+        this.timeout(defaultCliTimeout)
+
+        const result = await asyncFork(
+            __dirname + "/../index",
+            {
+                args: ["--help"]
+            }
+        )
+        await result.spawnPromise
+        expect(result.promise).is.not.undefined
+        await result.promise
+        await result.kill()
+
+        expect(result.code).is.equals(0)
+        expect(result.sysErr.length).is.equals(0)
+        expect(result.sysOut.length).is.not.equals(0)
+        expect(result.sysOut).includes("# CPROX #\n")
+        expect(result.sysOut).includes("Usage: cprox [OPTIONS] [ARGUMENTS]\n")
+        expect(result.sysOut).includes("! CProX | by majo418 | supported by CoreUnit.NET !\n")
+    })
+})
+
 describe('Live E2E proxy webserver tests', function () {
     this.timeout(defaultE2ETimeout)
     let port: number = 55557
@@ -269,7 +295,7 @@ describe('Live E2E proxy webserver tests', function () {
                 "-p", "" + port,
                 "-b", "127.0.0.1",
                 "localhost=PROXY:http://127.0.0.1:" + port2,
-                "sub.com=PROXY:http://1.1.2.3:4",
+                "sub.com=PROXY:http://127.0.0.1:50404",
             ])
         ])
 
@@ -470,21 +496,12 @@ describe('Live E2E proxy webserver tests', function () {
         }
         expect(uniqueStringify({
             resp: resp ? true : false,
-            errMsg: err?.message,
-            err: sysErr,
+            errMsg: typeof err.message == "string" && err.message.length > 0,
+            err: typeof sysErr == "string" && sysErr.length > 0,
         })).is.equals(uniqueStringify({
             resp: false,
-            errMsg: "network timeout at: http://127.0.0.1:55557/sub.html",
-            err: [
-                "{",
-                "  msg: 'connect EHOSTUNREACH 1.1.2.3:4',",
-                "  name: 'Error: connect EHOSTUNREACH 1.1.2.3:4',",
-                "  stack: [",
-                "    '    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1187:16)'",
-                "  ]",
-                "}",
-                ""
-            ].join("\n"),
+            errMsg: true,
+            err: true
         }))
     })
 
@@ -508,46 +525,13 @@ describe('Live E2E proxy webserver tests', function () {
         }
         expect(uniqueStringify({
             resp: resp ? true : false,
-            errMsg: err?.message,
-            err: sysErr,
+            errMsg: typeof err.message == "string" && err.message.length > 0,
+            err: typeof sysErr == "string" && sysErr.length > 0,
         })).is.equals(uniqueStringify({
             resp: false,
-            errMsg: "network timeout at: http://127.0.0.1:55557/",
-            err: [
-                "{",
-                "  msg: 'connect EHOSTUNREACH 1.1.2.3:4',",
-                "  name: 'Error: connect EHOSTUNREACH 1.1.2.3:4',",
-                "  stack: [",
-                "    '    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1187:16)'",
-                "  ]", "}", ""
-            ].join("\n"),
+            errMsg: true,
+            err: true
         }))
-    })
-})
-
-describe('Live cli', function () {
-    this.timeout(defaultE2ETimeout)
-
-    it('Cli help test', async function () {
-        this.timeout(defaultCliTimeout)
-
-        const result = await asyncFork(
-            __dirname + "/../index",
-            {
-                args: ["--help"]
-            }
-        )
-        await result.spawnPromise
-        expect(result.promise).is.not.undefined
-        await result.promise
-        await result.kill()
-
-        expect(result.code).is.equals(0)
-        expect(result.sysErr.length).is.equals(0)
-        expect(result.sysOut.length).is.not.equals(0)
-        expect(result.sysOut).includes("# CPROX #\n")
-        expect(result.sysOut).includes("Usage: cprox [OPTIONS] [ARGUMENTS]\n")
-        expect(result.sysOut).includes("! CProX | by majo418 | supported by CoreUnit.NET !\n")
     })
 })
 
