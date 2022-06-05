@@ -20,4 +20,4 @@ RUN npm ci --omit=dev
 
 COPY --from=build /app /app
 
-ENTRYPOINT [ "/app/bin/prod" ]
+ENTRYPOINT [ "/app/bin/prod.sh" ]

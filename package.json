@@ -16,9 +16,8 @@
     "redirect"
   ],
   "bin": {
-    "cprox": "./bin/prod",
-    "cproxdev": "./bin/dev",
-    "cproxcon": "./bin/con"
+    "cprox": "./bin/prod.sh",
+    "cproxdev": "./bin/dev.sh"
   },
   "repository": {
     "url": "git@github.com:majo418/cprox.git",
