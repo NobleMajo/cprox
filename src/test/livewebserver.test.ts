@@ -46,9 +46,9 @@ export interface AsyncForkSettings {
 export const defaultAsyncForkSettings: AsyncForkSettings = {
     args: [],
     env: {},
-    spawnTimeout: 1000 * 3,
-    timeout: 1000 * 6,
-    closeTimeout: 1000 * 3,
+    spawnTimeout: 1000 * 4,
+    timeout: 1000 * 8,
+    closeTimeout: 1000 * 4,
 }
 
 export async function asyncFork(
@@ -243,10 +243,10 @@ export const defaultFetchOptions = {
 }
 
 export const defaultE2ETimeout: number = 1000 * 60 * 2
-export const defaultBeforeTimeout: number = 1000 * 8
-export const defaultAfterTimeout: number = 1000 * 8
-export const defaultCliTimeout: number = 1000 * 16
-export const defaultRequestTimeout: number = 1000 * 3
+export const defaultBeforeTimeout: number = 1000 * 16
+export const defaultAfterTimeout: number = 1000 * 16
+export const defaultCliTimeout: number = 1000 * 32
+export const defaultRequestTimeout: number = 1000 * 4
 
 describe('Live E2E proxy webserver tests', function () {
     this.timeout(defaultE2ETimeout)
