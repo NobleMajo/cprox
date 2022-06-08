@@ -2,6 +2,6 @@
 !package.json
 !package-lock.json
 !tsconfig.json
-!src
 !bin
+!src
 src/test

@@ -4,5 +4,5 @@
 !package.json
 !README.md
 !LICENCE
-!dist/**/*
-dist/test/**/*
+!dist
+dist/test

@@ -12,11 +12,11 @@ export type UpgradeListener = (
 export function createHttpsServer(
     port: number,
     bindAddress: string,
-    requestListener: RequestListener,
-    upgradeListener: UpgradeListener,
     certs: Certs,
     connectionTimeout: number,
     maxHeaderSize: number,
+    requestListener: RequestListener,
+    upgradeListener?: UpgradeListener,
 ): Promise<HttpsServer> {
     return new Promise(async (res, rej) => {
         try {
@@ -28,7 +28,7 @@ export function createHttpsServer(
                 requestListener
             )
             server.setTimeout(connectionTimeout)
-            server.on('upgrade', upgradeListener)
+            upgradeListener && server.on('upgrade', upgradeListener)
             server.listen(
                 port,
                 bindAddress,
@@ -59,10 +59,10 @@ export async function closeServer(
 export function createHttpServer(
     port: number,
     bindAddress: string,
-    requestListener: RequestListener,
-    upgradeListener: UpgradeListener,
     connectionTimeout: number,
     maxHeaderSize: number,
+    requestListener: RequestListener,
+    upgradeListener?: UpgradeListener,
 ): Promise<HttpServer> {
     return new Promise(async (res, rej) => {
         try {
@@ -73,10 +73,7 @@ export function createHttpServer(
                 requestListener
             )
             server.setTimeout(connectionTimeout)
-            server.on(
-                'upgrade',
-                upgradeListener
-            )
+            upgradeListener && server.on('upgrade', upgradeListener)
             server.listen(
                 port,
                 bindAddress,

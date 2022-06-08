@@ -440,28 +440,64 @@ export class CProX {
         console.info("CProX| Starting...")
         if (typeof env.HTTPS_PORT == "number") {
             await closeServer(this.httpsServer)
-            console.info("Start server on port '" + env.HTTPS_PORT + "'...")
+            console.info("Start https server on port '" + env.HTTPS_PORT + "'...")
             const certs: Certs = await loadCerts(this.certPaths)
             this.httpsServerPromise = createHttpsServer(
                 env.HTTPS_PORT,
                 env.BIND_ADDRESS,
-                this.requestListener,
-                this.upgradeListener,
                 certs,
                 env.CONNECTION_TIMEOUT,
                 env.MAX_HEADER_SIZE,
+                this.requestListener,
+                this.upgradeListener,
             )
-        }
-        if (typeof env.HTTP_PORT == "number") {
+            if (typeof env.HTTP_PORT == "number") {
+                await closeServer(this.httpServer)
+                console.info("Start http redirect server on port '" + env.HTTP_PORT + "'...")
+                this.httpServerPromise = createHttpServer(
+                    env.HTTP_PORT,
+                    env.BIND_ADDRESS,
+                    env.CONNECTION_TIMEOUT,
+                    env.MAX_HEADER_SIZE,
+                    (req, res) => {
+                        let host = req.headers['host']
+                        if (
+                            typeof host != "string" ||
+                            host.length == 0
+                        ) {
+                            res.writeHead(400)
+                            res.end("Host header not defined!")
+                            return
+                        }
+                        if (!host.includes(":")) {
+                            host += ":" + env.HTTPS_PORT
+                        }
+                        const upgradeTo = req.headers['upgrade']
+                        const ws = typeof upgradeTo == "string" &&
+                            upgradeTo.length != 0 &&
+                            upgradeTo.toLowerCase().includes("websocket")
+
+                        res.writeHead(
+                            301,
+                            {
+                                "Location": (ws ? "wss://" : "https://") + host + req.url
+                            }
+                        )
+                        res.end()
+                    },
+
+                )
+            }
+        } else if (typeof env.HTTP_PORT == "number") {
             await closeServer(this.httpServer)
-            console.info("Start server on port '" + env.HTTP_PORT + "'...")
+            console.info("Start http server on port '" + env.HTTP_PORT + "'...")
             this.httpServerPromise = createHttpServer(
                 env.HTTP_PORT,
                 env.BIND_ADDRESS,
-                this.requestListener,
-                this.upgradeListener,
                 env.CONNECTION_TIMEOUT,
                 env.MAX_HEADER_SIZE,
+                this.requestListener,
+                this.upgradeListener,
             )
         }
         const [httpServer2, httpsServer2] = await Promise.all([

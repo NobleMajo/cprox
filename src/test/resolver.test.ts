@@ -8,7 +8,7 @@ import {
     clearEnvironment,
     setEnvironment,
     exampleRules,
-} from './assets';
+} from './example';
 import { uniqueStringify } from '../json';
 
 describe('loadRawRules()', () => {
