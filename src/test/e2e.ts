@@ -32,6 +32,7 @@ export interface AsyncForkOptions {
     spawnTimeout?: number,
     timeout?: number,
     closeTimeout?: number,
+    passCurrentEnv?: booleam,
 }
 
 export interface AsyncForkSettings {
@@ -40,6 +41,7 @@ export interface AsyncForkSettings {
     spawnTimeout: number,
     timeout: number,
     closeTimeout: number,
+    passCurrentEnv: booleam,
 }
 
 export const defaultAsyncForkSettings: AsyncForkSettings = {
@@ -48,6 +50,7 @@ export const defaultAsyncForkSettings: AsyncForkSettings = {
     spawnTimeout: 1000 * 4,
     timeout: 1000 * 8,
     closeTimeout: 1000 * 4,
+    passCurrentEnv: false,
 }
 
 export async function asyncFork(
@@ -62,7 +65,10 @@ export async function asyncFork(
         const child = fork(modulePath, settings.args, {
             execArgv: ["node_modules/ts-node/dist/bin.js"],
             silent: true,
-            env: settings.env,
+            env: {
+                ...(settings.passCurrentEnv ? process.env : {})
+                ...settings.env,
+            },
         })
         const result: AsyncForkResult = {
             spawned: false,
@@ -264,13 +270,10 @@ export async function asyncFork(
                 res()
                 return
             }
-            child.on(
-                'spawn',
-                () => {
-                    live()
-                    res()
-                }
-            )
+            child.on('spawn', () => {
+                live()
+                res()
+            })
             if (settings.spawnTimeout > 0) {
                 setTimeout(
                     () => rej(
