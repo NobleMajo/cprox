@@ -270,7 +270,7 @@ const root: CmdDefinition = {
     cmds: [],
     exe: async (cmd) => {
         env.VERBOSE && console.debug("VERBOSE MODE ENABLED!")
-        env.VERBOSE && console.debug("ENV: ", env)
+        env.VERBOSE && console.debug("ENV: ", env, "\n\n")
 
         let httpsPort = Number(cmd.valueFlags["https-port"])
         let httpPort = Number(cmd.valueFlags["http-port"])
