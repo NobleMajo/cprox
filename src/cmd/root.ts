@@ -341,7 +341,6 @@ const root: CmdDefinition = {
             }
         )
         env.VERBOSE && console.debug("CProX| Resolvers:\n", resolvers.length)
-
         env.VERBOSE && console.debug("CProX| Create CProX instance...")
 
         await new CProX(
