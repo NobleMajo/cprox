@@ -4,7 +4,8 @@ import {
     defaultE2ETimeout, defaultCliTimeout,
     asyncFork,
 } from '../e2e'
-import { uniqueStringify } from '../../json';
+import { uniqueStringify } from "majotools/dist/json"
+import { getNewPort } from '../e2e';
 
 describe('Live env', function () {
     this.timeout(defaultE2ETimeout)
@@ -15,7 +16,10 @@ describe('Live env', function () {
         const result = await asyncFork(
             __dirname + "/../../index",
             {
-                args: ["*=STATIC:/var/www/html"],
+                args: [
+                    "--dry-run",
+                    "*=STATIC:/var/www/html"
+                ],
                 env: {
                     "VERBOSE": "true",
                 }
@@ -26,24 +30,26 @@ describe('Live env', function () {
         await result.promise
         await result.close()
 
-        expect(result.code).is.equals(null)
-        expect(result.getErrOutput()).is.equals("")
-        const out = result.getStdOutput(undefined, "")
-        expect(out.length).is.not.equals(0)
+        const err = result.getErrOutput(undefined, "")
+        const std = result.getStdOutput(undefined, "")
+        const out = "Output:\n" + result.getOutput()
 
-        const envStartIndex = out.indexOf("ENV: {")
+        expect(err, out).is.equals("")
+        expect(std, out).is.not.equals("")
+
+        const envStartIndex = std.indexOf("ENV: {")
         expect(
             envStartIndex,
-            "Can't find 'ENV: {' in output:\n" + out
+            "Can't find 'ENV: {' in output:\n" + std
         ).is.not.equals(-1)
 
-        const envEndIndex = out.lastIndexOf("}")
+        const envEndIndex = std.lastIndexOf("}")
         expect(
             envEndIndex,
-            "Can't find '}' in output:\n" + out
+            "Can't find '}' after 'ENV: {' in output:\n" + std
         ).is.not.equals(-1)
 
-        const envString = out.substring(
+        const envString = std.substring(
             envStartIndex + 5,
             envEndIndex + 1
         )
@@ -56,7 +62,7 @@ describe('Live env', function () {
         }
         expect(
             uniqueStringify(env),
-            "Actual env was: " + JSON.stringify(env, null, 2)
+            "Actual env was: " + JSON.stringify(env, null, 2) + "\n" + out
         ).is.equals(uniqueStringify({
             "PRODUCTION": false,
             "VERBOSE": true,
@@ -84,6 +90,7 @@ describe('Live env', function () {
             "PROXY_VERIFY_CERTIFICATE": false,
             "PROXY_FOLLOW_REDIRECTS": false
         }))
+        expect(result.code, out).is.equals(null)
     })
 
     it('Check extra envtionment variables', async function () {
@@ -92,9 +99,12 @@ describe('Live env', function () {
         const result = await asyncFork(
             __dirname + "/../../index",
             {
-                args: ["*=STATIC:/var/www/html"],
+                args: [
+                    "--verbose",
+                    "*=STATIC:/var/www/html"
+                ],
                 env: {
-                    "VERBOSE": "true",
+                    "DRYRUN": "true",
                     "TRUST_ALL_CERTS": "false",
                     "SELF_SINGED_DOMAIN": "test.com",
                 }
@@ -105,26 +115,28 @@ describe('Live env', function () {
         await result.promise
         await result.close()
 
-        expect(result.code).is.equals(null)
-        expect(result.getErrOutput()).is.equals("")
-        const out = result.getStdOutput(undefined, "")
-        expect(out.length).is.not.equals(0)
+        const err = result.getErrOutput(undefined, "")
+        const std = result.getStdOutput(undefined, "")
+        const out = "Output:\n" + result.getOutput()
 
-        const envStartIndex = out.indexOf("ENV: {")
+        expect(err, out).is.equals("")
+        expect(std, out).is.not.equals("")
+
+        const envStartIndex = std.indexOf("ENV: {")
         expect(
             envStartIndex,
-            "Can't find 'ENV: {' in output:\n" + out
+            "Can't find 'ENV: {' in output:\n" + std
         ).is.not.equals(-1)
 
-        const envEndIndex = out.lastIndexOf("}")
+        const envEndIndex = std.lastIndexOf("}")
         expect(
             envEndIndex,
-            "Can't find '}' in output:\n" + out
+            "Can't find '}' after 'ENV: {' in output:\n" + std
         ).is.not.equals(-1)
 
-        const envString = out.substring(
+        const envString = std.substring(
             envStartIndex + 5,
-            envEndIndex + 1
+            envEndIndex + 1,
         )
         let env
         try {
@@ -135,7 +147,7 @@ describe('Live env', function () {
         }
         expect(
             uniqueStringify(env),
-            "Actual env was: " + JSON.stringify(env, null, 2)
+            "Actual env was: " + JSON.stringify(env, null, 2) + "\n" + out
         ).is.equals(uniqueStringify({
             "PRODUCTION": false,
             "VERBOSE": true,
@@ -163,6 +175,7 @@ describe('Live env', function () {
             "PROXY_VERIFY_CERTIFICATE": false,
             "PROXY_FOLLOW_REDIRECTS": false
         }))
+        expect(result.code, out).is.equals(null)
 
     })
 
@@ -173,11 +186,12 @@ describe('Live env', function () {
             __dirname + "/../../index",
             {
                 args: [
+                    "--verbose",
                     "--trust-all-certs",
                     "*=STATIC:/var/www/html"
                 ],
                 env: {
-                    "VERBOSE": "true",
+                    "DRYRUN": "true",
                 }
             }
         )
@@ -186,24 +200,26 @@ describe('Live env', function () {
         await result.promise
         await result.close()
 
-        expect(result.code).is.equals(0)
-        expect(result.getErrOutput()).is.equals("")
-        const out = result.getStdOutput(undefined, "")
-        expect(out.length).is.not.equals(0)
+        const err = result.getErrOutput(undefined, "")
+        const std = result.getStdOutput(undefined, "")
+        const out = "Output:\n" + result.getOutput()
 
-        const envStartIndex = out.indexOf("ENV: {")
+        expect(err, out).is.equals("")
+        expect(std, out).is.not.equals("")
+
+        const envStartIndex = std.indexOf("ENV: {")
         expect(
             envStartIndex,
-            "Can't find 'ENV: {' in output:\n" + out
+            "Can't find 'ENV: {' in output:\n" + std
         ).is.not.equals(-1)
 
-        const envEndIndex = out.lastIndexOf("}")
+        const envEndIndex = std.lastIndexOf("}")
         expect(
             envEndIndex,
-            "Can't find '}' in output:\n" + out
+            "Can't find '}' after 'ENV: {' in output:\n" + std
         ).is.not.equals(-1)
 
-        const envString = out.substring(
+        const envString = std.substring(
             envStartIndex + 5,
             envEndIndex + 1
         )
@@ -220,7 +236,7 @@ describe('Live env', function () {
         ).is.equals(uniqueStringify({
             "PRODUCTION": false,
             "VERBOSE": true,
-            "TRUST_ALL_CERTS": false,
+            "TRUST_ALL_CERTS": true,
             "DNS_SERVER_ADDRESSES": [
                 "127.0.0.11",
                 "1.0.0.1",
@@ -244,5 +260,6 @@ describe('Live env', function () {
             "PROXY_VERIFY_CERTIFICATE": false,
             "PROXY_FOLLOW_REDIRECTS": false
         }))
+        expect(result.code).is.equals(0)
     })
 })

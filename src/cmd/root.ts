@@ -9,19 +9,27 @@ import { createResolvers, findResolver, Resolver, Resolvers } from "../resolver"
 import { closeServer, createHttpServer, createHttpsServer, UpgradeListener } from "../server"
 import { parseRequestUrl } from "../reqdata"
 import { promises as fs } from "fs"
-import { cmdFlag } from "typenvy"
-import { envTypes, envDefaults } from "../env/env"
+import { cmdyFlag } from "typenvy"
+import { envData } from "../env/envParser"
 
-export const verbose: BoolFlag = cmdFlag(
+export const verbose: BoolFlag = cmdyFlag(
     {
         name: "verbose",
         shorthand: "v",
         description: "Show basic flag adn target informations",
     },
     "VERBOSE",
-    envTypes,
-    envDefaults,
-    env
+    envData
+)
+
+export const dryrun: BoolFlag = cmdyFlag(
+    {
+        name: "dry-run",
+        alias: ["dryrun", "drun", "dryr"],
+        description: "Exit cprox before final start server step.",
+    },
+    "DRYRUN",
+    envData
 )
 
 export const rules: ValueFlag = {
@@ -33,7 +41,7 @@ export const rules: ValueFlag = {
     description: "CProX rules",
 }
 
-export const httpPort: ValueFlag = cmdFlag(
+export const httpPort: ValueFlag = cmdyFlag(
     {
         name: "http-port",
         alias: ["http"],
@@ -43,12 +51,10 @@ export const httpPort: ValueFlag = cmdFlag(
     }
     ,
     "HTTP_PORT",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const httpsPort: ValueFlag = cmdFlag(
+export const httpsPort: ValueFlag = cmdyFlag(
     {
         name: "https-port",
         alias: ["https"],
@@ -57,12 +63,10 @@ export const httpsPort: ValueFlag = cmdFlag(
         description: "Set the https port (default: 443 but disabled if any port is set)",
     },
     "HTTPS_PORT",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const trustAllCerts: BoolFlag = cmdFlag(
+export const trustAllCerts: BoolFlag = cmdyFlag(
     {
         name: "trust-all-certs",
         alias: ["t-a-c", "tac"],
@@ -70,24 +74,20 @@ export const trustAllCerts: BoolFlag = cmdFlag(
         description: "Trust all certificates on proxy",
     },
     "TRUST_ALL_CERTS",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const disableSelfSinged: BoolFlag = cmdFlag(
+export const disableSelfSinged: BoolFlag = cmdyFlag(
     {
         name: "disable-self-singed",
         alias: ["disableselfsinged", "d-s-s", "dss"],
         description: "Disable generating self singed certificates if not exist",
     },
     "DISABLE_SELF_SINGED",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const bindHostAddress: ValueFlag = cmdFlag(
+export const bindHostAddress: ValueFlag = cmdyFlag(
     {
         name: "bind-host-address",
         alias: ["b-h-a", "bha", "bind-host-address"],
@@ -96,12 +96,10 @@ export const bindHostAddress: ValueFlag = cmdFlag(
         description: "Set the host where the server pind the ports",
     },
     "BIND_ADDRESS",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const dnsServerAddress: ValueFlag = cmdFlag(
+export const dnsServerAddress: ValueFlag = cmdyFlag(
     {
         name: "dns-server-address",
         alias: ["dns-server", "dnsserveraddress", "dns-address", "dns"],
@@ -110,12 +108,10 @@ export const dnsServerAddress: ValueFlag = cmdFlag(
         multiValues: true,
     },
     "DNS_SERVER_ADDRESSES",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const selfSingedDomain: ValueFlag = cmdFlag(
+export const selfSingedDomain: ValueFlag = cmdyFlag(
     {
         name: "self-singed-domain",
         alias: ["selfsingeddomain", "s-s-d", "ssd", "domain", "dom"],
@@ -124,12 +120,10 @@ export const selfSingedDomain: ValueFlag = cmdFlag(
         description: "Set the domain name for self singed certificates",
     },
     "SELF_SINGED_DOMAIN",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const certPath: ValueFlag = cmdFlag(
+export const certPath: ValueFlag = cmdyFlag(
     {
         name: "cert-path",
         alias: ["certpath"],
@@ -137,12 +131,10 @@ export const certPath: ValueFlag = cmdFlag(
         description: "Define the path for the certificates",
     },
     "CERT_PATH",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const certName: ValueFlag = cmdFlag(
+export const certName: ValueFlag = cmdyFlag(
     {
         name: "cert-name",
         alias: ["certname"],
@@ -150,12 +142,10 @@ export const certName: ValueFlag = cmdFlag(
         description: "Define the name for the certificates cert file",
     },
     "CERT_NAME",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const keyName: ValueFlag = cmdFlag(
+export const keyName: ValueFlag = cmdyFlag(
     {
         name: "key-name",
         alias: ["keyname"],
@@ -163,11 +153,9 @@ export const keyName: ValueFlag = cmdFlag(
         description: "Define the name for the certificates key file",
     },
     "KEY_NAME",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
-export const caName: ValueFlag = cmdFlag(
+export const caName: ValueFlag = cmdyFlag(
     {
         name: "ca-name",
         alias: ["caname"],
@@ -175,12 +163,10 @@ export const caName: ValueFlag = cmdFlag(
         description: "Define the name for the certificate ca file",
     },
     "CA_NAME",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const maxHeaderSize: ValueFlag = cmdFlag(
+export const maxHeaderSize: ValueFlag = cmdyFlag(
     {
         name: "max-header-size",
         alias: ["headersize", "maxheader", "max-header", "maxheadersize", "header-size"],
@@ -188,12 +174,10 @@ export const maxHeaderSize: ValueFlag = cmdFlag(
         description: "Define the maximum request header size (default: 1024 * 4)",
     },
     "MAX_HEADER_SIZE",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const connectionTimeout: ValueFlag = cmdFlag(
+export const connectionTimeout: ValueFlag = cmdyFlag(
     {
         name: "connection-timeout",
         alias: ["connect-timeout", "connecttimeout", "connectt", "connectiontimeout", "connectiont", "ctimeout"],
@@ -201,12 +185,10 @@ export const connectionTimeout: ValueFlag = cmdFlag(
         description: "Define the maximum time in miliseconds (or as millisecond calucaltion) for a open conneciton",
     },
     "CONNECTION_TIMEOUT",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const proxyReactionTimeout: ValueFlag = cmdFlag(
+export const proxyReactionTimeout: ValueFlag = cmdyFlag(
     {
         name: "proxy-reaction-timeout",
         alias: ["proxyreactiontimeout", "prt"],
@@ -214,33 +196,27 @@ export const proxyReactionTimeout: ValueFlag = cmdFlag(
         description: "Define the maximum time in miliseconds (or as millisecond calucaltion) that the proxy target has to respond",
     },
     "PROXY_REACTION_TIMEOUT",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const proxyVerifyCertificate: BoolFlag = cmdFlag(
+export const proxyVerifyCertificate: BoolFlag = cmdyFlag(
     {
         name: "proxy-verify-certificate",
         alias: ["proxyverifycertificate", "pvc"],
         description: "Proxy verify target certificates",
     },
     "PROXY_VERIFY_CERTIFICATE",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
-export const proxyFollowRedirects: BoolFlag = cmdFlag(
+export const proxyFollowRedirects: BoolFlag = cmdyFlag(
     {
         name: "proxy-follow-redirects",
         alias: ["proxyfollowredirects", "pfr"],
         description: "Proxy follow redirects",
     },
     "PROXY_FOLLOW_REDIRECTS",
-    envTypes,
-    envDefaults,
-    env
+    envData
 )
 
 const root: CmdDefinition = {
@@ -248,6 +224,7 @@ const root: CmdDefinition = {
     description: "CProX is a easy to configure redirect, proxy and static webserver",
     details: "You can use CProX as webserver. It can proxy, redirect and service static content on requests",
     flags: [
+        dryrun,
         httpPort,
         httpsPort,
         trustAllCerts,
@@ -345,6 +322,12 @@ const root: CmdDefinition = {
             }
         )
         env.VERBOSE && console.debug("CProX| Resolvers:\n", resolvers.length)
+
+        if (env.DRYRUN) {
+            console.debug("CProX| Exit because started in 'dry-run' mode!")
+            process.exit(0)
+            return
+        }
 
         env.VERBOSE && console.debug("CProX| Create CProX instance...")
 

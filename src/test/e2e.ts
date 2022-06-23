@@ -365,6 +365,6 @@ export const defaultCliTimeout: number = 1000 * 32
 export const defaultRequestTimeout: number = 1000 * 4
 
 let portCounter: number = 60400
-export function defineTestPort(): number {
+export function getNewPort(): number {
     return portCounter++
 }

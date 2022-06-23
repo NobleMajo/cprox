@@ -1,6 +1,6 @@
 import { fixPath } from "./certs"
 import { parseRequestUrl } from './reqdata';
-import { uniqueStringify } from './json';
+import { uniqueStringify } from "majotools/dist/json"
 
 export interface RawRules {
     [key: string]: string

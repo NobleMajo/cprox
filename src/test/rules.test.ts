@@ -1,13 +1,13 @@
 import 'mocha';
-import * as rule from "../rule";
-import { RawRules } from '../rule';
-import { expect } from 'chai';
+import { RawRules } from "../rule"
+import * as rule from "../rule"
+import { expect } from 'chai'
 import {
     clearEnvironment,
     setEnvironment,
     exampleRules,
-} from './example';
-import { uniqueStringify } from '../json';
+} from './example'
+import { uniqueStringify } from "majotools/dist/json"
 
 describe('loadRawRules()', () => {
     it('Single environment rule', async () => {
@@ -55,7 +55,7 @@ describe('loadRawRules()', () => {
 
 describe('sortRules()', () => {
     it('Host rules', async () => {
-        const rawRules: RawRules = {
+        const rawRules: rule.RawRules = {
             "test.com": "STATIC:/vat/www/html",
             "*.example.com": "STATIC:/vat/www/html",
             "wow.com": "STATIC:/vat/www/html",

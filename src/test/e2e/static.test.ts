@@ -2,19 +2,19 @@ import 'mocha';
 import { expect } from 'chai'
 import { after, before } from 'mocha'
 import fetch, { Response } from 'node-fetch'
-import { uniqueStringify } from '../../json'
 import {
     AsyncForkResult, defaultAfterTimeout,
     defaultBeforeTimeout, defaultE2ETimeout,
     defaultFetchOptions, defaultRequestTimeout,
-    defineTestPort,
+    getNewPort,
     startCprox
 } from '../e2e'
+import { uniqueStringify } from "majotools/dist/json"
 
 describe('Live E2E proxy webserver tests', function () {
     this.timeout(defaultE2ETimeout)
-    let port: number = defineTestPort()
-    let port2: number = defineTestPort()
+    let port: number = getNewPort()
+    let port2: number = getNewPort()
     let result: AsyncForkResult
     let result2: AsyncForkResult
 

@@ -2,19 +2,19 @@ import 'mocha';
 import { expect } from 'chai'
 import { after, before } from 'mocha'
 import fetch, { Response } from 'node-fetch'
-import { uniqueStringify } from '../../json'
 import {
     AsyncForkResult, defaultAfterTimeout,
     defaultBeforeTimeout, defaultE2ETimeout,
     defaultFetchOptions, defaultRequestTimeout,
-    defineTestPort,
+    getNewPort,
     startCprox
 } from '../e2e'
+import { uniqueStringify } from "majotools/dist/json"
 
 describe('Live E2E proxy webserver tests', function () {
     this.timeout(defaultE2ETimeout)
-    let port: number = defineTestPort()
-    let port2: number = defineTestPort()
+    let port: number = getNewPort()
+    let port2: number = getNewPort()
     let result: AsyncForkResult
     let result2: AsyncForkResult
 
@@ -48,15 +48,11 @@ describe('Live E2E proxy webserver tests', function () {
 
     afterEach(function () {
         expect(uniqueStringify({
-            out: result.getStdOutput(),
-            err: result.getErrOutput(),
-            out2: result2.getStdOutput(),
-            err2: result2.getErrOutput(),
+            out: result.getOutput(undefined, ""),
+            out2: result2.getOutput(undefined, ""),
         })).is.equal(uniqueStringify({
             out: "",
-            err: "",
             out2: "",
-            err2: "",
         }))
 
         expect(result.promise).is.not.undefined

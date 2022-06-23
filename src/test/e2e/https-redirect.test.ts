@@ -2,19 +2,19 @@ import 'mocha';
 import { expect } from 'chai'
 import { after, before } from 'mocha'
 import fetch from 'node-fetch'
-import { uniqueStringify } from '../../json'
 import {
     AsyncForkResult, defaultAfterTimeout,
     defaultBeforeTimeout, defaultE2ETimeout,
     defaultFetchOptions, defaultRequestTimeout,
-    defineTestPort,
+    getNewPort,
     startCprox
 } from '../e2e'
+import { uniqueStringify } from "majotools/dist/json"
 
 describe('Live E2E http to https redirect tests', function () {
     this.timeout(defaultE2ETimeout)
-    let httpPort: number = defineTestPort()
-    let httpsPort: number = defineTestPort()
+    let httpPort: number = getNewPort()
+    let httpsPort: number = getNewPort()
     let result: AsyncForkResult
 
     before("Start live test server", async function () {

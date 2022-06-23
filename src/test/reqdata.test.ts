@@ -1,7 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import { parseRequestUrl } from "../reqdata";
-import { uniqueStringify } from '../json';
+import { uniqueStringify } from "majotools/dist/json"
 
 describe('parseRequestUrl()', () => {
     it('Single request data', async () => {

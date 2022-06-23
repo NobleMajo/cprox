@@ -2,18 +2,18 @@ import 'mocha';
 import { expect } from 'chai'
 import { after, before } from 'mocha'
 import fetch, { Response } from 'node-fetch'
-import { uniqueStringify } from '../../json'
 import {
     AsyncForkResult, defaultAfterTimeout,
     defaultBeforeTimeout, defaultE2ETimeout,
     defaultFetchOptions, defaultRequestTimeout,
-    defineTestPort,
+    getNewPort,
     startCprox
 } from '../e2e'
+import { uniqueStringify } from "majotools/dist/json"
 
 describe('Live E2E load balancer webserver tests', function () {
     this.timeout(defaultE2ETimeout)
-    let port: number = defineTestPort()
+    let port: number = getNewPort()
     let result: AsyncForkResult
 
     before("Start live test server", async function () {

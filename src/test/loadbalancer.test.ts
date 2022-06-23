@@ -4,7 +4,7 @@ import * as resolver from "../resolver";
 import { expect } from 'chai';
 import { findResolver } from '../resolver';
 import { parseRequestUrl } from '../reqdata';
-import { uniqueStringify } from '../json';
+import { uniqueStringify } from "majotools/dist/json"
 
 describe('Load balancer', () => {
     it('Check local proxy load balancer with 2 targets', async () => {
