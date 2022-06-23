@@ -7,12 +7,13 @@ import {
     AsyncForkResult, defaultAfterTimeout,
     defaultBeforeTimeout, defaultE2ETimeout,
     defaultFetchOptions, defaultRequestTimeout,
+    defineTestPort,
     startCprox
 } from '../e2e'
 
 describe('Live E2E load balancer webserver tests', function () {
     this.timeout(defaultE2ETimeout)
-    let port: number =  (60600 + 2)
+    let port: number = defineTestPort()
     let result: AsyncForkResult
 
     before("Start live test server", async function () {

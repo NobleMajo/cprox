@@ -12,7 +12,6 @@ export const envDefaults = {
         "8.8.8.8"
     ] as string[],
 
-
     HTTP_PORT: 80 as number | null,
     HTTPS_PORT: 443 as number | null,
     BIND_ADDRESS: "0.0.0.0" as string,

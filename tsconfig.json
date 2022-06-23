@@ -15,6 +15,10 @@
     "outDir": "dist",
     "rootDir": "src",
     "noImplicitAny": true,
+    "noImplicitOverride": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitUseStrict": false,
   },
   "include": [
     "src",

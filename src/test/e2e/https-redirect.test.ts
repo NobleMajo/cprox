@@ -7,13 +7,14 @@ import {
     AsyncForkResult, defaultAfterTimeout,
     defaultBeforeTimeout, defaultE2ETimeout,
     defaultFetchOptions, defaultRequestTimeout,
+    defineTestPort,
     startCprox
 } from '../e2e'
 
 describe('Live E2E http to https redirect tests', function () {
     this.timeout(defaultE2ETimeout)
-    let httpPort: number = (60600 + 0)
-    let httpsPort: number = (60600 + 1)
+    let httpPort: number = defineTestPort()
+    let httpsPort: number = defineTestPort()
     let result: AsyncForkResult
 
     before("Start live test server", async function () {

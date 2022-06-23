@@ -7,13 +7,14 @@ import {
     AsyncForkResult, defaultAfterTimeout,
     defaultBeforeTimeout, defaultE2ETimeout,
     defaultFetchOptions, defaultRequestTimeout,
+    defineTestPort,
     startCprox
 } from '../e2e'
 
 describe('Live E2E proxy webserver tests', function () {
     this.timeout(defaultE2ETimeout)
-    let port: number =  (60600 + 5)
-    let port2: number =  (60600 + 6)
+    let port: number = defineTestPort()
+    let port2: number = defineTestPort()
     let result: AsyncForkResult
     let result2: AsyncForkResult
 

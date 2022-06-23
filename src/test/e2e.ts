@@ -2,9 +2,19 @@ import { ChildProcess, fork } from "child_process"
 
 export interface AsyncForkResult {
     spawned: boolean,
-    getStdOutput: (lastLines?: number) => string,
-    getErrOutput: (lastLines?: number) => string,
-    getOutput: (lastLines?: number) => string,
+    getErrOutput(
+        lastLines?: number,
+        prefix?: string,
+    ): string,
+    getStdOutput(
+        lastLines?: number,
+        prefix?: string,
+    ): string,
+    getOutput(
+        lastLines?: number,
+        stdLinePrefix?: string,
+        errorLinePrefix?: string,
+    ): string,
     output: [boolean, string][],
     spawnPromise: Promise<void>,
     promise: Promise<void> | null,
@@ -353,3 +363,8 @@ export const defaultBeforeTimeout: number = 1000 * 16
 export const defaultAfterTimeout: number = 1000 * 16
 export const defaultCliTimeout: number = 1000 * 32
 export const defaultRequestTimeout: number = 1000 * 4
+
+let portCounter: number = 60400
+export function defineTestPort(): number {
+    return portCounter++
+}
