@@ -1,17 +1,15 @@
 import { parseEnv } from "typenvy"
 import { envTypes, envDefaults } from "./env"
 
-const result = parseEnv(
+export const envData = parseEnv(
     envDefaults,
     envTypes,
 )
     .setProcessEnv()
     .errExit()
-const env = result.env
+export const env = envData.env
 export default env
 
 if (!env.PRODUCTION) {
     process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0"
 }
-
-export const envData = result.getData()

@@ -66,7 +66,8 @@ describe('Live env', function () {
         ).is.equals(uniqueStringify({
             "PRODUCTION": false,
             "VERBOSE": true,
-            "TRUST_ALL_CERTS": true,
+            "DRYRUN": true,
+            "TRUST_ALL_CERTS": false,
             "DNS_SERVER_ADDRESSES": [
                 "127.0.0.11",
                 "1.0.0.1",
@@ -105,7 +106,7 @@ describe('Live env', function () {
                 ],
                 env: {
                     "DRYRUN": "true",
-                    "TRUST_ALL_CERTS": "false",
+                    "TRUST_ALL_CERTS": "true",
                     "SELF_SINGED_DOMAIN": "test.com",
                 }
             }
@@ -151,6 +152,7 @@ describe('Live env', function () {
         ).is.equals(uniqueStringify({
             "PRODUCTION": false,
             "VERBOSE": true,
+            "DRYRUN": true,
             "TRUST_ALL_CERTS": true,
             "DNS_SERVER_ADDRESSES": [
                 "127.0.0.11",
@@ -236,6 +238,7 @@ describe('Live env', function () {
         ).is.equals(uniqueStringify({
             "PRODUCTION": false,
             "VERBOSE": true,
+            "DRYRUN": true,
             "TRUST_ALL_CERTS": true,
             "DNS_SERVER_ADDRESSES": [
                 "127.0.0.11",

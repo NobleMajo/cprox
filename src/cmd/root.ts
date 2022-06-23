@@ -246,6 +246,8 @@ const root: CmdDefinition = {
     allowUnknownArgs: true,
     cmds: [],
     exe: async (cmd) => {
+        console.log("TEST1:", env.DRYRUN)
+        console.log("TEST2:", env.VERBOSE)
         env.VERBOSE && console.debug(
             "VERBOSE MODE ENABLED!\n",
             "ENV:",
