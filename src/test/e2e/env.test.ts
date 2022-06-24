@@ -91,7 +91,7 @@ describe('Live env', function () {
             "PROXY_VERIFY_CERTIFICATE": false,
             "PROXY_FOLLOW_REDIRECTS": false
         }))
-        expect(result.code, out).is.equals(null)
+        expect(result.code, out).is.equals(0)
     })
 
     it('Check extra envtionment variables', async function () {
@@ -177,7 +177,7 @@ describe('Live env', function () {
             "PROXY_VERIFY_CERTIFICATE": false,
             "PROXY_FOLLOW_REDIRECTS": false
         }))
-        expect(result.code, out).is.equals(null)
+        expect(result.code, out).is.equals(0)
 
     })
 

@@ -90,7 +90,7 @@ export const disableSelfSinged: BoolFlag = cmdyFlag(
 export const bindHostAddress: ValueFlag = cmdyFlag(
     {
         name: "bind-host-address",
-        alias: ["b-h-a", "bha", "bind-host-address"],
+        alias: ["b-h-a", "bha", "bind-host-address", "bind-address"],
         shorthand: "b",
         types: ["string"],
         description: "Set the host where the server pind the ports",
@@ -246,8 +246,6 @@ const root: CmdDefinition = {
     allowUnknownArgs: true,
     cmds: [],
     exe: async (cmd) => {
-        console.log("TEST1:", env.DRYRUN)
-        console.log("TEST2:", env.VERBOSE)
         env.VERBOSE && console.debug(
             "VERBOSE MODE ENABLED!\n",
             "ENV:",
@@ -474,7 +472,6 @@ export class CProX {
                         )
                         res.end()
                     },
-
                 )
             }
         } else if (typeof env.HTTP_PORT == "number") {

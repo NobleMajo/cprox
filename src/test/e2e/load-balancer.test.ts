@@ -13,11 +13,13 @@ import { uniqueStringify } from "majotools/dist/json"
 
 describe('Live E2E load balancer webserver tests', function () {
     this.timeout(defaultE2ETimeout)
-    let port: number = getNewPort()
+    let port: number
     let result: AsyncForkResult
 
     before("Start live test server", async function () {
         this.timeout(defaultBeforeTimeout)
+
+        port = getNewPort()
 
         result = await startCprox([
             "-p", "" + port,

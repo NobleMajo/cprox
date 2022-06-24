@@ -13,13 +13,16 @@ import { uniqueStringify } from "majotools/dist/json"
 
 describe('Live E2E proxy webserver tests', function () {
     this.timeout(defaultE2ETimeout)
-    let port: number = getNewPort()
-    let port2: number = getNewPort()
+    let port: number
+    let port2: number
     let result: AsyncForkResult
     let result2: AsyncForkResult
 
     before("Start live test server", async function () {
         this.timeout(defaultBeforeTimeout)
+
+        port = getNewPort()
+        port2 = getNewPort()
 
         const p1 = startCprox([
             "-p", "" + port,

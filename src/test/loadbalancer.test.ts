@@ -1,9 +1,9 @@
-import 'mocha';
-import * as rule from "../rule";
-import * as resolver from "../resolver";
-import { expect } from 'chai';
-import { findResolver } from '../resolver';
-import { parseRequestUrl } from '../reqdata';
+import 'mocha'
+import * as rule from "../rule"
+import * as resolver from "../resolver"
+import { expect } from 'chai'
+import { findResolver } from '../resolver'
+import { parseRequestUrl } from '../reqdata'
 import { uniqueStringify } from "majotools/dist/json"
 
 describe('Load balancer', () => {

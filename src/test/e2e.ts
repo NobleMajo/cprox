@@ -364,7 +364,7 @@ export const defaultAfterTimeout: number = 1000 * 16
 export const defaultCliTimeout: number = 1000 * 32
 export const defaultRequestTimeout: number = 1000 * 4
 
-let portCounter: number = 60400
+let portCounter: number = 63892
 export function getNewPort(): number {
     return portCounter++
 }

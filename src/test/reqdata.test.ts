@@ -1,6 +1,6 @@
-import 'mocha';
-import { expect } from 'chai';
-import { parseRequestUrl } from "../reqdata";
+import 'mocha'
+import { expect } from 'chai'
+import { parseRequestUrl } from "../reqdata"
 import { uniqueStringify } from "majotools/dist/json"
 
 describe('parseRequestUrl()', () => {

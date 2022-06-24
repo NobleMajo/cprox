@@ -13,12 +13,15 @@ import { uniqueStringify } from "majotools/dist/json"
 
 describe('Live E2E http to https redirect tests', function () {
     this.timeout(defaultE2ETimeout)
-    let httpPort: number = getNewPort()
-    let httpsPort: number = getNewPort()
+    let httpPort: number
+    let httpsPort: number
     let result: AsyncForkResult
 
     before("Start live test server", async function () {
         this.timeout(defaultBeforeTimeout)
+
+        httpPort = getNewPort()
+        httpsPort = getNewPort()
 
         result = await startCprox([
             "-p", "" + httpPort,
@@ -34,18 +37,22 @@ describe('Live E2E http to https redirect tests', function () {
     })
 
     afterEach(function () {
-        expect(uniqueStringify({
-            out: result.getStdOutput(),
-            err: result.getErrOutput(),
-        })).is.equal(uniqueStringify({
+        const output = "Output:\n" + result.getOutput()
+        expect(
+            uniqueStringify({
+                out: result.getStdOutput(undefined, ""),
+                err: result.getErrOutput(undefined, ""),
+            }),
+            output
+        ).is.equal(uniqueStringify({
             out: "",
             err: ""
         }))
 
-        expect(result.promise).is.not.undefined
-        expect(result.code).is.null
-        expect(result.killed).is.false
-        expect(result.spawned).is.true
+        expect(result.promise, output).is.not.undefined
+        expect(result.code, output).is.null
+        expect(result.killed, output).is.false
+        expect(result.spawned, output).is.true
     })
 
     it('request without host', async function () {
