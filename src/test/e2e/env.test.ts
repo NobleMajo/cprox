@@ -147,7 +147,10 @@ describe('Live env', function () {
             throw err
         }
         expect(
-            uniqueStringify(env),
+            uniqueStringify({
+                ...env,
+                CERT_PATH: "?" + env.CERT_PATH.substring(env.CERT_PATH.lastIndexOf("cprox"))
+            }),
             "Actual env was: " + JSON.stringify(env, null, 2) + "\n" + out
         ).is.equals(uniqueStringify({
             "PRODUCTION": false,
@@ -164,7 +167,7 @@ describe('Live env', function () {
             "HTTP_PORT": 80,
             "HTTPS_PORT": 443,
             "BIND_ADDRESS": "0.0.0.0",
-            "CERT_PATH": "/home/codec/ws/main/npm/cprox/certs",
+            "CERT_PATH": "?cprox/certs",
             "CERT_NAME": "cert.pem",
             "KEY_NAME": "privkey.pem",
             "CA_NAME": "chain.pem",
@@ -233,7 +236,10 @@ describe('Live env', function () {
             throw err
         }
         expect(
-            uniqueStringify(env),
+            uniqueStringify({
+                ...env,
+                CERT_PATH: "?" + env.CERT_PATH.substring(env.CERT_PATH.lastIndexOf("cprox"))
+            }),
             "Actual env was: " + JSON.stringify(env, null, 2)
         ).is.equals(uniqueStringify({
             "PRODUCTION": false,
@@ -250,7 +256,7 @@ describe('Live env', function () {
             "HTTP_PORT": 80,
             "HTTPS_PORT": 443,
             "BIND_ADDRESS": "0.0.0.0",
-            "CERT_PATH": "/home/codec/ws/main/npm/cprox/certs",
+            "CERT_PATH": "?cprox/certs",
             "CERT_NAME": "cert.pem",
             "KEY_NAME": "privkey.pem",
             "CA_NAME": "chain.pem",
