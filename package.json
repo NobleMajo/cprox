@@ -27,7 +27,7 @@
     "tsc": "tsc -p tsconfig.json",
     "start": "ts-node src/index.ts *=STATIC:/var/www/html --dry-run",
     "exec": "node dist/index.js",
-    "test": "mocha --paralell --require ts-node/register src/test/**/*.test.ts",
+    "test": "mocha --paralell --exit --require ts-node/register src/test/**/*.test.ts",
     "build": "npm run tsc",
     "start:watch": "nodemon -w ./src -x \"npm run start\" --ext *.ts",
     "build:watch": "nodemon -w ./src -x \"npm run build\" --ext *.ts",

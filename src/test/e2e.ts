@@ -147,6 +147,8 @@ export async function asyncFork(
                         setTimeout(
                             () => {
                                 child.kill(9)
+                                child.stdout?.destroy()
+                                child.stderr?.destroy()
                                 result.closing = false
                                 result.closed = true
                                 rej(
@@ -235,6 +237,8 @@ export async function asyncFork(
             result.code = code
             result.closing = false
             result.closed = true
+            child.stdout?.destroy()
+            child.stderr?.destroy()
         })
         child.on('spawn', () => {
             result.spawned = true
