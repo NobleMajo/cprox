@@ -1,4 +1,3 @@
-
 export interface RequestData {
     host: string,
     path: string,

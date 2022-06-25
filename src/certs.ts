@@ -1,6 +1,6 @@
-import path from "path"
+import * as path from "path"
 import { FSWatcher, promises as fs, watch } from "fs"
-import os from "os"
+import * as  os from "os"
 const selfsigned = require("selfsigned")
 
 export interface CertPaths {

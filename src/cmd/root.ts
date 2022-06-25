@@ -1,6 +1,6 @@
 import { CmdDefinition, CmdParserOptions, BoolFlag, ValueFlag, Awaitable } from "cmdy"
 import env from "../env/envParser"
-import dns from "dns"
+import * as dns from "dns"
 import { RequestListener, Server as HttpServer } from "http"
 import { Server as HttpsServer } from "https"
 import { createCertWatcher, fixPath, loadCerts, Certs, generateSelfSigned, CertPaths } from '../certs';

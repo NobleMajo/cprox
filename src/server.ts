@@ -1,5 +1,7 @@
-import http, { RequestListener, Server as HttpServer, ServerResponse } from "http"
-import https, { Server as HttpsServer } from "https"
+import * as http from "http"
+import { RequestListener, Server as HttpServer, ServerResponse } from "http"
+import * as https from "https"
+import { Server as HttpsServer } from "https"
 import { Duplex } from "stream"
 import { Certs } from "./certs"
 

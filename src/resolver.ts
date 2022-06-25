@@ -1,8 +1,9 @@
 import { IncomingMessage, ServerResponse } from "http"
 import { Duplex } from "stream"
 import { Rule, ProxyRule, StaticRule, RedirectRule, ProxyTarget, SplitedURL, RuleType, Rules } from './rule';
-import HttpProxy from "http-proxy"
-import serveStatic, { RequestHandler } from "serve-static"
+import * as HttpProxy from "http-proxy"
+import * as  serveStatic from "serve-static"
+import { RequestHandler } from "serve-static"
 import { RequestData } from './reqdata';
 import env from "./env/envParser"
 import { Awaitable } from "majotools/dist/httpMiddleware";
