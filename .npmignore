@@ -5,4 +5,4 @@
 !README.md
 !LICENCE
 !dist/**/*
-dist/test
+dist/test/**/*

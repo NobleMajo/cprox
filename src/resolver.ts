@@ -199,6 +199,7 @@ export function createProxy(
             port: target[2],
         },
         ws: true,
+        xfwd: true,
         secure: env.PROXY_VERIFY_CERTIFICATE,
         proxyTimeout: env.PROXY_REACTION_TIMEOUT,
         timeout: env.CONNECTION_TIMEOUT,
