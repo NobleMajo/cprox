@@ -194,31 +194,42 @@ export function createProxy(
         req
     )
 
-    if (!req.headers["X-Forwarded-Local-Address"]) {
+    if (
+        !req.headers["X-Forwarded-Local-Address"] &&
+        req.socket.localAddress
+    ) {
         req.headers["X-Forwarded-Local-Address"] = "" + req.socket.localAddress
     }
-    if (!req.headers["X-Forwarded-Local-Port"]) {
+    if (
+        !req.headers["X-Forwarded-Local-Port"] &&
+        req.socket.localPort
+    ) {
         req.headers["X-Forwarded-Local-Port"] = "" + req.socket.localPort
     }
-    if (!req.headers["X-Forwarded-Ip"]) {
-        req.headers["X-Forwarded-Ip"] =
-            req.headers["X-Forwarded-For"] =
+    if (
+        !req.headers["X-Forwarded-For"] &&
+        req.socket.remoteAddress
+    ) {
+        req.headers["X-Forwarded-For"] =
             "" + req.socket.remoteAddress
     }
-    if (!req.headers["X-Forwarded-Port"]) {
+    if (
+        !req.headers["X-Forwarded-Port"] &&
+        req.socket.remotePort
+    ) {
         req.headers["X-Forwarded-Port"] = "" + req.socket.remotePort
     }
-    if (!req.headers["X-Forwarded-Origin"]) {
-        req.headers["X-Forwarded-Origin"] =
-            req.headers["origin"] ?
-                req.headers["origin"] :
-                undefined
+    if (
+        !req.headers["X-Forwarded-Origin"] &&
+        req.headers["origin"]
+    ) {
+        req.headers["X-Forwarded-Origin"] = "" + req.headers["origin"]
     }
-    if (!req.headers["X-Forwarded-Host"]) {
-        req.headers["X-Forwarded-Host"] =
-            req.headers["host"] ?
-                req.headers["host"] :
-                undefined
+    if (
+        !req.headers["X-Forwarded-Host"] &&
+        req.headers["host"]
+    ) {
+        req.headers["X-Forwarded-Host"] = "" + req.headers["host"]
     }
     if (!req.headers["X-Forwarded-Ssl"]) {
         req.headers["X-Forwarded-Ssl"] =
