@@ -7,6 +7,7 @@ import { RequestHandler } from "serve-static"
 import { RequestData } from './reqdata';
 import env from "./env/envParser"
 import { Awaitable } from "majotools/dist/httpMiddleware";
+import { connectionTimeout } from './cmd/root';
 
 export type ResolverHttpMiddleware = (
     data: RequestData,
@@ -192,6 +193,21 @@ export function createProxy(
         rule,
         req
     )
+
+    req.headers["X-Forwarded-Local-Address"] = "" + req.socket.localAddress
+    req.headers["X-Forwarded-Local-Port"] = "" + req.socket.localPort
+
+    req.headers["X-Forwarded-For"] = "" + req.socket.remoteAddress
+    req.headers["X-Forwarded-Ip"] = "" + req.socket.remoteAddress
+    req.headers["X-Forwarded-Port"] = "" + req.socket.remotePort
+
+    req.headers["X-Forwarded-Origin"] = "" + req.headers["Origin"]
+    req.headers["X-Forwarded-Host"] = "" + req.headers["Host"]
+    req.headers["X-Forwarded-Ssl"] =
+        typeof (req.socket as any).getPeerCertificate == "function" ?
+            "on" :
+            "off"
+
     const proxy: HttpProxy = new HttpProxy({
         target: {
             protocol: target[0] ? "https:" : "http:",
@@ -199,7 +215,6 @@ export function createProxy(
             port: target[2],
         },
         ws: true,
-        xfwd: true,
         secure: env.PROXY_VERIFY_CERTIFICATE,
         proxyTimeout: env.PROXY_REACTION_TIMEOUT,
         timeout: env.CONNECTION_TIMEOUT,
