@@ -30,7 +30,7 @@ describe('Live cli', function () {
         expect(std.length, out).is.not.equals(0)
         expect(std, out).not.includes("CProX| Exit because started in 'dry-run' mode!")
         expect(std, out).includes("# CPROX #")
-        expect(std, out).includes("Usage: cprox [OPTIONS] [ARGUMENTS]")
+        expect(std, out).includes("Usage: cprox [OPTIONS] COMMAND [ARGUMENTS]")
         expect(std, out).includes("! CProX | by majo418 | supported by CoreUnit.NET !")
         expect(result.code, out).is.equals(0)
     })
