@@ -194,19 +194,41 @@ export function createProxy(
         req
     )
 
-    req.headers["X-Forwarded-Local-Address"] = "" + req.socket.localAddress
-    req.headers["X-Forwarded-Local-Port"] = "" + req.socket.localPort
+    if (!req.headers["X-Forwarded-Local-Address"]) {
+        req.headers["X-Forwarded-Local-Address"] = "" + req.socket.localAddress
+    }
+    if (!req.headers["X-Forwarded-Local-Port"]) {
+        req.headers["X-Forwarded-Local-Port"] = "" + req.socket.localPort
+    }
+    if (!req.headers["X-Forwarded-Ip"]) {
+        req.headers["X-Forwarded-Ip"] =
+            req.headers["X-Forwarded-For"] =
+            "" + req.socket.remoteAddress
+    }
+    if (!req.headers["X-Forwarded-Port"]) {
+        req.headers["X-Forwarded-Port"] = "" + req.socket.remotePort
+    }
+    if (!req.headers["X-Forwarded-Origin"]) {
+        req.headers["X-Forwarded-Origin"] =
+            req.headers["origin"] ?
+                req.headers["origin"] :
+                undefined
+    }
+    if (!req.headers["X-Forwarded-Host"]) {
+        req.headers["X-Forwarded-Host"] =
+            req.headers["host"] ?
+                req.headers["host"] :
+                undefined
+    }
+    if (!req.headers["X-Forwarded-Ssl"]) {
+        req.headers["X-Forwarded-Ssl"] =
+            typeof (req.socket as any).getPeerCertificate == "function" ?
+                "on" :
+                "off"
+    }
 
-    req.headers["X-Forwarded-For"] = "" + req.socket.remoteAddress
-    req.headers["X-Forwarded-Ip"] = "" + req.socket.remoteAddress
-    req.headers["X-Forwarded-Port"] = "" + req.socket.remotePort
 
-    req.headers["X-Forwarded-Origin"] = "" + req.headers["Origin"]
-    req.headers["X-Forwarded-Host"] = "" + req.headers["Host"]
-    req.headers["X-Forwarded-Ssl"] =
-        typeof (req.socket as any).getPeerCertificate == "function" ?
-            "on" :
-            "off"
+
 
     const proxy: HttpProxy = new HttpProxy({
         target: {
