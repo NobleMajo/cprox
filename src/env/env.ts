@@ -23,7 +23,13 @@ export const envDefaults = {
     CA_NAME: "chain.pem" as string | null,
 
     DISABLE_SELF_SINGED: false as boolean,
-    SELF_SINGED_DOMAIN: "example.com" as string,
+    SELF_SINGED_COMMON_DOMAIN_NAME: "example.com" as string,
+    SELF_SINGED_COUNTRY_CODE: "INT" as string,
+    SELF_SINGED_STATE_NAME: "International" as string,
+    SELF_SINGED_LOCALITY_NAME: "International" as string,
+    SELF_SINGED_ORGANIZATION_NAME: "None" as string,
+    SELF_SINGED_EMAIL_ADDRESS: "none@example.com" as string,
+    SELF_SINGED_NETSCAPE_COMMENT: "Self-Singed SSL Certificate by the CProX Server Software" as string,
 
     MAX_HEADER_SIZE: 1024 * 4 as number,
     CONNECTION_TIMEOUT: 1000 * 15 as number,
@@ -52,7 +58,13 @@ export const envTypes: typenvy.VariablesTypes = {
     CA_NAME: [typenvy.TC_STRING, typenvy.TC_NULL],
 
     DISABLE_SELF_SINGED: [typenvy.TC_BOOLEAN],
-    SELF_SINGED_DOMAIN: [typenvy.TC_STRING],
+    SELF_SINGED_COMMON_DOMAIN_NAME: [typenvy.TC_STRING],
+    SELF_SINGED_COUNTRY_CODE: [typenvy.TC_STRING],
+    SELF_SINGED_STATE_NAME: [typenvy.TC_STRING],
+    SELF_SINGED_LOCALITY_NAME: [typenvy.TC_STRING],
+    SELF_SINGED_ORGANIZATION_NAME: [typenvy.TC_STRING],
+    SELF_SINGED_EMAIL_ADDRESS: [typenvy.TC_STRING],
+    SELF_SINGED_NETSCAPE_COMMENT: [typenvy.TC_STRING],
 
     MAX_HEADER_SIZE: [typenvy.TC_CALCULATION, typenvy.TC_NUMBER],
     CONNECTION_TIMEOUT: [typenvy.TC_CALCULATION, typenvy.TC_NUMBER],

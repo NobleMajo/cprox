@@ -6,6 +6,7 @@ import { findResolver, Resolvers } from "./resolver"
 import { closeServer, createHttpServer, createHttpsServer, UpgradeListener } from "./server"
 import { parseRequestUrl } from "./reqdata"
 import { promises as fs } from "fs"
+import { selfSingedLocalityName } from './cmd/root';
 
 export class CProX {
     httpServer: HttpServer | undefined = undefined
@@ -175,7 +176,40 @@ export class CProX {
                 await fs.mkdir(env.CERT_PATH, {
                     recursive: true
                 })
-                await generateSelfSigned(env.SELF_SINGED_DOMAIN, this.certPaths)
+
+                await generateSelfSigned(
+                    this.certPaths,
+                    [
+                        {
+                            name: "countryName",
+                            value: env.SELF_SINGED_COUNTRY_CODE,
+                        },
+                        {
+                            name: "commonName",
+                            value: env.SELF_SINGED_COMMON_DOMAIN_NAME,
+                        },
+                        {
+                            name: "stateOrProvinceName",
+                            value: env.SELF_SINGED_STATE_NAME,
+                        },
+                        {
+                            name: "localityName",
+                            value: env.SELF_SINGED_LOCALITY_NAME,
+                        },
+                        {
+                            name: "organizationName",
+                            value: env.SELF_SINGED_ORGANIZATION_NAME,
+                        },
+                        {
+                            name: "emailAddress",
+                            value: env.SELF_SINGED_EMAIL_ADDRESS,
+                        },
+                        {
+                            name: "nsComment",
+                            value: env.SELF_SINGED_NETSCAPE_COMMENT,
+                        }
+                    ],
+                )
             }
         }
 

@@ -147,29 +147,49 @@ export async function loadCerts(
     })
 }
 
+export interface SelfSigningOptions {
+    commonName: string,
+    shortName: string,
+}
+
+export interface SelfSigningSettings {
+
+}
+
+export const defaultSelfSigningSettings: SelfSigningSettings = {
+
+}
+
+export type SelfSigningAttributeKeys =
+    "countryName" |
+    "stateOrProvinceName" |
+    "localityName" |
+    "organizationName" |
+    "commonName" |
+    "emailAddress" |
+    "subjectKeyIdentifier" |
+    "authorityKeyIdentifier" |
+    "subjectKeyIdentifier" |
+    "basicConstraints" |
+    "keyUsage" |
+    "subjectAltName" |
+    "nsComment"
+export interface SelfSigningAttribute {
+    name: SelfSigningAttributeKeys,
+    value: string,
+}
+
 export function generateSelfSigned(
-    domainName: string,
     paths: CertPaths,
+    attributes: SelfSigningAttribute[],
 ): Promise<void> {
     return new Promise<void>((res, rej) => {
-
         selfsigned.generate(
-            null,
+            attributes,
             {
-                name: domainName,
-                value: domainName,
                 keySize: 4092,
                 days: 365,
-                //algorithm: 'sha256',
-                /*extensions: [
-                    {
-                        name: 'basicConstraints',
-                        cA: true,
-                    }
-                ],*/
-                //pkcs7: false,
-                //clientCertificate: false,
-                //clientCertificateCN: 'none'
+                algorithm: 'sha512',
             },
             async (
                 err: Error | any,

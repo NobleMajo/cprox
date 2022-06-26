@@ -67,10 +67,91 @@ export const trustAllCerts: BoolFlag = cmdyFlag(
 export const disableSelfSinged: BoolFlag = cmdyFlag(
     {
         name: "disable-self-singed",
-        alias: ["disableselfsinged", "d-s-s", "dss"],
+        alias: ["disableselfsinged", "ssld"],
         description: "Disable generating self singed certificates if not exist",
     },
     "DISABLE_SELF_SINGED",
+    envData
+)
+
+export const selfSingedCountryCode: ValueFlag = cmdyFlag(
+    {
+        name: "self-singed-country-code",
+        alias: ["ssl-country-code", "sslcc"],
+        types: ["string"],
+        description: "Set the country code for the self singed certificate",
+    },
+    "SELF_SINGED_COUNTRY_CODE",
+    envData
+)
+
+export const selfSingedCommonDomainName: ValueFlag = cmdyFlag(
+    {
+        name: "self-singed-common-domain-name",
+        alias: [
+            "self-singed-domain-name", "self-singed-common-name",
+            "ssl-common-name", "ssl-domain-name", "ssl-common-domain-name",
+            "sslcdn", "sslcn", "ssldn"
+        ],
+        types: ["string"],
+        description: "Set the common domain name for the self singed certificate",
+    },
+    "SELF_SINGED_COMMON_DOMAIN_NAME",
+    envData
+)
+
+export const selfSingedStateName: ValueFlag = cmdyFlag(
+    {
+        name: "self-singed-state-name",
+        alias: ["ssl-state-name",],
+        types: ["string"],
+        description: "Set the state name for the self singed certificate",
+    },
+    "SELF_SINGED_STATE_NAME",
+    envData
+)
+
+export const selfSingedLocalityName: ValueFlag = cmdyFlag(
+    {
+        name: "self-singed-locality-name",
+        alias: ["ssl-locality-name", "sslln"],
+        types: ["string"],
+        description: "Set the locality name for the self singed certificate",
+    },
+    "SELF_SINGED_LOCALITY_NAME",
+    envData
+)
+
+export const selfSingedOrganizationName: ValueFlag = cmdyFlag(
+    {
+        name: "self-singed-organization-name",
+        alias: ["ssl-organization-name", "sslon"],
+        types: ["string"],
+        description: "Set the organization name for the self singed certificate",
+    },
+    "SELF_SINGED_ORGANIZATION_NAME",
+    envData
+)
+
+export const selfSingedEmailAddress: ValueFlag = cmdyFlag(
+    {
+        name: "self-singed-email-address",
+        alias: ["ssl-email-address", "sslea"],
+        types: ["string"],
+        description: "Set the email address for the self singed certificate",
+    },
+    "SELF_SINGED_EMAIL_ADDRESS",
+    envData
+)
+
+export const selfSingedNetscapeComment: ValueFlag = cmdyFlag(
+    {
+        name: "self-singed-netscape-comment",
+        alias: ["ssl-email-netscape-comment", "sslnc"],
+        types: ["string"],
+        description: "Set the netscape comment for the self singed certificate",
+    },
+    "SELF_SINGED_NETSCAPE_COMMENT",
     envData
 )
 
@@ -98,17 +179,7 @@ export const dnsServerAddress: ValueFlag = cmdyFlag(
     envData
 )
 
-export const selfSingedDomain: ValueFlag = cmdyFlag(
-    {
-        name: "self-singed-domain",
-        alias: ["selfsingeddomain", "s-s-d", "ssd", "domain", "dom"],
-        shorthand: "d",
-        types: ["string"],
-        description: "Set the domain name for self singed certificates",
-    },
-    "SELF_SINGED_DOMAIN",
-    envData
-)
+
 
 export const certPath: ValueFlag = cmdyFlag(
     {
@@ -217,7 +288,13 @@ const root: CmdDefinition = {
         trustAllCerts,
         bindHostAddress,
         disableSelfSinged,
-        selfSingedDomain,
+        selfSingedCountryCode,
+        selfSingedCommonDomainName,
+        selfSingedStateName,
+        selfSingedLocalityName,
+        selfSingedOrganizationName,
+        selfSingedEmailAddress,
+        selfSingedNetscapeComment,
         dnsServerAddress,
         certPath,
         certName,
