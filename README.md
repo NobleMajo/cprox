@@ -81,7 +81,7 @@ Run as proxy server:
 ```sh
 cprox *=PROXY:http://127.0.0.1:8080
 ```
-Help:
+Cli tool help output:
 ```sh
 cprox -h
 ```
@@ -106,9 +106,54 @@ docker run -it --rm \
   majo418/cprox \
     *=REDIRECT:https://start.duckduckgo.com
 ```
-Help:
+### help
 ```sh
 docker run -it --rm majo418/cprox -h
+```
+
+### help output
+```css
+# CPROX #
+
+Usage: cprox [OPTIONS] COMMAND [ARGUMENTS]
+
+CProX is a easy to configure redirect, proxy and static webserver
+
+Options:
+  -v, --verbose                                  Show basic flag adn target informations (default: 'false', ENV: 'VERBOSE')
+      --dry-run                                  Exit cprox before final start server step. (default: 'false', ENV: 'DRYRUN')
+  -p, --http-port [number]                       Set the http port (default: 80 but disabled if any port is set) (default: '80', ENV: 'HTTP_PORT')
+  -s, --https-port [number]                      Set the https port (default: 443 but disabled if any port is set) (default: '443', ENV: 'HTTPS_PORT')
+  -t, --trust-all-certs                          Trust all certificates on proxy (default: 'false', ENV: 'TRUST_ALL_CERTS')
+  -b, --bind-host-address [string]               Set the host where the server pind the ports (default: '0.0.0.0', ENV: 'BIND_ADDRESS')
+      --disable-self-singed                      Disable generating self singed certificates if not exist (default: 'false', ENV: 'DISABLE_SELF_SINGED')
+      --self-singed-country-code [string]        Set the country code for the self singed certificate (default: 'INT', ENV: 'SELF_SINGED_COUNTRY_CODE')
+      --self-singed-common-domain-name [string]  Set the common domain name for the self singed certificate (default: 'example.com', ENV: 'SELF_SINGED_COMMON_DOMAIN_NAME')
+      --self-singed-state-name [string]          Set the state name for the self singed certificate (default: 'International', ENV: 'SELF_SINGED_STATE_NAME')
+      --self-singed-locality-name [string]       Set the locality name for the self singed certificate (default: 'International', ENV: 'SELF_SINGED_LOCALITY_NAME')
+      --self-singed-organization-name [string]   Set the organization name for the self singed certificate (default: 'None', ENV: 'SELF_SINGED_ORGANIZATION_NAME')
+      --self-singed-email-address [string]       Set the email address for the self singed certificate (default: 'none@example.com', ENV: 'SELF_SINGED_EMAIL_ADDRESS')
+      --self-singed-netscape-comment [string]    Set the netscape comment for the self singed certificate (default: 'Self-Singed SSL Certificate by the CProX Server Software', ENV: 'SELF_SINGED_NETSCAPE_COMMENT')
+      --dns-server-address [string]              Add a dns address to the existing dns addresses (default: '127.0.0.11,1.0.0.1,8.8.4.4,1.1.1.1,8.8.8.8', ENV: 'DNS_SERVER_ADDRESSES')
+      --cert-path [string]                       Define the path for the certificates (default: './certs', ENV: 'CERT_PATH')
+      --cert-name [string]                       Define the name for the certificates cert file (default: 'cert.pem', ENV: 'CERT_NAME')
+      --key-name [string]                        Define the name for the certificates key file (default: 'privkey.pem', ENV: 'KEY_NAME')
+      --ca-name [string]                         Define the name for the certificate ca file (default: 'chain.pem', ENV: 'CA_NAME')
+  -r, --rule [string]                            CProX rules
+      --max-header-size [number | string]        Define the maximum request header size (default: 1024 * 4) (default: '4096', ENV: 'MAX_HEADER_SIZE')
+      --connection-timeout [number | string]     Define the maximum time in miliseconds (or as millisecond calucaltion) for a open conneciton (default: '15000', ENV: 'CONNECTION_TIMEOUT')
+      --proxy-reaction-timeout [number | string] Define the maximum time in miliseconds (or as millisecond calucaltion) that the proxy target has to respond (default: '3000', ENV: 'PROXY_REACTION_TIMEOUT')
+      --proxy-verify-certificate                 Proxy verify target certificates (default: 'false', ENV: 'PROXY_VERIFY_CERTIFICATE')
+      --proxy-follow-redirects                   Proxy follow redirects (default: 'false', ENV: 'PROXY_FOLLOW_REDIRECTS')
+  -h, --help                                     Shows this help output
+
+Commands:
+version Shows the version of cprox
+
+Details:
+You can use CProX as webserver. It can proxy, redirect and service static content on requests
+
+! CProX | by majo418 | supported by CoreUnit.NET !
 ```
 
 # usage recommendation
