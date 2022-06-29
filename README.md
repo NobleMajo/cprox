@@ -44,14 +44,6 @@ CProX is an easy to configure `static serve`, `redirect`, `reverse proxy` and `l
  - Simple `cli tool` and easy `envtionment variables`.
  - Automatically `self-signed certificate` if required and not disabled!
  
-# 
-![!](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F5%2F5e%2FOxygen480-status-dialog-warning.svg%2F120px-Oxygen480-status-dialog-warning.svg.png&f=1&nofb=1)
-Warning! There is currenty a problem using cprox as npm cli tool in project (package.json) scope.
-The global scope it works fine! Use this to execute cprox in project scope: 
-```sh
-node node_modules/cprox/dist/index.js
-```
-
 # configuration
 ## example
 ```sh
