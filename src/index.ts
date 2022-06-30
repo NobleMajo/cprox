@@ -3,8 +3,6 @@ import { cmdyFlag } from "typenvy"
 import root from "./cmd/root"
 import { envData } from "./env/envParser"
 
-console.log("TYPESCRIPT!!!")
-
 export const verbose: BoolFlag = cmdyFlag(
     {
         name: "verbose",
