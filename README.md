@@ -62,6 +62,9 @@ Please checkout the [configuration guide](https://github.com/majo418/cprox/blob/
 Checkout the `test.sh` and the `start.sh` scripts to understand what you need to think about and how to start the server.
 
 ## NodeJS
+### tested with
+ - node v16
+ - npm  v8
 
 ### install
 ```sh
@@ -87,10 +90,9 @@ cprox -h
 ```
 
 ## Docker
-
-### requirements
- - docker cli
- - Linus distribution
+### tested with
+ - Ubuntu v20.04
+ - Docker v20.10.16
 
 ### pull
 ```sh
