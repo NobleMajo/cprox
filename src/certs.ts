@@ -200,6 +200,15 @@ export function generateSelfSigned(
                     return
                 }
                 await Promise.all([
+                    fs.mkdir(paths.cert.split("/").slice(0, -1).join("/"), {
+                        recursive: true
+                    }),
+                    fs.mkdir(paths.key.split("/").slice(0, -1).join("/"), {
+                        recursive: true
+                    }),
+                ])
+
+                await Promise.all([
                     fs.writeFile(paths.cert, pems.cert),
                     fs.writeFile(paths.key, pems.private),
                 ])

@@ -17,7 +17,7 @@ export const envDefaults = {
     HTTPS_PORT: 443 as number | null,
     BIND_ADDRESS: "0.0.0.0" as string,
 
-    CERT_PATH: "./certs" as string,
+    CERT_PATH: "./.store/certs" as string,
     CERT_NAME: "cert.pem" as string,
     KEY_NAME: "privkey.pem" as string,
     CA_NAME: "chain.pem" as string | null,
