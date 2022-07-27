@@ -18,9 +18,15 @@ export class CProX {
     constructor(
         public resolvers: Resolvers,
         public certPaths: CertPaths,
+        public verbose: boolean,
     ) { }
 
     requestListener: RequestListener = (req, res) => {
+        this.verbose ?? console.debug(
+            "CProX| Request from '" +
+            req.socket.remoteAddress + ":" +
+            req.socket.remotePort + "'"
+        )
         try {
             res.setHeader("server", "CProX")
             res.setHeader("x-powered-by", "CProX")
@@ -54,6 +60,11 @@ export class CProX {
     }
 
     upgradeListener: UpgradeListener = (req, socket, head) => {
+        this.verbose ?? console.debug(
+            "CProX| Upgrade from '" +
+            req.socket.remoteAddress + ":" +
+            req.socket.remotePort + "'"
+        )
         try {
             if (!req.headers.host || !req.url) {
                 socket.destroy()
@@ -161,7 +172,31 @@ export class CProX {
             this.httpsServerPromise
         ])
         this.httpServer = httpServer2
-        this.httpsServer = httpsServer2
+        this.httpsServer = httpsServer2;
+
+        if (this.verbose) {
+            if (this.httpsServer) {
+                this.verbose && this.httpsServer.on(
+                    "secureConnection",
+                    (socket) => console.debug(
+                        "CProX| TLS Connection from '" +
+                        socket.remoteAddress + ":" +
+                        socket.remotePort + "'"
+                    )
+                )
+            }
+            if (this.httpServer) {
+                this.verbose && this.httpServer.on(
+                    "connection",
+                    (socket) => console.debug(
+                        "CProX| Unsecure connection from '" +
+                        socket.remoteAddress + ":" +
+                        socket.remotePort + "'"
+                    )
+                )
+            }
+        }
+
         console.info("CProX| Server started!")
     }
 

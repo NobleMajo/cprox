@@ -399,7 +399,8 @@ const root: CmdDefinition = {
 
         await new CProX(
             resolvers,
-            certPaths
+            certPaths,
+            env.VERBOSE
         ).init()
     }
 }
