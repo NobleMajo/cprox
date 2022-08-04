@@ -238,9 +238,6 @@ export function createProxy(
                 "off"
     }
 
-
-
-
     const proxy: HttpProxy = new HttpProxy({
         target: {
             protocol: target[0] ? "https:" : "http:",
@@ -266,7 +263,19 @@ export function createProxy(
         proxy.on("error", decrease)
     }
     proxy.on("error", settings.proxyErrorHandler)
-    settings.verbose && console.debug("PROXY:", targetHost, "\non Host:", reqData.hostParts, "\non Path:", reqData.pathParts)
+    settings.verbose && console.debug(
+        "PROXY RESOLVER:" + rule.type + "\n",
+        "  req from: " + reqData.hostParts.reverse().join(".") + "/" + reqData.pathParts.join("/") + "\n", 
+        "  resolver: " + "\n",
+        
+    )
+    settings.verbose && console.debug(
+        "PROXY:",
+        "\nFROM HOST:", reqData.hostParts,
+        "\nFROM PATH:", reqData.pathParts,
+        "\nTARGET:",
+        (target[0] ? "https:" : "http:") + "//" + targetHost + ":" + target[2],
+    )
     return proxy
 }
 
@@ -286,6 +295,7 @@ export function createResolver(
         ...defaultCreateResolverSettings,
         ...options,
     }
+
     if (rule.type == "PROXY") {
         let proxyConnections: ProxyConnectionCounter
         let proxyTargetIdMap: ProxyTargetMapper
@@ -398,7 +408,6 @@ export function createResolver(
                     req
                 )
 
-                const uuid = "S$" + rule.target
                 let staticServer: RequestHandler<any> = serveStatic(
                     rule.target,
                     {
@@ -422,7 +431,7 @@ export function createResolver(
             },
         )
     } else {
-        throw new Error("rule type: " + (rule as any).type)
+        throw new Error("Unknown resolver rule type: " + (rule as any).type)
     }
 }
 
