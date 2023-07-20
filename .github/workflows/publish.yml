@@ -20,7 +20,6 @@ jobs:
     - run: npm i -g npm@9
     - run: npm ci
     - run: npm run build
-    - run: ls -al 'src'; ls -al 'src/test'; ls -al 'src/test/e2e'
     - run: npm test
     - name: npmjs.org npm publish
       uses: JS-DevTools/npm-publish@v1
