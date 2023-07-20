@@ -1,13 +1,12 @@
-import { IncomingMessage, ServerResponse } from "http"
-import { Duplex } from "stream"
-import { Rule, ProxyRule, StaticRule, RedirectRule, ProxyTarget, SplitedURL, RuleType, Rules } from './rule';
-import * as HttpProxy from "http-proxy"
-import * as  serveStatic from "serve-static"
-import { RequestHandler } from "serve-static"
-import { RequestData } from './reqdata';
-import env from "./env/envParser"
+import { IncomingMessage, ServerResponse } from "http";
+import * as HttpProxy from "http-proxy";
 import { Awaitable } from "majotools/dist/httpMiddleware";
-import { connectionTimeout } from './cmd/root';
+import * as serveStatic from "serve-static";
+import { RequestHandler } from "serve-static";
+import { Duplex } from "stream";
+import env from "./env/envParser";
+import { RequestData } from './reqdata';
+import { ProxyRule, ProxyTarget, RedirectRule, Rule, RuleType, Rules, SplitedURL, StaticRule, getProxyTargetId } from './rule';
 
 export type ResolverHttpMiddleware = (
     data: RequestData,
@@ -156,8 +155,8 @@ export function overwriteRequestUrl(
     rule: Rule,
     req: IncomingMessage,
 ): void {
-    req.url = reqData.path.substring(
-        rule.path.length
+    req.url = reqData.originPath.substring(
+        rule.originPath.length
     )
     if (!req.url.startsWith("/")) {
         req.url = "/" + req.url
@@ -186,7 +185,7 @@ export function createProxy(
     const targetHost: string = parseTargetVariables(
         reqData,
         rule,
-        target[1]
+        target.host
     )
     overwriteRequestUrl(
         reqData,
@@ -240,9 +239,9 @@ export function createProxy(
 
     const proxy: HttpProxy = new HttpProxy({
         target: {
-            protocol: target[0] ? "https:" : "http:",
+            protocol: target.secure ? "https:" : "http:",
             host: targetHost,
-            port: target[2],
+            port: target.port,
         },
         ws: true,
         secure: env.PROXY_VERIFY_CERTIFICATE,
@@ -265,9 +264,9 @@ export function createProxy(
     proxy.on("error", settings.proxyErrorHandler)
     settings.verbose && console.debug(
         "PROXY RESOLVER:" + rule.type + "\n",
-        "  req from: " + reqData.hostParts.reverse().join(".") + "/" + reqData.pathParts.join("/") + "\n", 
+        "  req from: " + reqData.hostParts.reverse().join(".") + "/" + reqData.pathParts.join("/") + "\n",
         "  resolver: " + "\n",
-        
+
     )
     settings.verbose && console.debug(
         "PROXY:",
@@ -304,15 +303,15 @@ export function createResolver(
             proxyConnections = {}
             proxyTargetIdMap = {}
             proxyTargetIds = rule.target.map((proxyTarget) => {
-                const targetId = proxyTarget.join("/")
+                const targetId = getProxyTargetId(proxyTarget)
                 proxyTargetIdMap[targetId] = proxyTarget
                 proxyConnections[targetId] = 0
                 return targetId
             })
             settings.verbose && console.debug(
                 "PROXY:",
-                rule.host,
-                rule.path,
+                rule.originHost,
+                rule.originPath,
                 "Started in load balancer mode with " +
                 proxyTargetIds.length +
                 " targets!"
@@ -366,30 +365,31 @@ export function createResolver(
                 const targetHost: string = parseTargetVariables(
                     reqData,
                     rule,
-                    target[1]
+                    target.host,
                 )
                 const targetPath: string = parseTargetVariables(
                     reqData,
                     rule,
-                    target[3]
+                    target.path,
                 )
 
                 settings.verbose && console.debug(
                     "REDIRECT:",
-                    target[0] + "://" +
+                    target.protocol + "://" +
                     targetHost + ":" +
-                    target[2] + targetPath,
+                    target.port + targetPath,
                     "\non Host:",
                     reqData.hostParts,
                     "\non Path:",
                     reqData.pathParts
                 )
                 res.statusCode = 301
+
                 res.setHeader(
                     "Location",
-                    target[0] + "://" +
+                    target.protocol + "://" +
                     targetHost + ":" +
-                    target[2] +
+                    target.port +
                     targetPath
                 )
                 res.end()
@@ -454,7 +454,7 @@ export function findResolver(
     verbose: boolean = false,
 ): FoundResolver | undefined {
     if (cache) {
-        const resolver: FoundResolver = cache.get(data.host + "$" + data.path) as any
+        const resolver: FoundResolver = cache.get(data.originHost + "$" + data.originPath) as any
         if (resolver) {
             resolver.req = data
             return resolver
@@ -466,20 +466,20 @@ export function findResolver(
             verbose && console.debug("CPROX-RESOLVER: mismatch host:", resolver.rule.hostParts, data.hostParts)
             continue
         }
-        if (!data.path.startsWith(resolver.rule.path)) {
-            verbose && console.debug("CPROX-RESOLVER: mismatch path:", data.path, resolver.rule.path)
+        if (!data.originPath.startsWith(resolver.rule.originPath)) {
+            verbose && console.debug("CPROX-RESOLVER: mismatch path:", data.originPath, resolver.rule.originPath)
             continue
         }
         if (cache) {
-            cache.set(data.host + "$" + data.path, resolver)
+            cache.set(data.originHost + "$" + data.originPath, resolver)
         }
-        verbose && console.debug("CPROX-RESOLVER: found resolver:", resolver.rule.type + ":" + resolver.rule.host + resolver.rule.path)
+        verbose && console.debug("CPROX-RESOLVER: found resolver:", resolver.rule.type + ":" + resolver.rule.originHost + resolver.rule.originPath)
         return {
             ...resolver,
             req: data
         }
     }
-    verbose && console.debug("CPROX-RESOLVER: no resolver found for:", data.host + data.path)
+    verbose && console.debug("CPROX-RESOLVER: no resolver found for:", data.originHost + data.originPath)
     return undefined
 }
 

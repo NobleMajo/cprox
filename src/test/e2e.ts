@@ -1,4 +1,5 @@
 import { ChildProcess, fork } from "child_process"
+import { Response } from "node-fetch"
 
 export interface AsyncForkResult {
     spawned: boolean,
@@ -356,19 +357,72 @@ export async function startCprox(
     return result
 }
 
+export const defaultE2ETimeout: number = 1000 * 16
+export const defaultBeforeTimeout: number = 1000 * 8
+export const defaultAfterTimeout: number = 1000 * 4
+export const defaultCliTimeout: number = 1000 * 8
+export const defaultTestTimeout: number = 1000 * 2
+
+const defaultRequestTimeout: number = 140
+
 export const defaultFetchOptions = {
-    timeout: 1000 * 1,
+    timeout: defaultRequestTimeout,
     follow: 0,
-    redirect: "manual" as "manual"
+    redirect: "manual" as "manual",
 }
 
-export const defaultE2ETimeout: number = 1000 * 60 * 2
-export const defaultBeforeTimeout: number = 1000 * 16
-export const defaultAfterTimeout: number = 1000 * 16
-export const defaultCliTimeout: number = 1000 * 32
-export const defaultRequestTimeout: number = 1000 * 4
+let defaultMinTestPort = 46000
+let defaultMaxTestPort = 49000
+let usedPorts: number[] = []
 
-let portCounter: number = 63892
-export function getNewPort(): number {
-    return portCounter++
+export function getRandomTestPort(
+    randomMinPort: number = defaultMinTestPort,
+    randomMaxPort: number = defaultMaxTestPort,
+    minFreePortsFactor: number = 0.3
+): number {
+    const usedPort: number = Math.floor(
+        Math.random() * (
+            randomMaxPort - randomMinPort + 1
+        )
+    ) + randomMinPort
+    if (usedPorts.includes(usedPort)) {
+        const needToBeFree = (
+            randomMaxPort - randomMinPort
+        ) * minFreePortsFactor
+        if (usedPorts.length > needToBeFree) {
+            throw new Error(
+                "Lesser then '" + needToBeFree + "' ('" +
+                (minFreePortsFactor * 100) + "'%) ports are free to use!"
+            )
+        }
+
+        return getRandomTestPort(randomMinPort, randomMaxPort)
+    }
+    usedPorts.push(usedPort)
+    return usedPort
+}
+
+export function getLogMessage(
+    result: AsyncForkResult,
+    resp?: Response,
+    message: string = "Unexpected data",
+): string {
+    return message + ": " + JSON.stringify({
+        ...(
+            resp ? {
+                respStatus: resp.status,
+                respStatusText: resp.statusText,
+                respHeaders: [...resp.headers.keys()],
+            } : {}
+        ),
+        exitCode: result.code,
+        killed: result.killed,
+        spawned: result.spawned,
+        closed: result.closed,
+        out: result.getOutput(-1, undefined, undefined)
+            .split("/\n")
+            .join("\n")
+            .split("\\n")
+            .join("\n"),
+    }, null, 2)
 }

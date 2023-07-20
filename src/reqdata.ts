@@ -1,6 +1,7 @@
 export interface RequestData {
-    host: string,
-    path: string,
+    originUrl: string,
+    originHost: string,
+    originPath: string,
     hostParts: string[],
     pathParts: string[],
 }
@@ -11,6 +12,24 @@ export const ipv4Regex = /^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\\.([01]?[0-9]?
 export const ipv6Regex = /^((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$/g
 
 export function parseRequestUrl(
+    url: string,
+): RequestData {
+    const index = url.indexOf("/")
+    return parseRequestHostPath(
+        index != -1 ?
+            (
+                index != 0 ?
+                    url.substring(0, index) :
+                    ""
+            ) :
+            url,
+        index != -1 ?
+            url.substring(index) :
+            "/"
+    )
+}
+
+export function parseRequestHostPath(
     host: string,
     path: string,
 ): RequestData {
@@ -39,15 +58,16 @@ export function parseRequestUrl(
     }
 
     let pathParts: string[] = path.split("/")
-    if (pathParts[0] == "") {
+    while (pathParts[0] == "") {
         pathParts.shift()
     }
-    if (hostParts[0] == "") {
+    while (hostParts[0] == "") {
         hostParts.shift()
     }
     return {
-        host: host,
-        path: path,
+        originUrl: host + path,
+        originHost: host,
+        originPath: path,
         hostParts: hostParts,
         pathParts: pathParts,
     }

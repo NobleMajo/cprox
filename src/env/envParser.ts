@@ -7,6 +7,7 @@ export const envData = parseEnv(
 )
     .setProcessEnv()
     .errExit()
+    
 export const env = envData.env
 export default env
 

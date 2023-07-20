@@ -24,7 +24,15 @@
   - [guide](#guide)
 - [gettings started](#gettings-started)
   - [NodeJS](#nodejs)
+    - [tested with](#tested-with)
+    - [install](#install)
+    - [run](#run)
   - [Docker](#docker)
+    - [tested with](#tested-with-1)
+    - [pull](#pull)
+    - [run](#run-1)
+    - [help](#help)
+    - [help output](#help-output)
 - [usage recommendation](#usage-recommendation)
 - [references](#references)
 - [contribution](#contribution)
@@ -161,15 +169,23 @@ You can use CProX as webserver. It can proxy, redirect and service static conten
 # usage recommendation
 Running the program under different conditions might work, have unpredictable effects, or might work only partially or not at all.  
 The program was tested under the following conditions:
- - node.js v16
- - npm v8
- - ubuntu 20.04
+ - node.js v20+
+ - npm v9+
+ - ubuntu 22.04+
 
 # references
  - [configuration](https://github.com/majo418/cprox/blob/main/docs/config.md).
  - [npm scripts](https://github.com/majo418/cprox/blob/main/docs/npm.md).
 
 # contribution
+
+# feature request
+Create a issue with "Feature: " at the begin if the title.
+
+# issues
+Create a issue with "Issues: " at the begin if the title.
+
+# develop
  - 1. fork the project
  - 2. implement your idea
  - 3. create a pull/merge request
@@ -179,5 +195,4 @@ The program was tested under the following conditions:
 
 ---
 **cya ;3**  
-*by majo418*
-
+*by NobleMajo*

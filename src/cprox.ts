@@ -1,12 +1,11 @@
-import env from "./env/envParser"
-import { RequestListener, Server as HttpServer } from "http"
-import { Server as HttpsServer } from "https"
-import { createCertWatcher, loadCerts, Certs, generateSelfSigned, CertPaths } from './certs';
-import { findResolver, Resolvers } from "./resolver"
-import { closeServer, createHttpServer, createHttpsServer, UpgradeListener } from "./server"
-import { parseRequestUrl } from "./reqdata"
-import { promises as fs } from "fs"
-import { selfSingedLocalityName } from './cmd/root';
+import { promises as fs } from "fs";
+import { Server as HttpServer, RequestListener } from "http";
+import { Server as HttpsServer } from "https";
+import { CertPaths, Certs, createCertWatcher, generateSelfSigned, loadCerts } from './certs';
+import env from "./env/envParser";
+import { parseRequestHostPath } from "./reqdata";
+import { Resolvers, findResolver } from "./resolver";
+import { UpgradeListener, closeServer, createHttpServer, createHttpsServer } from "./server";
 
 export class CProX {
     httpServer: HttpServer | undefined = undefined
@@ -36,7 +35,7 @@ export class CProX {
                 res.end()
                 return
             }
-            const data = parseRequestUrl(
+            const data = parseRequestHostPath(
                 req.headers.host,
                 req.url
             )
@@ -70,7 +69,7 @@ export class CProX {
                 socket.destroy()
                 return
             }
-            const data = parseRequestUrl(
+            const data = parseRequestHostPath(
                 req.headers.host,
                 req.url
             )

@@ -1,15 +1,14 @@
-import { CmdDefinition, BoolFlag, ValueFlag } from "cmdy"
-import env from "../env/envParser"
+import { BoolFlag, CmdDefinition, ValueFlag } from "cmdy"
 import * as dns from "dns"
-import { loadRawRules, parseRules, sortRules } from "../rule"
-import { createResolvers } from "../resolver"
 import { cmdyFlag } from "typenvy"
-import { envData } from "../env/envParser"
-import { CProX } from "../cprox"
 import { fixPath } from "../certs"
+import { CProX } from "../cprox"
+import env, { envData } from "../env/envParser"
+import { createResolvers } from "../resolver"
+import { loadRawRules, parseRules, sortRules } from "../rule"
 import version from "./version"
 
-export const dryrun: BoolFlag = cmdyFlag(
+export const dryRun: BoolFlag = cmdyFlag(
     {
         name: "dry-run",
         alias: ["dryrun", "drun", "dryr"],
@@ -282,7 +281,7 @@ const root: CmdDefinition = {
     description: "CProX is a easy to configure redirect, proxy and static webserver",
     details: "You can use CProX as webserver. It can proxy, redirect and service static content on requests",
     flags: [
-        dryrun,
+        dryRun,
         httpPort,
         httpsPort,
         trustAllCerts,
@@ -377,7 +376,7 @@ const root: CmdDefinition = {
             process.exit(1)
         }
 
-        env.VERBOSE && console.debug("CProX| SortedRules:\n", rules.length)
+
         console.info("CProX| " + rules.length + " rules found!")
         console.info("CProX| Create resolver...")
         const resolvers = createResolvers(
@@ -392,7 +391,6 @@ const root: CmdDefinition = {
         if (env.DRYRUN) {
             console.debug("CProX| Exit because started in 'dry-run' mode!")
             process.exit(0)
-            return
         }
 
         env.VERBOSE && console.debug("CProX| Create CProX instance...")

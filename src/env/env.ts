@@ -38,6 +38,8 @@ export const envDefaults = {
     PROXY_REACTION_TIMEOUT: 1000 * 3 as number,
     PROXY_VERIFY_CERTIFICATE: false as boolean,
     PROXY_FOLLOW_REDIRECTS: false as boolean,
+
+    X_FORWARDED_SSL: true as boolean
 }
 
 export const envTypes: typenvy.VariablesTypes = {
@@ -72,4 +74,6 @@ export const envTypes: typenvy.VariablesTypes = {
     PROXY_REACTION_TIMEOUT: [typenvy.TC_CALCULATION, typenvy.TC_NUMBER],
     PROXY_VERIFY_CERTIFICATE: [typenvy.TC_BOOLEAN],
     PROXY_FOLLOW_REDIRECTS: [typenvy.TC_BOOLEAN],
+
+    X_FORWARDED_SSL: [typenvy.TC_BOOLEAN],
 }

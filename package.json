@@ -1,9 +1,9 @@
 {
   "name": "cprox",
   "description": "A easy to configure redirect, static serve, proxy and load balancer web server.",
-  "version": "1.9.6",
+  "version": "1.9.8",
   "main": "dist/index.js",
-  "author": "majo418",
+  "author": "NobleMajo",
   "license": "MIT",
   "private": false,
   "keywords": [
@@ -20,14 +20,14 @@
     "cproxdev": "./bin/dev.ts"
   },
   "repository": {
-    "url": "git@github.com:majo418/cprox.git",
+    "url": "git@github.com:noblemajo/cprox.git",
     "type": "git"
   },
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "start": "ts-node src/index.ts *=STATIC:/var/www/html --dry-run",
     "exec": "node dist/index.js",
-    "test": "mocha --paralell --exit --require ts-node/register src/test/**/*.test.ts",
+    "test": "mocha --parallel --exit --require ts-node/register 'src/test/**/*.test.ts'",
     "build": "npm run tsc",
     "start:watch": "nodemon -w ./src -x \"npm run start\" --ext *.ts",
     "build:watch": "nodemon -w ./src -x \"npm run build\" --ext *.ts",
@@ -36,25 +36,25 @@
     "dev": "nodemon -w ./src -x \"npm run build; npm run test; npm run start\" --ext *.ts"
   },
   "devDependencies": {
-    "@types/chai": "4",
-    "@types/http-proxy": "1",
-    "@types/mocha": "9",
-    "@types/node": "16",
-    "@types/node-fetch": "2",
-    "@types/serve-static": "1",
-    "chai": "4",
-    "mocha": "9",
-    "node-fetch": "2",
-    "nodemon": "2",
-    "ts-node": "10",
-    "typescript": "4"
+    "@types/chai": "^4.3.5",
+    "@types/http-proxy": "^1.17.11",
+    "@types/mocha": "^8.2.3",
+    "@types/node": "^20.4.1",
+    "@types/node-fetch": "^2.6.4",
+    "@types/serve-static": "^1.15.2",
+    "chai": "^4.3.7",
+    "mocha": "^8.4.0",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
   },
   "dependencies": {
-    "cmdy": "1",
-    "http-proxy": "1",
-    "majotools": "1",
-    "selfsigned": "2",
-    "serve-static": "1",
-    "typenvy": "1"
+    "cmdy": "^1.4.5",
+    "http-proxy": "^1.18.1",
+    "majotools": "^1.4.4",
+    "node-fetch": "^2.6.12",
+    "selfsigned": "^2.1.1",
+    "serve-static": "^1.15.0",
+    "typenvy": "^1.5.15"
   }
 }
