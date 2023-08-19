@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import { Server as HttpServer, RequestListener } from "http";
 import { Server as HttpsServer } from "https";
-import { CertPaths, Certs, createCertWatcher, generateSelfSigned, loadCerts } from './certs';
+import { CertLoader, LoadedCerts, createCertWatcher } from './certs';
 import env from "./env/envParser";
 import { parseRequestHostPath } from "./reqdata";
 import { Resolvers, findResolver } from "./resolver";
@@ -16,7 +15,8 @@ export class CProX {
 
     constructor(
         public resolvers: Resolvers,
-        public certPaths: CertPaths,
+        public certLoader: CertLoader | undefined,
+        public certDirPath: string | undefined,
         public verbose: boolean,
     ) { }
 
@@ -107,8 +107,10 @@ export class CProX {
         console.info("CProX| Starting...")
         if (typeof env.HTTPS_PORT == "number") {
             await closeServer(this.httpsServer)
+            console.info("CProX| Load certs for https server...")
+            const certs: LoadedCerts = await this.certLoader()
+            console.log("certs: ", certs)
             console.info("Start https server on port '" + env.HTTPS_PORT + "'...")
-            const certs: Certs = await loadCerts(this.certPaths)
             this.httpsServerPromise = createHttpsServer(
                 env.HTTPS_PORT,
                 env.BIND_ADDRESS,
@@ -165,6 +167,8 @@ export class CProX {
                 this.requestListener,
                 this.upgradeListener,
             )
+        } else {
+            throw new Error("No http or https port defined!")
         }
         const [httpServer2, httpsServer2] = await Promise.all([
             this.httpServerPromise,
@@ -200,57 +204,10 @@ export class CProX {
     }
 
     async init() {
-        if (typeof env.HTTPS_PORT == "number") {
-            try {
-                await loadCerts(this.certPaths)
-            } catch (err) {
-                if (env.DISABLE_SELF_SINGED) {
-                    throw err
-                }
-                await fs.mkdir(env.CERT_PATH, {
-                    recursive: true
-                })
-
-                await generateSelfSigned(
-                    this.certPaths,
-                    [
-                        {
-                            name: "countryName",
-                            value: env.SELF_SINGED_COUNTRY_CODE,
-                        },
-                        {
-                            name: "commonName",
-                            value: env.SELF_SINGED_COMMON_DOMAIN_NAME,
-                        },
-                        {
-                            name: "stateOrProvinceName",
-                            value: env.SELF_SINGED_STATE_NAME,
-                        },
-                        {
-                            name: "localityName",
-                            value: env.SELF_SINGED_LOCALITY_NAME,
-                        },
-                        {
-                            name: "organizationName",
-                            value: env.SELF_SINGED_ORGANIZATION_NAME,
-                        },
-                        {
-                            name: "emailAddress",
-                            value: env.SELF_SINGED_EMAIL_ADDRESS,
-                        },
-                        {
-                            name: "nsComment",
-                            value: env.SELF_SINGED_NETSCAPE_COMMENT,
-                        }
-                    ],
-                )
-            }
-        }
-
         await this.restart()
         if (typeof env.HTTPS_PORT == "number") {
-            const watcher = await createCertWatcher(
-                this.certPaths,
+            await createCertWatcher(
+                this.certDirPath,
                 () => this.restart()
             )
         }

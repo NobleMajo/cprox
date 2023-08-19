@@ -18,9 +18,9 @@ export const envDefaults = {
     BIND_ADDRESS: "0.0.0.0" as string,
 
     CERT_PATH: "./.store/certs" as string,
-    CERT_NAME: "cert.pem" as string,
-    KEY_NAME: "privkey.pem" as string,
-    CA_NAME: "chain.pem" as string | null,
+    CERT_SUFFIX: ".crt" as string,
+    KEY_SUFFIX: ".key" as string,
+    CA_SUFFIX: ".chain.pem" as string | null,
 
     DISABLE_SELF_SINGED: false as boolean,
     SELF_SINGED_COMMON_DOMAIN_NAME: "example.com" as string,
@@ -55,9 +55,9 @@ export const envTypes: typenvy.VariablesTypes = {
     BIND_ADDRESS: [typenvy.TC_STRING],
 
     CERT_PATH: [typenvy.TC_PATH],
-    CERT_NAME: [typenvy.TC_STRING],
-    KEY_NAME: [typenvy.TC_STRING],
-    CA_NAME: [typenvy.TC_STRING, typenvy.TC_NULL],
+    CERT_SUFFIX: [typenvy.TC_STRING],
+    KEY_SUFFIX: [typenvy.TC_STRING],
+    CA_SUFFIX: [typenvy.TC_STRING, typenvy.TC_NULL],
 
     DISABLE_SELF_SINGED: [typenvy.TC_BOOLEAN],
     SELF_SINGED_COMMON_DOMAIN_NAME: [typenvy.TC_STRING],

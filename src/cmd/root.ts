@@ -1,12 +1,12 @@
-import { BoolFlag, CmdDefinition, ValueFlag } from "cmdy"
-import * as dns from "dns"
-import { cmdyFlag } from "typenvy"
-import { fixPath } from "../certs"
-import { CProX } from "../cprox"
-import env, { envData } from "../env/envParser"
-import { createResolvers } from "../resolver"
-import { loadRawRules, parseRules, sortRules } from "../rule"
-import version from "./version"
+import { BoolFlag, CmdDefinition, ValueFlag } from "cmdy";
+import * as dns from "dns";
+import { cmdyFlag } from "typenvy";
+import { CProX } from "../cprox";
+import env, { envData } from "../env/envParser";
+import { createResolvers } from "../resolver";
+import { loadRawRules, parseRules, sortRules } from "../rule";
+import { CertLoader, createCertLoader } from './../certs';
+import version from "./version";
 
 export const dryRun: BoolFlag = cmdyFlag(
     {
@@ -191,35 +191,36 @@ export const certPath: ValueFlag = cmdyFlag(
     envData
 )
 
-export const certName: ValueFlag = cmdyFlag(
+export const certSuffix: ValueFlag = cmdyFlag(
     {
-        name: "cert-name",
-        alias: ["certname"],
+        name: "cert-suffix",
+        alias: ["certsuffix"],
         types: ["string"],
-        description: "Define the name for the certificates cert file",
+        description: "Define the name for the certificates cert filename suffix",
     },
-    "CERT_NAME",
+    "CERT_SUFFIX",
     envData
 )
 
-export const keyName: ValueFlag = cmdyFlag(
+export const keySuffix: ValueFlag = cmdyFlag(
     {
-        name: "key-name",
-        alias: ["keyname"],
+        name: "key-suffix",
+        alias: ["keysuffix"],
         types: ["string"],
-        description: "Define the name for the certificates key file",
+        description: "Define the name for the certificates key filename suffix",
     },
-    "KEY_NAME",
+    "KEY_SUFFIX",
     envData
 )
-export const caName: ValueFlag = cmdyFlag(
+
+export const caSuffix: ValueFlag = cmdyFlag(
     {
-        name: "ca-name",
-        alias: ["caname"],
+        name: "ca-suffix",
+        alias: ["casuffix"],
         types: ["string"],
-        description: "Define the name for the certificate ca file",
+        description: "Define the name for the certificate ca filename suffix",
     },
-    "CA_NAME",
+    "CA_SUFFIX",
     envData
 )
 
@@ -296,9 +297,9 @@ const root: CmdDefinition = {
         selfSingedNetscapeComment,
         dnsServerAddress,
         certPath,
-        certName,
-        keyName,
-        caName,
+        certSuffix,
+        keySuffix,
+        caSuffix,
         rules,
         maxHeaderSize,
         connectionTimeout,
@@ -347,15 +348,7 @@ const root: CmdDefinition = {
         env.VERBOSE && console.debug("CProX| Set dns server addresses...")
         dns.setServers(env.DNS_SERVER_ADDRESSES)
 
-        env.VERBOSE && console.debug("CProX| Set cert paths...")
-        const certPaths = {
-            cert: fixPath(env.CERT_PATH + "/" + env.CERT_NAME),
-            key: fixPath(env.CERT_PATH + "/" + env.KEY_NAME),
-            ca: fixPath(env.CERT_PATH + "/" + env.CA_NAME),
-        }
-
         env.VERBOSE && console.debug("CProX| Load rules...")
-
         const rawRules = loadRawRules(
             [
                 ...cmd.arrayFlags.rule,
@@ -375,9 +368,53 @@ const root: CmdDefinition = {
             console.error("Try to run this command with '--help' flag.")
             process.exit(1)
         }
-
-
         console.info("CProX| " + rules.length + " rules found!")
+
+        let certLoader: CertLoader = undefined
+        if (typeof env.HTTPS_PORT == "number") {
+            certLoader = createCertLoader(
+                rules.map((r) => r.originHost),
+                env.CERT_PATH,
+                env.CERT_SUFFIX,
+                env.KEY_SUFFIX,
+                env.CA_SUFFIX,
+                env.DISABLE_SELF_SINGED !== true,
+                [
+                    {
+                        name: "countryName",
+                        value: env.SELF_SINGED_COUNTRY_CODE,
+                    },
+                    {
+                        name: "commonName",
+                        value: env.SELF_SINGED_COMMON_DOMAIN_NAME,
+                    },
+                    {
+                        name: "stateOrProvinceName",
+                        value: env.SELF_SINGED_STATE_NAME,
+                    },
+                    {
+                        name: "localityName",
+                        value: env.SELF_SINGED_LOCALITY_NAME,
+                    },
+                    {
+                        name: "organizationName",
+                        value: env.SELF_SINGED_ORGANIZATION_NAME,
+                    },
+                    {
+                        name: "emailAddress",
+                        value: env.SELF_SINGED_EMAIL_ADDRESS,
+                    },
+                    {
+                        name: "nsComment",
+                        value: env.SELF_SINGED_NETSCAPE_COMMENT,
+                    }
+                ]
+            )
+
+            env.VERBOSE && console.debug("CProX| Check rule certificates...")
+            await certLoader()
+        }
+
         console.info("CProX| Create resolver...")
         const resolvers = createResolvers(
             rules,
@@ -397,8 +434,9 @@ const root: CmdDefinition = {
 
         await new CProX(
             resolvers,
-            certPaths,
-            env.VERBOSE
+            certLoader,
+            env.CERT_PATH,
+            env.VERBOSE,
         ).init()
     }
 }

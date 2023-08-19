@@ -1,9 +1,9 @@
 import * as http from "http"
-import { RequestListener, Server as HttpServer, ServerResponse } from "http"
+import { Server as HttpServer, RequestListener } from "http"
 import * as https from "https"
 import { Server as HttpsServer } from "https"
 import { Duplex } from "stream"
-import { Certs } from "./certs"
+import { Certs, LoadedCerts } from "./certs"
 
 export type UpgradeListener = (
     req: http.IncomingMessage,
@@ -14,7 +14,7 @@ export type UpgradeListener = (
 export function createHttpsServer(
     port: number,
     bindAddress: string,
-    certs: Certs,
+    certs: Certs | LoadedCerts,
     connectionTimeout: number,
     maxHeaderSize: number,
     requestListener: RequestListener,
