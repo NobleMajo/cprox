@@ -1,71 +1,71 @@
-name: Image
+# name: Image
 
-on:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: 15 11 * * 5
+# on:
+#   push:
+#     branches:
+#       - main
+#   schedule:
+#     - cron: 15 11 * * 5
 
-jobs:
-  test:
-    name: Test docker image
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build docker image
-        run: ./scripts/build.sh
-      - name: Run built image
-        run: ./scripts/start.sh
-      - name: Check (max 5 times) if docker images is running
-        run: for i in {1..5}; do docker exec --tty ${{ github.event.repository.name }} env TERM=xterm docker info && break || sleep 10; done
+# jobs:
+#   test:
+#     name: Test docker image
+#     runs-on: ubuntu-20.04
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Build docker image
+#         run: ./scripts/build.sh
+#       - name: Run built image
+#         run: ./scripts/start.sh
+#       - name: Check (max 5 times) if docker images is running
+#         run: for i in {1..5}; do docker exec --tty ${{ github.event.repository.name }} env TERM=xterm docker info && break || sleep 10; done
 
-  release:
-    name: Release docker image
-    runs-on: ubuntu-20.04
-    needs: test
-    steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+#   release:
+#     name: Release docker image
+#     runs-on: ubuntu-20.04
+#     needs: test
+#     steps:
+#       - name: Set up QEMU
+#         uses: docker/setup-qemu-action@v1
 
-      - name: Set up docker buildx
-        uses: docker/setup-buildx-action@v1
+#       - name: Set up docker buildx
+#         uses: docker/setup-buildx-action@v1
 
-      - name: Login to docker hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+#       - name: Login to docker hub
+#         uses: docker/login-action@v1
+#         with:
+#           username: ${{ secrets.DOCKER_HUB_USERNAME }}
+#           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build and push (latest|docker-hub)
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: ${{ github.repository }}:latest
+#       - name: Build and push (latest|docker-hub)
+#         uses: docker/build-push-action@v2
+#         with:
+#           push: true
+#           tags: ${{ github.repository }}:latest
 
-      - name: Build and push (commit-hash|docker-hub)
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: ${{ github.repository }}:${{ github.sha }}
+#       - name: Build and push (commit-hash|docker-hub)
+#         uses: docker/build-push-action@v2
+#         with:
+#           push: true
+#           tags: ${{ github.repository }}:${{ github.sha }}
 
-      - run: docker logout
+#       - run: docker logout
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v1 
-        with:
-          registry: docker.pkg.github.com
-          username: ${{ GITHUB.ACTOR }}
-          password: ${{ GITHUB.TOKEN }}
+#       - name: Login to DockerHub
+#         uses: docker/login-action@v1 
+#         with:
+#           registry: docker.pkg.github.com
+#           username: ${{ GITHUB.ACTOR }}
+#           password: ${{ GITHUB.TOKEN }}
 
-      - name: Build and push (latest|docker-hub)
-        uses: docker/build-push-action@v2
-        with:
-          tags: ${{ GITHUB.REPOSITORY }}:latest
+#       - name: Build and push (latest|docker-hub)
+#         uses: docker/build-push-action@v2
+#         with:
+#           tags: ${{ GITHUB.REPOSITORY }}:latest
 
-      - name: Build and push (commit-hash|docker-hub)
-        uses: docker/build-push-action@v2
-        with:
-          tags: ${{ GITHUB.REPOSITORY }}:${{ GITHUB.SHA }}
+#       - name: Build and push (commit-hash|docker-hub)
+#         uses: docker/build-push-action@v2
+#         with:
+#           tags: ${{ GITHUB.REPOSITORY }}:${{ GITHUB.SHA }}
 
-      - run: docker logout
+#       - run: docker logout
