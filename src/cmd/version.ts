@@ -18,6 +18,22 @@ const version: CmdDefinition = {
     ],
     allowUnknownArgs: false,
     cmds: [],
+    /**
+     * @description enables verbose mode and outputs version, license, author, and
+     * description information in a structured format.
+     * 
+     * @param { `async` (cmd) value. } cmd - command being executed and is used to determine
+     * the output format for the functions.
+     * 
+     * 		- `flags`: An array of strings representing the command-line flags passed to the
+     * program.
+     * 		- `json`: A boolean indicating whether the `-json` flag was passed, which triggers
+     * the output of JSON data.
+     * 
+     * 
+     * @returns { string } a series of hyphenated lines and information about the version,
+     * license, author, and description of the software.
+     */
     exe: async (cmd) => {
         env.VERBOSE && console.debug(
             "VERBOSE MODE ENABLED!\n",
