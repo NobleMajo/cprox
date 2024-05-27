@@ -5,7 +5,9 @@ import { after, before } from 'mocha';
 import fetch from 'node-fetch';
 import {
     AsyncForkResult, defaultAfterTimeout,
-    defaultBeforeTimeout, defaultE2ETimeout,
+    defaultBeforeTimeout,
+    defaultCliTimeout,
+    defaultE2ETimeout,
     defaultFetchOptions,
     defaultTestTimeout,
     getRandomTestPort,
@@ -29,7 +31,7 @@ describe('Live E2E http to https redirect tests', function () {
             "-s", "" + httpsPort,
             "-b", "127.0.0.1",
             "localhost=STATIC:" + __dirname + "/../html",
-        ])
+        ], defaultCliTimeout)
     })
 
     after(async function () {
@@ -58,6 +60,7 @@ describe('Live E2E http to https redirect tests', function () {
 
     it('request without host', async function () {
         this.timeout(defaultTestTimeout)
+
         const resp = await fetch("http://127.0.0.1:" + httpPort, {
             ...defaultFetchOptions,
         })

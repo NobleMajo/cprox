@@ -5,11 +5,14 @@ import { after, before } from 'mocha';
 import fetch, { Response } from "node-fetch";
 import {
     AsyncForkResult, defaultAfterTimeout,
-    defaultBeforeTimeout, defaultE2ETimeout,
-    defaultFetchOptions, defaultTestTimeout,
+    defaultBeforeTimeout,
+    defaultCliTimeout,
+    defaultE2ETimeout,
+    defaultFetchOptions,
+    defaultTestTimeout,
     getLogMessage,
     getRandomTestPort,
-    startCprox,
+    startCprox
 } from '../e2e';
 
 describe('Live E2E load balancer webserver tests', function () {
@@ -27,7 +30,7 @@ describe('Live E2E load balancer webserver tests', function () {
             "-b", "127.0.0.1",
             "localhost=REDIRECT:http://127.0.0.1:8080,http://127.0.0.1:8081,http://127.0.0.1:8082",
             "test.com=REDIRECT:http://127.0.0.1:8080,http://127.0.0.1:8081,http://127.0.0.1:8082,http://127.0.0.1:8083",
-        ])
+        ], defaultCliTimeout)
     })
 
     after(async function () {

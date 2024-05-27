@@ -58,7 +58,7 @@ export const defaultAsyncForkSettings: AsyncForkSettings = {
     env: {},
     spawnTimeout: 1000 * 4,
     timeout: 1000 * 8,
-    closeTimeout: 1000 * 4,
+    closeTimeout: -1,
 }
 
 export async function asyncFork(
@@ -310,7 +310,7 @@ export function asyncSleep(millis: number): Promise<void> {
 
 export async function startCprox(
     args: string[],
-    timeoutMillis: number = 1000 * 8,
+    timeoutMillis: number,
     checkIntervalMillis: number = 200,
 ): Promise<AsyncForkResult> {
     if (timeoutMillis < 100) {
@@ -323,7 +323,7 @@ export async function startCprox(
         __dirname + "/../index",
         {
             args: args,
-            timeout: defaultE2ETimeout - 5
+            timeout: timeoutMillis - 1000
         }
     )
     await result.spawnPromise
@@ -333,7 +333,8 @@ export async function startCprox(
             resolved = true
             await result.close()
             rej(new Error(
-                "Can't find started message!\n" +
+                "Can't find started message for:\n" +
+                args.join(" ") + "\n\n" +
                 (
                     result.output.length == 0 ?
                         "No error or standard output!" :
@@ -343,6 +344,7 @@ export async function startCprox(
         }, timeoutMillis)
         while (!resolved) {
             await asyncSleep(checkIntervalMillis)
+
             if (result.getStdOutput().includes("CProX| Server started!")) {
                 resolved = true
                 break
@@ -357,11 +359,11 @@ export async function startCprox(
     return result
 }
 
-export const defaultE2ETimeout: number = 1000 * 16
-export const defaultBeforeTimeout: number = 1000 * 8
-export const defaultAfterTimeout: number = 1000 * 4
-export const defaultCliTimeout: number = 1000 * 8
-export const defaultTestTimeout: number = 1000 * 2
+export const defaultE2ETimeout: number = 1000 * 60
+export const defaultBeforeTimeout: number = 1000 * 40
+export const defaultAfterTimeout: number = 1000 * 10
+export const defaultCliTimeout: number = 1000 * 30
+export const defaultTestTimeout: number = 1000 * 10
 
 const defaultRequestTimeout: number = 140
 

@@ -1,9 +1,10 @@
+import { expect } from 'chai';
 import 'mocha';
-import { expect } from 'chai'
 import {
-    defaultE2ETimeout, defaultCliTimeout,
     asyncFork,
-} from '../e2e'
+    defaultCliTimeout,
+    defaultE2ETimeout,
+} from '../e2e';
 
 describe('Live cli', function () {
     this.timeout(defaultE2ETimeout)
@@ -14,7 +15,8 @@ describe('Live cli', function () {
         const result = await asyncFork(
             __dirname + "/../../index",
             {
-                args: ["--help"]
+                args: ["--help"],
+                closeTimeout: defaultCliTimeout - 2000,
             }
         )
         await result.spawnPromise
@@ -44,7 +46,8 @@ describe('Live cli', function () {
                 args: [
                     "--dry-run",
                     "*=STATIC:/var/www/html"
-                ]
+                ],
+                closeTimeout: defaultCliTimeout - 2000,
             }
         )
         await result.spawnPromise

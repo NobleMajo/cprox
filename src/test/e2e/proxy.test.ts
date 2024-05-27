@@ -5,7 +5,9 @@ import { after, before } from 'mocha';
 import fetch, { Response } from 'node-fetch';
 import {
     AsyncForkResult, defaultAfterTimeout,
-    defaultBeforeTimeout, defaultE2ETimeout,
+    defaultBeforeTimeout,
+    defaultCliTimeout,
+    defaultE2ETimeout,
     defaultFetchOptions,
     defaultTestTimeout,
     getRandomTestPort,
@@ -30,13 +32,13 @@ describe('Live E2E proxy webserver tests', function () {
             "-b", "127.0.0.1",
             "localhost=PROXY:http://127.0.0.1:" + port2,
             "sub.com=PROXY:http://127.0.0.1:50404",
-        ])
+        ], defaultCliTimeout)
         const p2 = startCprox([
             "-p", "" + port2,
             "-b", "127.0.0.1",
             "localhost=STATIC:" + __dirname + "/../html",
             "sub.com=STATIC:" + __dirname + "/../html/sub",
-        ])
+        ], defaultCliTimeout)
 
         result2 = await p2
         result = await p1

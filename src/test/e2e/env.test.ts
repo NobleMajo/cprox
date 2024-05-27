@@ -18,11 +18,12 @@ describe('Live env', function () {
             {
                 args: [
                     "--dry-run",
-                    "*=STATIC:/var/www/html"
+                    "*=STATIC:/var/www/html",
                 ],
                 env: {
                     "VERBOSE": "true",
-                }
+                },
+                closeTimeout: defaultCliTimeout - 2000,
             }
         )
         await result.spawnPromise
@@ -118,7 +119,8 @@ describe('Live env', function () {
                     "DRYRUN": "true",
                     "TRUST_ALL_CERTS": "true",
                     "SELF_SINGED_DOMAIN": "test.com",
-                }
+                },
+                closeTimeout: defaultCliTimeout - 2000,
             }
         )
         await result.spawnPromise

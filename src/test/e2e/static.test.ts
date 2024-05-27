@@ -5,7 +5,9 @@ import { after, before } from 'mocha';
 import fetch, { Response } from 'node-fetch';
 import {
     AsyncForkResult, defaultAfterTimeout,
-    defaultBeforeTimeout, defaultE2ETimeout,
+    defaultBeforeTimeout,
+    defaultCliTimeout,
+    defaultE2ETimeout,
     defaultFetchOptions, defaultTestTimeout,
     getRandomTestPort,
     startCprox
@@ -20,12 +22,13 @@ describe('Live E2E static webserver tests', function () {
         this.timeout(defaultBeforeTimeout)
 
         port = getRandomTestPort()
+
         result = await startCprox([
             "-p", "" + port,
             "-b", "127.0.0.1",
             "localhost=STATIC:" + __dirname + "/../html",
             "sub.com=STATIC:" + __dirname + "/../html/sub",
-        ])
+        ], defaultCliTimeout)
     })
 
     after(async function () {
