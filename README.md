@@ -1,16 +1,16 @@
 # CProX
-![CI/CD](https://github.com/majo418/cprox/workflows/Publish/badge.svg)
+![CI/CD](https://github.com/noblemajo/cprox/workflows/Publish/badge.svg)
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
-![typescript](https://img.shields.io/badge/dynamic/json?style=plastic&color=blue&label=Typescript&prefix=v&query=devDependencies.typescript&url=https%3A%2F%2Fraw.githubusercontent.com%2Fmajo418%2Fcprox%2Fmain%2Fpackage.json)
+![typescript](https://img.shields.io/badge/dynamic/json?style=plastic&color=blue&label=Typescript&prefix=v&query=devDependencies.typescript&url=https%3A%2F%2Fraw.githubusercontent.com%2Fnoblemajo%2Fcprox%2Fmain%2Fpackage.json)
 ![npm](https://img.shields.io/npm/v/cprox.svg?style=plastic&logo=npm&color=red)
-![github](https://img.shields.io/badge/dynamic/json?style=plastic&color=darkviolet&label=GitHub&prefix=v&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fmajo418%2Fcprox%2Fmain%2Fpackage.json)
+![github](https://img.shields.io/badge/dynamic/json?style=plastic&color=darkviolet&label=GitHub&prefix=v&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fnoblemajo%2Fcprox%2Fmain%2Fpackage.json)
 
-![](https://img.shields.io/badge/dynamic/json?color=green&label=watchers&query=watchers&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
-![](https://img.shields.io/badge/dynamic/json?color=yellow&label=stars&query=stargazers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
-![](https://img.shields.io/badge/dynamic/json?color=orange&label=subscribers&query=subscribers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
-![](https://img.shields.io/badge/dynamic/json?color=navy&label=forks&query=forks&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
-![](https://img.shields.io/badge/dynamic/json?color=darkred&label=open%20issues&query=open_issues&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fmajo418%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=green&label=watchers&query=watchers&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=yellow&label=stars&query=stargazers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=orange&label=subscribers&query=subscribers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=navy&label=forks&query=forks&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=darkred&label=open%20issues&query=open_issues&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
 
 # table of contents
 - [CProX](#cprox)
@@ -37,9 +37,9 @@
 
 # about
 |
-[Docker Hub](https://hub.docker.com/r/majo418/cprox)
+[Docker Hub](https://hub.docker.com/r/noblemajo/cprox)
 |
-[GitHub](https://github.com/majo418/cprox)
+[GitHub](https://github.com/noblemajo/cprox)
 |  
 CProX is an easy to configure `static serve`, `redirect`, `reverse proxy` and `load balancing` web server.
 
@@ -62,7 +62,7 @@ cprox \
 ```
 
 ## guide
-Please checkout the [configuration guide](https://github.com/majo418/cprox/blob/main/docs/config.md).
+Please checkout the [configuration guide](https://github.com/noblemajo/cprox/blob/main/docs/config.md).
 
 # gettings started
 Checkout the `test.sh` and the `start.sh` scripts to understand what you need to think about and how to start the server.
@@ -102,7 +102,7 @@ cprox -h
 
 ### pull
 ```sh
-docker pull majo418/cprox:latest
+docker pull noblemajo/cprox:latest
 ```
 
 ### run
@@ -111,12 +111,12 @@ docker run -it --rm \
   -p 80:80 \
   -p 443:443 \
   -v $(pwd)/certs:/app/certs \
-  majo418/cprox \
+  noblemajo/cprox \
     *=REDIRECT:https://start.duckduckgo.com
 ```
 ### help
 ```sh
-docker run -it --rm majo418/cprox -h
+docker run -it --rm noblemajo/cprox -h
 ```
 
 ### help output
@@ -161,7 +161,7 @@ version Shows the version of cprox
 Details:
 You can use CProX as webserver. It can proxy, redirect and service static content on requests
 
-! CProX | by majo418 | supported by CoreUnit.NET !
+! CProX | by noblemajo | supported by CoreUnit.NET !
 ```
 
 # usage recommendation
@@ -172,8 +172,8 @@ The program was tested under the following conditions:
  - ubuntu 22.04+
 
 # references
- - [configuration](https://github.com/majo418/cprox/blob/main/docs/config.md).
- - [npm scripts](https://github.com/majo418/cprox/blob/main/docs/npm.md).
+ - [configuration](https://github.com/noblemajo/cprox/blob/main/docs/config.md).
+ - [npm scripts](https://github.com/noblemajo/cprox/blob/main/docs/npm.md).
 
 # contribution
 
