@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 CURRENT_WORK_DIR=$(pwd)
 CURRENT_SCRIPT=$(realpath $0)
