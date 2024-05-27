@@ -1,6 +1,4 @@
 # CProX
-![Docker](https://img.shields.io/docker/image-size/majo418/cprox)
-![CI/CD](https://github.com/majo418/cprox/workflows/Image/badge.svg)
 ![CI/CD](https://github.com/majo418/cprox/workflows/Publish/badge.svg)
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
