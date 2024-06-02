@@ -1,57 +1,43 @@
 # CProX
 ![CI/CD](https://github.com/noblemajo/cprox/workflows/Publish/badge.svg)
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
-
 ![typescript](https://img.shields.io/badge/dynamic/json?style=plastic&color=blue&label=Typescript&prefix=v&query=devDependencies.typescript&url=https%3A%2F%2Fraw.githubusercontent.com%2Fnoblemajo%2Fcprox%2Fmain%2Fpackage.json)
 ![npm](https://img.shields.io/npm/v/cprox.svg?style=plastic&logo=npm&color=red)
-![github](https://img.shields.io/badge/dynamic/json?style=plastic&color=darkviolet&label=GitHub&prefix=v&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fnoblemajo%2Fcprox%2Fmain%2Fpackage.json)
+<!-- ![github](https://img.shields.io/badge/dynamic/json?style=plastic&color=darkviolet&label=GitHub&prefix=v&query=version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fnoblemajo%2Fcprox%2Fmain%2Fpackage.json) -->
 
 ![](https://img.shields.io/badge/dynamic/json?color=green&label=watchers&query=watchers&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
 ![](https://img.shields.io/badge/dynamic/json?color=yellow&label=stars&query=stargazers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
-![](https://img.shields.io/badge/dynamic/json?color=orange&label=subscribers&query=subscribers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
 ![](https://img.shields.io/badge/dynamic/json?color=navy&label=forks&query=forks&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
-![](https://img.shields.io/badge/dynamic/json?color=darkred&label=open%20issues&query=open_issues&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
+<!-- ![](https://img.shields.io/badge/dynamic/json?color=orange&label=subscribers&query=subscribers_count&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox)
+![](https://img.shields.io/badge/dynamic/json?color=darkred&label=open%20issues&query=open_issues&suffix=x&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fnoblemajo%2Fcprox) -->
 
-# table of contents
-- [CProX](#cprox)
-- [table of contents](#table-of-contents)
-- [about](#about)
-  - [details](#details)
-- [configuration](#configuration)
-  - [example](#example)
-  - [guide](#guide)
-- [gettings started](#gettings-started)
-  - [NodeJS](#nodejs)
-    - [tested with](#tested-with)
-    - [install](#install)
-    - [run](#run)
-  - [Docker](#docker)
-    - [tested with](#tested-with-1)
-    - [pull](#pull)
-    - [run](#run-1)
-    - [help](#help)
-    - [help output](#help-output)
-- [usage recommendation](#usage-recommendation)
-- [references](#references)
-- [contribution](#contribution)
-
-# about
-|
-[Docker Hub](https://hub.docker.com/r/noblemajo/cprox)
-|
-[GitHub](https://github.com/noblemajo/cprox)
-|  
 CProX is an easy to configure `static serve`, `redirect`, `reverse proxy` and `load balancing` web server.
 
-## details
+---
+- [CProX](#cprox)
+- [Features](#features)
+- [Tested with](#tested-with)
+- [Configuration](#configuration)
+- [Gettings started](#gettings-started)
+  - [Install](#install)
+  - [Help](#help)
+  - [Run](#run)
+- [Contributing](#contributing)
+- [License](#license)
+- [Disclaimer](#disclaimer)
+
+# Features
  - Support for `http`, `https`, `ws`, `wss` and any subprotocol.  
- - Its a `free` `open source` project.
- - Available on `github.com`, `npmjs.com` and `hub.docker.com`.
  - Simple `cli tool` and easy `envtionment variables`.
- - Automatically `self-signed certificate` if required and not disabled!
+ - Automatically `self-signed certificate` if required (or disabled)!
  
-# configuration
-## example
+# Tested with
+ - node v16
+ - npm  v8
+
+# Configuration
+Please checkout the [configuration guide](https://github.com/noblemajo/cprox/blob/main/docs/config.md).  
+But here a quick example:
 ```sh
 cprox \
     *=STATIC:/var/www/html \
@@ -61,23 +47,21 @@ cprox \
     www.example.com/proxy=PROXY:http://127.0.0.1:58080
 ```
 
-## guide
-Please checkout the [configuration guide](https://github.com/noblemajo/cprox/blob/main/docs/config.md).
-
-# gettings started
+# Gettings started
 Checkout the `test.sh` and the `start.sh` scripts to understand what you need to think about and how to start the server.
 
-## NodeJS
-### tested with
- - node v16
- - npm  v8
-
-### install
+## Install
 ```sh
 npm i -g cprox
 ```
 
-### run
+## Help
+Checkout the help output for a quit overview:
+```sh
+cprox -h
+```
+
+## Run
 Run as redirect server:
 ```sh
 cprox *=REDIRECT:https://start.duckduckgo.com
@@ -91,106 +75,14 @@ Run as proxy server:
 cprox *=PROXY:http://127.0.0.1:8080
 ```
 Cli tool help output:
-```sh
-cprox -h
-```
 
-## Docker
-### tested with
- - Ubuntu v20.04
- - Docker v20.10.16
+# Contributing
+Contributions to HiveSsh are welcome!  
+Interested users can refer to the guidelines provided in the [CONTRIBUTING.md](CONTRIBUTING.md) file to contribute to the project and help improve its functionality and features.
 
-### pull
-```sh
-docker pull noblemajo/cprox:latest
-```
+# License
+HiveSsh is licensed under the [MIT license](LICENSE), providing users with flexibility and freedom to use and modify the software according to their needs.
 
-### run
-```sh
-docker run -it --rm \
-  -p 80:80 \
-  -p 443:443 \
-  -v $(pwd)/certs:/app/certs \
-  noblemajo/cprox \
-    *=REDIRECT:https://start.duckduckgo.com
-```
-### help
-```sh
-docker run -it --rm noblemajo/cprox -h
-```
-
-### help output
-```css
-# CPROX #
-
-Usage: cprox [OPTIONS] COMMAND [ARGUMENTS]
-
-CProX is a easy to configure redirect, proxy and static webserver
-
-Options:
-  -v, --verbose                                  Show basic flag adn target informations (default: 'false', ENV: 'VERBOSE')
-      --dry-run                                  Exit cprox before final start server step. (default: 'false', ENV: 'DRYRUN')
-  -p, --http-port [number]                       Set the http port (default: 80 but disabled if any port is set) (default: '80', ENV: 'HTTP_PORT')
-  -s, --https-port [number]                      Set the https port (default: 443 but disabled if any port is set) (default: '443', ENV: 'HTTPS_PORT')
-  -t, --trust-all-certs                          Trust all certificates on proxy (default: 'false', ENV: 'TRUST_ALL_CERTS')
-  -b, --bind-host-address [string]               Set the host where the server pind the ports (default: '0.0.0.0', ENV: 'BIND_ADDRESS')
-      --disable-self-singed                      Disable generating self singed certificates if not exist (default: 'false', ENV: 'DISABLE_SELF_SINGED')
-      --self-singed-country-code [string]        Set the country code for the self singed certificate (default: 'INT', ENV: 'SELF_SINGED_COUNTRY_CODE')
-      --self-singed-common-domain-name [string]  Set the common domain name for the self singed certificate (default: 'example.com', ENV: 'SELF_SINGED_COMMON_DOMAIN_NAME')
-      --self-singed-state-name [string]          Set the state name for the self singed certificate (default: 'International', ENV: 'SELF_SINGED_STATE_NAME')
-      --self-singed-locality-name [string]       Set the locality name for the self singed certificate (default: 'International', ENV: 'SELF_SINGED_LOCALITY_NAME')
-      --self-singed-organization-name [string]   Set the organization name for the self singed certificate (default: 'None', ENV: 'SELF_SINGED_ORGANIZATION_NAME')
-      --self-singed-email-address [string]       Set the email address for the self singed certificate (default: 'none@example.com', ENV: 'SELF_SINGED_EMAIL_ADDRESS')
-      --self-singed-netscape-comment [string]    Set the netscape comment for the self singed certificate (default: 'Self-Singed SSL Certificate by the CProX Server Software', ENV: 'SELF_SINGED_NETSCAPE_COMMENT')
-      --dns-server-address [string]              Add a dns address to the existing dns addresses (default: '127.0.0.11,1.0.0.1,8.8.4.4,1.1.1.1,8.8.8.8', ENV: 'DNS_SERVER_ADDRESSES')
-      --cert-path [string]                       Define the path for the certificates (default: './certs', ENV: 'CERT_PATH')
-      --cert-name [string]                       Define the name for the certificates cert file (default: 'cert.pem', ENV: 'CERT_NAME')
-      --key-name [string]                        Define the name for the certificates key file (default: 'privkey.pem', ENV: 'KEY_NAME')
-      --ca-name [string]                         Define the name for the certificate ca file (default: 'chain.pem', ENV: 'CA_NAME')
-  -r, --rule [string]                            CProX rules
-      --max-header-size [number | string]        Define the maximum request header size (default: 1024 * 4) (default: '4096', ENV: 'MAX_HEADER_SIZE')
-      --connection-timeout [number | string]     Define the maximum time in miliseconds (or as millisecond calucaltion) for a open conneciton (default: '15000', ENV: 'CONNECTION_TIMEOUT')
-      --proxy-reaction-timeout [number | string] Define the maximum time in miliseconds (or as millisecond calucaltion) that the proxy target has to respond (default: '3000', ENV: 'PROXY_REACTION_TIMEOUT')
-      --proxy-verify-certificate                 Proxy verify target certificates (default: 'false', ENV: 'PROXY_VERIFY_CERTIFICATE')
-      --proxy-follow-redirects                   Proxy follow redirects (default: 'false', ENV: 'PROXY_FOLLOW_REDIRECTS')
-  -h, --help                                     Shows this help output
-
-Commands:
-version Shows the version of cprox
-
-Details:
-You can use CProX as webserver. It can proxy, redirect and service static content on requests
-
-! CProX | by noblemajo | supported by CoreUnit.NET !
-```
-
-# usage recommendation
-Running the program under different conditions might work, have unpredictable effects, or might work only partially or not at all.  
-The program was tested under the following conditions:
- - node.js v20+
- - npm v9+
- - ubuntu 22.04+
-
-# references
- - [configuration](https://github.com/noblemajo/cprox/blob/main/docs/config.md).
- - [npm scripts](https://github.com/noblemajo/cprox/blob/main/docs/npm.md).
-
-# contribution
-
-# feature request
-Create a issue with "Feature: " at the begin if the title.
-
-# issues
-Create a issue with "Issues: " at the begin if the title.
-
-# develop
- - 1. fork the project
- - 2. implement your idea
- - 3. create a pull/merge request
-```ts
-// please create seperated forks for different kind of featues/ideas/structure changes/implementations
-```
-
----
-**cya ;3**  
-*by NobleMajo*
+# Disclaimer
+HiveSsh is provided without warranties.  
+Users are advised to review the accompanying license for more information on the terms of use and limitations of liability.
