@@ -216,7 +216,11 @@ export function createProxy(
         proxy.on("error", decrease)
     }
     proxy.on("error", settings.proxyErrorHandler)
-    settings.verbose && console.debug("PROXY:", targetHost, "\non Host:", reqData.hostParts, "\non Path:", reqData.pathParts)
+    settings.verbose && console.debug(
+        "PROXY:" + targetHost + "   " + target[2] + "   " + target[3] + "\n" +
+        "on Host:" + reqData.hostParts + "\n" +
+        "on Path:" + reqData.pathParts
+    )
     return proxy
 }
 
@@ -420,7 +424,7 @@ export function findResolver(
             req: data
         }
     }
-    verbose && console.debug("CPROX-RESOLVER: no resolver found for:", data.host + data.path)
+    verbose && console.debug("CPROX-RESOLVER: no resolver found for:", data.host + + data.path)
     return undefined
 }
 
