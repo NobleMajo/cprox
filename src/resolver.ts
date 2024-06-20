@@ -31,17 +31,18 @@ export class ProxyResolver implements BaseResolver {
     public type: "PROXY" = "PROXY"
 
     /**
-     * @description Defines objects `rule`, `http`, and `ws` properties and sets their
-     * values according to information provided in its argument list.
+     * @description Initializes an instance of a class with three public members: `rule`,
+     * `http`, and `ws`. These members are likely used to handle HTTP and WebSocket
+     * requests and responses.
      * 
-     * @param { ProxyRule } rule - ProxyRule object that defines the HTTP proxying rules
-     * for the application.
+     * @param { ProxyRule } rule - ProxyRule that determines how the functions within the
+     * constructor are intercepted and modified before being executed.
      * 
-     * @param { ResolverHttpMiddleware } http - `ResolverHttpMiddleware` instance and
-     * provides access to the middleware functions for handling HTTP requests.
+     * @param { ResolverHttpMiddleware } http - `ResolveHttp Middleware` used to handle
+     * HTTP requests.
      * 
-     * @param { ResolverWsMiddleware } ws - `ResolverWsMiddleware` component in the
-     * constructor of the class.
+     * @param { ResolverWsMiddleware } ws - ResolverWsMiddleware for handling WebSocket
+     * connections in the constructor of the class.
      */
     constructor(
         public rule: ProxyRule,
@@ -54,16 +55,17 @@ export class StaticResolver implements BaseResolver {
     public type: "STATIC" = "STATIC"
 
     /**
-     * @description Defines a class with three properties: `rule`, `http`, and `ws`.
+     * @description Defines the dependencies for a class, which can then be used to
+     * initialize and configure objects.
      * 
-     * @param { StaticRule } rule - StaticRule object that contains information about the
-     * HTTP or WebSocket rule to which the constructor belongs.
+     * @param { StaticRule } rule - StaticRule object that contains configuration data
+     * for HTTP and WebSocket middleware.
      * 
-     * @param { ResolverHttpMiddleware } http - ResolveHttp Middleware, which is responsible
-     * for handling HTTP requests.
+     * @param { ResolverHttpMiddleware } http - `ResolveHttpMiddleware` interface, which
+     * is responsible for handling HTTP requests and responses.
      * 
-     * @param { ResolverWsMiddleware } ws - 3rd party websocket middleware to be injected
-     * into the constructor.
+     * @param { ResolverWsMiddleware } ws - `ResolveWsMiddleware` service that is injected
+     * into the constructor of the class.
      */
     constructor(
         public rule: StaticRule,
@@ -76,16 +78,17 @@ export class RedirectResolver implements BaseResolver {
     public type: "REDIRECT" = "REDIRECT"
 
     /**
-     * @description Sets up middlewares for redirect and websocket requests for the application.
+     * @description Sets properties for a class instance that includes an `RedirectRule`,
+     * `ResolverHttpMiddleware`, and `ResolverWsMiddleware`.
      * 
-     * @param { RedirectRule } rule - `RedirectRule` object that is used to configure
-     * redirection rules for HTTP and WebSocket requests.
+     * @param { RedirectRule } rule - `RedirectRule` object that determines how to handle
+     * incoming requests.
      * 
-     * @param { ResolverHttpMiddleware } http - ResolveHttp Middleware in the constructor
-     * function.
+     * @param { ResolverHttpMiddleware } http - ResolverHttpMiddleware used to handle
+     * HTTP requests.
      * 
-     * @param { ResolverWsMiddleware } ws - ResolverWsMiddleware component in the constructor
-     * function.
+     * @param { ResolverWsMiddleware } ws - ResolverWsMiddleware, which handles websocket
+     * connections in the application.
      */
     constructor(
         public rule: RedirectRule,
@@ -98,16 +101,17 @@ export type Resolver = ProxyResolver | StaticResolver | RedirectResolver
 export type Resolvers = Resolver[]
 
 /**
- * @description Checks if all elements in a given search sequence ("searchFor") match
- * their corresponding elements in another given sequence ("tester").
+ * @description Compares two arrays of strings, `searchFor` and `tester`, and returns
+ * `true` if all elements in `searchFor` are present in `tester`, and `false` otherwise.
  * 
- * @param { string[] } searchFor - pattern to be matched in the input string.
+ * @param { string[] } searchFor - string to search for within the `tester` string.
  * 
- * @param { string[] } tester - part or parts of a string to be searched for in the
- * `searchFor` array.
+ * @param { string[] } tester - sequence of parts to compare with the `searchFor`
+ * parameter, and is used to determine if any part of the `searchFor` sequence matches
+ * any part of the `tester` sequence.
  * 
- * @returns { boolean } a boolean value indicating whether the specified parts of the
- * host string match those in the search query.
+ * @returns { boolean } a boolean indicating whether the searchFor pattern matches
+ * the tester.
  */
 export function hostPartsMatch(
     searchFor: string[],
@@ -139,14 +143,13 @@ export function hostPartsMatch(
 }
 
 /**
- * @description Handles error responses from a proxy server and logs information about
- * the error, including the message, name, and stack trace, to the console.
+ * @description Handles and logs proxy errors based on error message and stack trace
+ * information provided.
  * 
- * @param { Error } err - Error object passed to the function, which is then analyzed
- * and processed based on its properties and message.
+ * @param { Error } err - error object passed to the function.
  * 
- * @returns { object } a string containing information about the error, including the
- * message and the stack trace.
+ * @returns { object } a message indicating the error occurred, along with information
+ * about the error's cause and any relevant stack trace.
  */
 export function defaultProxyErrorHandler(err: Error) {
     if (err.message == "read ECONNRESET") {
@@ -189,20 +192,21 @@ export const defaultCreateResolverSettings: CreateResolverSettings = {
 }
 
 /**
- * @description Replaces placeholder variables with actual values from the `reqData`
- * object, based on the `rule` and `targetValue` input.
+ * @description Replaces placeholders in a string with values from a `RequestData`
+ * object and a set of host and path variables.
  * 
- * @param { RequestData } reqData - data that is passed from the main program to be
- * parsed and replaced with variables in the `targetValue`.
+ * @param { RequestData } reqData - data provided by the user in a request, which is
+ * used to replace placeholders in the `targetValue`.
  * 
- * @param { Rule } rule - 3D rule to which the variable replacement is applied.
+ * @param { Rule } rule - rule that is being processed, and its hostVars and pathVars
+ * properties are iterated over to replace placeholders in the target value with
+ * actual values from the request data.
  * 
- * @param { string } targetValue - string value that is being processed by the function,
- * and it undergoes substitution with placeholders for dynamic values extracted from
- * `reqData` and `rule`.
+ * @param { string } targetValue - value to be transformed by replacing placeholder
+ * tokens with actual values extracted from the `reqData`.
  * 
- * @returns { string } a modified version of the input `targetValue`, with placeholders
- * replaced with values from the `reqData` object.
+ * @returns { string } a modified version of the `targetValue`, with any occurrences
+ * of `{{ }}` replaced with values from `reqData`.
  */
 export function parseTargetVariables(
     reqData: RequestData,
@@ -225,19 +229,17 @@ export function parseTargetVariables(
 }
 
 /**
- * @description Modifies the URL of an incoming request based on a rule provided in
- * the `rule` parameter, and ensures that the resulting URL starts with a slash if necessary.
+ * @description Modifies the URL of an incoming message based on a rule and user-provided
+ * data, appending or prefixing the URL with `/`.
  * 
- * @param { RequestData } reqData - data of the request, which contains the path
- * information to be overwritten on the request URL.
+ * @param { RequestData } reqData - request data containing the path information,
+ * which is utilized to generate the modified URL.
  * 
- * @param { Rule } rule - portion of the request URL that should be overridden with
- * the data from the `reqData` object.
+ * @param { Rule } rule - part of the original URL that should be replaced with the
+ * new path.
  * 
- * @param { IncomingMessage } req - IncomingMessage object passed to the function,
- * and its `url` property is modified by updating its value with the manipulated path
- * from the `rule.path` and any necessary prefixing of the URL with the leading slash
- * "/".
+ * @param { IncomingMessage } req - incoming HTTP request message, which is modified
+ * by the function to overwrite its URL based on the provided rule and data.
  */
 export function overwriteRequestUrl(
     reqData: RequestData,
@@ -253,39 +255,39 @@ export function overwriteRequestUrl(
 }
 
 /**
- * @description Creates an HTTP proxy instance based on configuration settings, rule,
- * and other inputs. It sets up the proxy target, protocol, host, port, secure, follow
- * redirects, and error handling mechanisms.
+ * @description Creates an HTTP proxy based on given settings, rules, and data. It
+ * sets up a target host and port, secure connection (if enabled), timeouts, and
+ * follow redirects. The function also handles proxy errors and logs verbose messages.
  * 
- * @param { CreateResolverSettings } settings - CreateResolverSettings object that
- * specifies the configuration for the HTTP proxy, such as verbosity level and error
- * handling mechanism.
+ * @param { CreateResolverSettings } settings - CreateResolverSettings object, which
+ * defines configuration options for the HTTP proxy such as verification of certificate
+ * authenticity and reaction timeout.
  * 
- * @param { ProxyRule } rule - ProxyRule object defining the proxy configuration for
- * a particular target, including the host name, port number, and any specific path
- * manipulation instructions.
+ * @param { ProxyRule } rule - configuration of a specific proxy rule to be applied
+ * to the incoming request, including the target host and port, and any additional
+ * configuration options such as verify certificate and timeout values.
  * 
- * @param { ProxyConnectionCounter } proxyConnections - count of connections currently
- * being made to the upstream servers for the given target ID, which is used to
- * determine which target to use when there are multiple targets available.
+ * @param { ProxyConnectionCounter } proxyConnections - count of active connections
+ * for each target ID, which is used to remove one connection when a new one is
+ * established through the proxy.
  * 
- * @param { ProxyTargetMapper } proxyTargetIdMap - 1:1 mapping between the original
- * request target and its corresponding proxy target ID, which is used to identify
- * the appropriate proxy target for forwarding the request.
+ * @param { ProxyTargetMapper } proxyTargetIdMap - 1-to-many mapping between the
+ * original request's target URL and a unique identifier for each target, allowing
+ * the proxy to target the correct destination based on the rule.
  * 
- * @param { string[] } proxyTargetIds - 0-based array of target IDs used to select a
- * specific target from the `rule.target` array when multiple targets are defined,
- * allowing the function to intelligently route incoming requests based on the target
- * connection with the fewest established connections.
+ * @param { string[] } proxyTargetIds - 0-based array of unique target IDs generated
+ * by sorting and selecting the corresponding ProxyConnectionCounter value for each
+ * target, which is used to determine the target proxy to use based on the rule provided.
  * 
- * @param { RequestData } reqData - data of a request that is being proxied, providing
- * information such as the hostname, port number, and path to be used in the proxy configuration.
+ * @param { RequestData } reqData - data needed to create a HTTP request, including
+ * the URL, headers, and any other relevant information, which is then used to customize
+ * the created HTTP proxy.
  * 
- * @param { IncomingMessage } req - incoming message being proxied, and is used to
- * modify the URL of the request for target variable resolution and redirect handling.
+ * @param { IncomingMessage } req - incoming message that triggered the creation of
+ * the proxy, and it is passed through to the created proxy for further processing.
  * 
- * @returns { HttpProxy } an instance of `HttpProxy` with configuration settings set
- * based on the input parameters.
+ * @returns { HttpProxy } an instance of the `HttpProxy` class, representing a HTTP(S)
+ * proxy with customized target configuration and event listeners.
  */
 export function createProxy(
     settings: CreateResolverSettings,
@@ -331,11 +333,17 @@ export function createProxy(
     if (rule.target.length > 1) {
         let removed: boolean = false
         /**
-         * @description Decrements a reference counted object by removing it from a cache if
-         * it is not null.
+         * @description Decreases the value of `proxyConnections` for a specific `targetId`.
+         * If the target is already removed, the function returns immediately without modifying
+         * the array.
          * 
-         * @returns { boolean } a boolean value indicating whether the target connection was
-         * successfully removed from the list of proxy connections.
+         * @returns { undefined } the updated value of `removed`.
+         * 
+         * 	* `removed`: A boolean value indicating whether the connection was successfully
+         * removed. If `true`, the connection was removed; otherwise, it remains unchanged.
+         * 	* `proxyConnections[targetId]`: The value of this property decreases by 1 whenever
+         * the function is called, indicating the number of active connections for the specified
+         * target ID.
          */
         const decrease = () => {
             if (removed) {
@@ -349,7 +357,7 @@ export function createProxy(
     }
     proxy.on("error", settings.proxyErrorHandler)
     settings.verbose && console.debug(
-        "PROXY:" + targetHost + "   " + target[2] + "   " + target[3] + "\n" +
+        "PROXY: " + targetHost + ":" + target[2] + "\n" +
         "on Host:" + reqData.hostParts + "\n" +
         "on Path:" + reqData.pathParts
     )
@@ -365,19 +373,17 @@ export interface ProxyTargetMapper {
 }
 
 /**
- * @description Generates a custom HTTP resolver for given rules based on their `type`.
- * It creates a new instance of a subclassed resolver depending on the rule type, and
- * sets up necessary functions to handle incoming requests.
+ * @description Creates a Resolver instance based on given Rule object and options,
+ * which can handle PROXY, REDIRECT, or STATIC requests. It returns a Resolver instance
+ * with the appropriate handler for the given request type.
  * 
- * @param { Rule } rule - 3D Object rule provided by the caller, which specifies the
- * HTTP request type and routing strategy for generating an HTTP response.
+ * @param { Rule } rule - λ rule to create a resolver for.
  * 
  * @param { CreateResolverOptions } options - CreateResolverOptions object, which
- * provides additional settings for customizing the behavior of the resolver, such
- * as setting default values for certain properties or overwriting existing settings.
+ * allows for additional customization of the created resolver.
  * 
- * @returns { Resolver } a Resolver object that handles incoming requests based on
- * the given rule.
+ * @returns { Resolver } an instance of a `Resolver` object that can handle HTTP
+ * requests based on a given rule.
  */
 export function createResolver(
     rule: Rule,
@@ -528,17 +534,18 @@ export function createResolver(
 }
 
 /**
- * @description Maps over a given set of `Rules` and uses them to create new `Resolvers`.
- * It takes an optional `CreateResolverOptions` object to customize the creation process.
+ * @description Maps a set of `Rules` objects to corresponding `Resolvers`. Each rule
+ * is passed through the `createResolver` function with any provided `CreateResolverOptions`,
+ * and the resulting resolver is returned as part of the map result.
  * 
- * @param { Rules } rules - collection of rules to be transformed into resolvers using
- * the `createResolvers()` function.
+ * @param { Rules } rules - set of rules that determine how to convert code into
+ * documentation, which are then mapped and returned as a collection of Resolvers.
  * 
- * @param { CreateResolverOptions } options - settings for creating resolvers based
- * on the given rules, allowing for customization of the creation process.
+ * @param { CreateResolverOptions } options - configuration object used to customize
+ * the creation of resolvers for each rule in the `rules` array.
  * 
- * @returns { Resolvers } an array of resolution functions tailored to the provided
- * rules and options.
+ * @returns { Resolvers } an array of resolvers created for each rule provided in the
+ * `rules` parameter.
  */
 export function createResolvers(
     rules: Rules,
@@ -550,26 +557,26 @@ export function createResolvers(
 export type FoundResolver = Resolver & { req: RequestData }
 
 /**
- * @description Searches through a list of resolvers (provided in the `resolvers`
- * parameter) to find one that matches the given request data (`data`). If a matching
- * resolver is found, it returns the resolver's properties and the request data.
- * Otherwise, it returns `undefined`.
+ * @description Searches through a list of provided resolvers based on the given
+ * request's host and path, returning the first matching resolver or `undefined`. It
+ * uses a cache to store previously found resolvers for efficient lookups.
  * 
  * @param { RequestData } data - request data passed through the function, which is
- * used to retrieve a resolver from the cache or to check if a resolver already exists
- * for the current host and path.
+ * used to determine if a resolver is found for the provided host and path.
  * 
- * @param { Resolvers } resolvers - an array of resolution rules that can be matched
- * to a given request, and is used to identify a potential resolver for the request.
+ * @param { Resolvers } resolvers - an array of Resolver objects that are searched
+ * to find a matching one for a given request data, with each Resolver object
+ * representing a potential URL pattern and associated handler.
  * 
- * @param { object } cache - {get, set} functions of a cache object that stores and
- * retrieves found resolvers for hosts and paths based on their combination.
+ * @param { object } cache - {get, set} object that stores already resolved resolvers
+ * for specific host and path combinations, allowing quick lookups instead of
+ * reresolution when called with a new request.
  * 
- * @param { boolean } verbose - ability to output additional information about the
- * matching resolvers at debug levels.
+ * @param { boolean } verbose - logging level, when set to `true`, it enables debug
+ * logs for the resolution process, otherwise, only essential information is logged.
  * 
- * @returns { FoundResolver | undefined } a `FoundResolver` object or `undefined`,
- * depending on whether a matching resolver was found in the cache or not.
+ * @returns { FoundResolver | undefined } a `FoundResolver` object containing the
+ * resolved data or `undefined` if no resolver was found.
  */
 export function findResolver(
     data: RequestData,
