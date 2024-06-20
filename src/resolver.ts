@@ -217,7 +217,7 @@ export function createProxy(
     }
     proxy.on("error", settings.proxyErrorHandler)
     settings.verbose && console.debug(
-        "PROXY:" + targetHost + "   " + target[2] + "   " + target[3] + "\n" +
+        "PROXY: " + targetHost + ":" + target[2] + "\n" +
         "on Host:" + reqData.hostParts + "\n" +
         "on Path:" + reqData.pathParts
     )
