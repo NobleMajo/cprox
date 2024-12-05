@@ -1,0 +1,66 @@
+name: auto-update
+run-name: Update npm dependencies
+
+on:
+  schedule:
+    - cron: '30 12 6,20 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-deps:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    - name: Update npm dependencies
+      run: |
+        npm version patch --no-git-tag-version
+        npm update
+        npm run build
+        npm run test --if-present
+
+    - name: Commit and push changes
+      uses: EndBug/add-and-commit@v9
+      with:
+        add: 'package*.json'
+        message: 'Bot: npm deps update'
+
+    - name: Update npm dependencies
+      run: |
+        npm version patch --no-git-tag-version
+        npm update
+        npm run build
+        npm run test --if-present
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: dist
+
+  publish-npm:
+    needs: update-deps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
