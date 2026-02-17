@@ -1,7 +1,7 @@
 {
   "name": "cprox",
   "description": "A easy to configure redirect, static serve, proxy and load balancer web server.",
-  "version": "1.9.45",
+  "version": "1.9.46",
   "main": "dist/index.js",
   "author": "NobleMajo",
   "license": "MIT",
